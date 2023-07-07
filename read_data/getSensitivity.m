@@ -33,7 +33,8 @@ switch sensor
     case 'VS-209-directional'
         ftab =  [1e3 4.5e3 10e3 20e3];
         htab = [-185 -171 -160 -160];
-        phitab = [-90 -90 -160 -160];
+        %phitab = [-90 -90 -160 -160];
+        phitab = -90*ones(size(htab));
 end
 if any(f==0)
     fidx = f>=100;
