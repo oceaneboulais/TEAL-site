@@ -99,9 +99,15 @@ for tidx = 2:length(t_sec)
 
     diveIdx = find(t_sec(tidx) >=diveStartTime & diveStartTime~=-1,1,'last');
     
+    if isempty(surfIdx)
+        surfIdx = 1;
+    end
+    
     if t_sec(tidx)<missionStartTimer
         depth_mission(tidx) = 0;
-    elseif (~isempty(diveIdx) && t_sec(tidx) >= diveStartTime(diveIdx)) && ~(t_sec(tidx) >= surfaceStartTime(surfIdx))
+    elseif (~isempty(diveIdx) && t_sec(tidx) >= diveStartTime(diveIdx))...
+            && (~(t_sec(tidx) >= surfaceStartTime(surfIdx)) ...
+            || surfaceStartTime(surfIdx)==-1)
         % calculate new depth using dive speed
         if depth_mission(tidx-1) < diveDepth(diveIdx)
             depth_mission(tidx) = depth_mission(tidx-1) + diveVelocity(diveIdx)*dt;
@@ -109,14 +115,14 @@ for tidx = 2:length(t_sec)
             depth_mission(tidx) = diveDepth(diveIdx);
         end
 
-    elseif (~isempty(surfIdx) && t_sec(tidx) >= surfaceStartTime(surfIdx)) 
+    elseif t_sec(tidx) >= surfaceStartTime(surfIdx) && surfaceStartTime(surfIdx)~=-1
         % calculate new depth using surface speed 
         surfTime = surfaceStartTime(surfIdx) + surfaceDuration(surfIdx);
-        if depth_mission(tidx-1) > 0 && t_sec(tidx) < surfTime
+        if depth_mission(tidx-1) > 0 %&& t_sec(tidx) < surfTime
             depth_mission(tidx) = depth_mission(tidx-1) + surfaceVelocity*dt;
         elseif  depth_mission(tidx-1) <= 0 && t_sec(tidx) < surfTime
             depth_mission(tidx) = 0;
-        elseif t_sec(tidx) >= surfTime
+        elseif t_sec(tidx) >= surfTime && depth_mission(tidx-1) <= 0
             % start the next dive 
             surfIdx = surfIdx + 1;
             depth_mission(tidx) = 0;
