@@ -118,7 +118,7 @@ for tidx = 2:length(t_sec)
     elseif t_sec(tidx) >= surfaceStartTime(surfIdx) && surfaceStartTime(surfIdx)~=-1
         % calculate new depth using surface speed 
         surfTime = surfaceStartTime(surfIdx) + surfaceDuration(surfIdx);
-        if depth_mission(tidx-1) > 0 %&& t_sec(tidx) < surfTime
+        if depth_mission(tidx-1) > 0 
             depth_mission(tidx) = depth_mission(tidx-1) + surfaceVelocity*dt;
         elseif  depth_mission(tidx-1) <= 0 && t_sec(tidx) < surfTime
             depth_mission(tidx) = 0;
