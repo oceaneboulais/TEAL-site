@@ -35,6 +35,10 @@ filenames = filenames(sortidx,:);
 % file_idx1 = find(file_time_utc <= time_start_utc,1,'last');
 file_idx1 = find(file_time_utc > time_start_utc,1,'first')-1;
 file_idx2 = find(file_time_utc > time_stop_utc,1,'first')-1;
+if isempty(file_idx2)
+    file_idx2 = length(file_time_utc);
+end
+
 
 filelist = filelist(file_idx1:file_idx2);
 filenames = filenames(file_idx1:file_idx2,:);
