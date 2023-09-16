@@ -11,6 +11,13 @@ end
 
 filenames = vertcat(filelist.name);
 
+% check file size and remove any zero byte files 
+filesize = vertcat(filelist.bytes);
+badfiles = filesize==0;
+warning('Removing %i bad files:',sum(badfiles))
+display(filenames(filesize==0,:))
+filenames(filesize==0,:) = [];
+
 % get the date and time in UTC from the filenames, sort them
 file_time_utc = timeFromFilename(filenames);
 % years = filenames(:,12:15);
