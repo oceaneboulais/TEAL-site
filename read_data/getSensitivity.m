@@ -35,6 +35,16 @@ switch sensor
         htab = [-185 -171 -160 -160];
         %phitab = [-90 -90 -160 -160];
         phitab = -90*ones(size(htab));
+    case 'VS-301-omni'
+        % based on nominal - actual sensitivity TBD
+        ftab =  [100 1e3 4e3];
+        htab = [-162 -162 -162];
+        phitab = 0*ones(size(htab));
+    case 'VS-301-directional'
+        % true sensitivity TBD
+        ftab =  [100 1e3 4e3];
+        htab = [-162 -162 -162];
+        phitab = -90*ones(size(htab));
 end
 if any(f==0)
     fidx = f>=100;
