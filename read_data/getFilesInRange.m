@@ -50,6 +50,7 @@ end
 
 filelist = filelist(file_idx1:file_idx2);
 filenames = filenames(file_idx1:file_idx2,:);
+file_time_utc = timeFromFilename(filenames);
 % file_time_posix = file_time_posix(file_idx1:file_idx2);
 
 %%
