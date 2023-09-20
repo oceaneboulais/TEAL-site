@@ -36,18 +36,30 @@ switch sensor
         %phitab = [-90 -90 -160 -160];
         phitab = -90*ones(size(htab));
     case 'VS-301-omni'
-        % based on nominal - actual sensitivity TBD
-        ftab =  [100 1e3 4e3];
-        htab = [-162 -162 -162];
+        % based on nominal - measured sensitivity TBD
+        ftab =  [3 1e3 2e3 20e3];
+        htab = [-162 -162 -162 -162];
         phitab = 0*ones(size(htab));
     case 'VS-301-directional'
-        % true sensitivity TBD
-        ftab =  [100 1e3 4e3];
-        htab = [-162 -162 -162];
+        % based on nominal - measured sensitivity TBD
+        ftab = 3:10:20e3;
+        omega = 2*pi*ftab;
+
+        a_sens_g = 10; % V/g
+
+        rho = 1000;  % kg/m^3
+        c = 1500; % m/s
+
+        % the conversion from V/g to V/uPa is to DIVIDE by the factor:
+        %  g * (9.8 m/s^2 /g) * (rho kg/m^3) * (c m/s) / (i * omega 1/s) * (1 x 10^6 uPa / Pa)
+        g_to_uPa = -1i*9.8*rho*c*1e6./omega;
+        
+        h_uPa = a_sens_g./g_to_uPa; % units of V/uPa
+        htab = 20*log10(h_uPa); % units of dB re V/uPa
         phitab = -90*ones(size(htab));
 end
 if any(f==0)
-    fidx = f>=100;
+    fidx = f>=3;
     HdB(fidx) = interp1(log10(ftab),htab,log10(f(fidx)),'linear','extrap');
     HdB(~fidx) = htab(1);
     
