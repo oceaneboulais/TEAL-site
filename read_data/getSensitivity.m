@@ -12,11 +12,11 @@ function H = getSensitivity(f,sensor)
 Vmax=5;  %Assumed peak-to peak range of the ADC
 
 switch sensor
-    case 'GTI-M35-300-directional'
+    case {'GTI-M35-300-directional','M-35-NS','M-35-EW'}
         ftab =  [100 4e3 7e3 10e3 12e3 20e3];
         htab = [-192 -160 -156 -155 -155.5 -160];
         phitab = -90*ones(size(htab));
-    case 'GTI-M35-300-omni'
+    case {'GTI-M35-300-omni','M-35-omni'}
 %         ftab =  [100  3e3  3.9e3 5e3   6e3  9e3  10e3 12e3 20e3 200e3];
 %         htab = [-163 -164 -163   -165.5 -165 -164 -165 -163 -164 -164];
         ftab =  [100 2e3 3e3 20e3];
@@ -30,7 +30,7 @@ switch sensor
         ftab =  [1e3 4e3 7e3 8e3 10e3 20e3];
         htab = [-162 -163 -164 -165 -165 -165];
         phitab = 0*ones(size(htab));
-    case 'VS-209-directional'
+    case {'VS-209-directional','VS-209-X','VS-209-Y','VS-209-Z'}
         ftab =  [1e3 4.5e3 10e3 20e3];
         htab = [-185 -171 -160 -160];
         %phitab = [-90 -90 -160 -160];
@@ -40,7 +40,7 @@ switch sensor
         ftab =  [3 1e3 2e3 20e3];
         htab = [-162 -162 -162 -162];
         phitab = 0*ones(size(htab));
-    case 'VS-301-directional'
+    case {'VS-301-directional','VS-301-X','VS-301-Y','VS-301-Z'}
         % based on nominal - measured sensitivity TBD
         ftab = 3:10:20e3;
         omega = 2*pi*ftab;
