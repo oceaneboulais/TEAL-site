@@ -1,15 +1,27 @@
-function H = getSensitivity(f,sensor)
+function H = getSensitivity(f,sensor,varargin)
+% function H = getSensitivity(f,sensor,nbits,Vmax)
 % applies the tabulated sensitivity for the chosen sensor
 % INPUTS:
 %   f:      desired frequencies in Hz
 %   sensor: desired sensor ('GTI-M35-300-omni', 'GTI-M35-300-directional',
 %               or 'HTI-92WB'
+%   additional name-value pair inputs: 'nbits', 'vmax','units' can be specified as: 
+%       getSensitivity(f,'GTI-M35-300-omni','nbits',16,'Vmax',2) etc.
+%
 % OUTPUTS:
 %   H:      sensivity values for in dB at frequencies f
 
 % Alison B. Laferriere
 
-Vmax=5;  %Assumed peak-to peak range of the ADC
+p = inputParser;
+
+p.PartialMatching = true; % this makes it case insensitive 
+
+addParameter(p,'nbits',24); 
+addParameter(p,'vmax',5);
+addParameter(p,'units','uPa/count') % or 'uPa/V'
+parse(p,varargin{:});
+
 
 switch sensor
     case {'GTI-M35-300-directional','M-35-NS','M-35-EW'}
@@ -71,6 +83,14 @@ else
 end
 
  H =  (10.^(-HdB/20)).*exp(1i*phi_deg*pi/180);  %%%Units of uPa/V
- 
- H=  (Vmax./(2^32))*H;  %%Units of uPa/(count);
+
+ switch p.Results.units
+     case 'uPa/count'
+         % convert to counts
+        H=  (p.Results.vmax./(2^(p.Results.nbits-1)))*H;  %%Units of uPa/(count);
+     case 'uPa/V'
+         % do nothing
+     otherwise 
+         error('unrecognized units!')
+ end
  
