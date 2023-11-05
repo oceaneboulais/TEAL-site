@@ -124,7 +124,7 @@ for deployment = deployment_set
 
     thissavefolder = fullfile(savefolderbase,param_spec,driftlog.ExperimentName{didx});
 
-    if ~isfolder(thisavefolder)
+    if ~isfolder(thissavefolder)
         mkdir(thissavefolder)
     end
 
