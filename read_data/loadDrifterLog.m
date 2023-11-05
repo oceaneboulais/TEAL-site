@@ -64,7 +64,7 @@ data_matrix = load(data_filename);
 %44. SrcID
 %45. Control State
 %46. VALVE_INDEX
-
+%47. EN_PUMP
 
 Data.Timestamp = data_matrix(:,1);
 Data.z_setpoint = data_matrix(:,2);
@@ -118,6 +118,34 @@ if size(data_matrix,2)==46
     
     Data.Control_State = data_matrix(:,45);
     Data.VALVE_INDEX = data_matrix(:,46);
+elseif size(data_matrix,2)== 47
+    Data.VOS = data_matrix(:,25);
+    Data.RangeTime = data_matrix(:,26);
+    
+    Data.RangeDist = data_matrix(:,27);
+    Data.USBLAzimuth = data_matrix(:,28);
+    Data.USBLElevation = data_matrix(:,29);
+    Data.USBLFitError = data_matrix(:,30);
+    Data.PositionEasting = data_matrix(:,31);
+    Data.PositionNorthing = data_matrix(:,32);
+    Data.PositionDepth = data_matrix(:,33);
+    
+    Data.AUX0 = data_matrix(:,34);
+    Data.AUX1 = data_matrix(:,35);
+    Data.AUX2 = data_matrix(:,36);
+    Data.AUX3 = data_matrix(:,37);
+    Data.AUX4 = data_matrix(:,38);
+    Data.AUX5 = data_matrix(:,39);
+    Data.AUX6 = data_matrix(:,40);
+    Data.AUX7 = data_matrix(:,41);
+    Data.AUX8 = data_matrix(:,42);
+    Data.AUX9 = data_matrix(:,43);
+    
+    Data.SrcID = data_matrix(:,44);
+    
+    Data.Control_State = data_matrix(:,45);
+    Data.VALVE_INDEX = data_matrix(:,46);
+    Data.EN_PUMP = data_matrix(:,47);
 else
     % this is an older file with:
     %25. OP2?

@@ -87,6 +87,13 @@ oilLowThreshold = str2double(extractBetween(filetext,'''w366 ',''''));
 
 oilHighThreshold = str2double(extractBetween(filetext,'''w367 ',''''));
 
+for driftPing = 1:15
+    fixAddress(driftPing) = str2double(extractBetween(filetext,sprintf('''w%i ',driftPing + 210 -1),''''));
+end
+fixAddress(fixAddress==0) = [];
+fixPeriod = str2double(extractBetween(filetext,'''w225 ',''''));
+fixDelay = str2double(extractBetween(filetext,'''w226 ',''''));
+
 dt = 1;
 t_sec = missionStartSetpoint:dt:missionEndTimer;
 
@@ -95,19 +102,26 @@ depth_mission(1) = 0;
 surfaceVelocity = -0.1; % guess the surface velocity 
 surfIdx = 1;
 
+t_count_sec = 0;
+
 for tidx = 2:length(t_sec)
 
-    diveIdx = find(t_sec(tidx) >=diveStartTime & diveStartTime~=-1,1,'last');
+    diveIdx = find(t_count_sec >=diveStartTime & diveStartTime~=-1,1,'last');
     
     if isempty(surfIdx)
         surfIdx = 1;
     end
-    
+    t_count_sec = t_count_sec + dt;
     if t_sec(tidx)<missionStartTimer
+        % wait until the missionStartTimer to start the mission
         depth_mission(tidx) = 0;
-    elseif (~isempty(diveIdx) && t_sec(tidx) >= diveStartTime(diveIdx))...
-            && (~(t_sec(tidx) >= surfaceStartTime(surfIdx)) ...
+        t_count_sec = 0;
+    elseif t_sec(tidx)>=missionStartTimer && isempty(diveIdx)
+        depth_mission(tidx) = depth_mission(tidx-1);
+    elseif (~isempty(diveIdx) && t_count_sec >= diveStartTime(diveIdx))...
+            && (~(t_count_sec >= surfaceStartTime(surfIdx)) ...
             || surfaceStartTime(surfIdx)==-1)
+        % we have reached the time to start diving 
         % calculate new depth using dive speed
         if depth_mission(tidx-1) < diveDepth(diveIdx)
             depth_mission(tidx) = depth_mission(tidx-1) + diveVelocity(diveIdx)*dt;
@@ -115,19 +129,23 @@ for tidx = 2:length(t_sec)
             depth_mission(tidx) = diveDepth(diveIdx);
         end
 
-    elseif t_sec(tidx) >= surfaceStartTime(surfIdx) && surfaceStartTime(surfIdx)~=-1
+    elseif t_count_sec >= surfaceStartTime(surfIdx) && surfaceStartTime(surfIdx)~=-1
         % calculate new depth using surface speed 
         surfTime = surfaceStartTime(surfIdx) + surfaceDuration(surfIdx);
         if depth_mission(tidx-1) > 0 
+            % we have not reached the surface yet, keep surfacing
             depth_mission(tidx) = depth_mission(tidx-1) + surfaceVelocity*dt;
-        elseif  depth_mission(tidx-1) <= 0 && t_sec(tidx) < surfTime
+        elseif  depth_mission(tidx-1) <= 0 && t_count_sec < surfTime
+            % we may have reached the surface, but we have not reached the
+            % designated surfacing time so stay at the surface
             depth_mission(tidx) = 0;
-        elseif t_sec(tidx) >= surfTime && depth_mission(tidx-1) <= 0
+        elseif t_count_sec >= surfTime && depth_mission(tidx-1) <= 0
             % start the next dive 
             surfIdx = surfIdx + 1;
             depth_mission(tidx) = 0;
         end
     else
+        % depth_mission(tidx) = depth_mission(tidx-1);
         keyboard
     end
 end
@@ -156,9 +174,49 @@ end
 title1 = sprintf('Cameras will turn on for %1.0f minutes every %1.0f minutes',cameraTon/60,cameraToff/60);
 title2 = sprintf('Beacon will flash for %1.0f seconds every %1.0f seconds',beaconPulseTime,beaconTimeBetween);
 
+t_cameraOn_sec = 0:(cameraTon+cameraToff):missionEndTimer;
+t_cameraOff_sec = cameraTon:(cameraTon+cameraToff):missionEndTimer;
+
+Npings = length(fixAddress);
+tmpFixDelay = fixDelay;
+for ii = 1:Npings
+    t_fix_sec{ii} = tmpFixDelay:(Npings*fixPeriod):missionEndTimer;
+    tmpFixDelay = tmpFixDelay + fixPeriod;
+end
+    
+
 if exist('deploy_time','var')
     t = deploy_time + seconds(t_sec);
-    plot(t,-depth_mission,'linewidth',2)
+    
+
+    ton_cam = deploy_time + seconds(t_cameraOn_sec);
+    toff_cam = deploy_time + seconds(t_cameraOff_sec);
+
+    hold on; ya = ylim;
+    for idx = 1:min(length(ton_cam),length(toff_cam))
+        h(2) = area([ton_cam(idx) toff_cam(idx)],...
+            [-endMissionDepthThreshold -endMissionDepthThreshold],'FaceAlpha',0.2,'FaceColor',[0.5 0.5 0]);
+    end
+
+    hold on
+    if endMissionDepthEnable
+        h(3) = plot(t,-endMissionDepthThreshold*ones(size(t)),'--r','linewidth',2);
+    end
+
+    if exist('t_fix_sec','var')
+        cmap = lines(length(t_fix_sec));
+        for ii = 1:length(t_fix_sec)
+            t_fix = deploy_time + seconds(t_fix_sec{ii});   
+            hL = plot([t_fix(:) t_fix(:)],[-endMissionDepthThreshold ya(2)],'color',cmap(ii,:));
+            h(end+1) = hL(1);
+            leg_str{ii} = sprintf('Ping %i',fixAddress(ii));
+        end
+    end
+
+    title({sprintf('Dive Profile: Platform ID %i',platformID),...
+        sprintf('Mission Start: %s',deploy_time),title1,title2})
+
+    h(1) = plot(t,-depth_mission,'linewidth',2);
     grid on; grid minor;
     xlabel('Time')
     ylabel('Depth,m')
@@ -166,9 +224,6 @@ if exist('deploy_time','var')
     ax2 = gca(); ax2.XTick = t(1):dx:t(end);
     set(gca,'XTickLabelRotation',90)
     datetick('x','mm-dd, HH:MM:SS','keepticks')
-
-    title({sprintf('Dive Profile: Platform ID %i',platformID),...
-        sprintf('Mission Start: %s',deploy_time),title1,title2})
 else
     t = t_sec/60^2;
     plot(t,-depth_mission,'linewidth',2)
@@ -177,10 +232,7 @@ else
     ylabel('Depth,m')
     
 end
-hold on
-if endMissionDepthEnable
-    plot(t,-endMissionDepthThreshold*ones(size(t)),'--r','linewidth',2)
-end
+
 
 
 set(gca,'fontweight','bold','fontsize',14);
@@ -190,5 +242,6 @@ xlim([t(1) t(end)])
 
 set(gca,'fontweight','bold','fontsize',14);
 
-legend('Dive Profile','Depth Threshold')
+legendstr = {'Dive Profile','Camera On','Depth Threshold'};
+legend(h,cat(2,legendstr,leg_str));
 

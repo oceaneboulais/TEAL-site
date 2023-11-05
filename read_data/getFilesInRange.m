@@ -9,6 +9,7 @@ if isempty(filelist)
     error('No files found!')
 end
 
+
 filenames = vertcat(filelist.name);
 
 % check file size and remove any zero byte files 
@@ -19,8 +20,16 @@ display(filenames(filesize==0,:))
 filenames(filesize==0,:) = [];
 filelist(filesize==0) = [];
 
+[~,~,ext] = fileparts(filenames(1,:));
+
+
 % get the date and time in UTC from the filenames, sort them
-file_time_utc = timeFromFilename(filenames);
+switch ext
+    case '.wav'
+        file_time_utc = timeFromFilename(filenames);
+    case '.mat'
+        file_time_utc = datetime(filenames(:,end-16:end-4),'InputFormat','yyMMdd''T''HHmmSS');
+end
 % years = filenames(:,12:15);
 % days = filenames(:,17:19);
 % months = repmat('0101',[size(years,1) 1]);
@@ -50,7 +59,15 @@ end
 
 filelist = filelist(file_idx1:file_idx2);
 filenames = filenames(file_idx1:file_idx2,:);
-file_time_utc = timeFromFilename(filenames);
+
+switch ext
+    case '.wav'
+        file_time_utc = timeFromFilename(filenames);
+    case '.mat'
+        file_time_utc = datetime(filenames(:,end-16:end-4),'InputFormat','yyMMdd''T''HHmmSS');
+end
+
+% file_time_utc = timeFromFilename(filenames);
 % file_time_posix = file_time_posix(file_idx1:file_idx2);
 
 %%

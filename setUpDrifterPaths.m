@@ -15,7 +15,7 @@ end
 
 [~,hostname] = system('hostname');
 switch hostname(1:end-1)
-    case {'Alisons-MacBook-Pro.local','Alisons-MBP'}
+    case {'Alisons-MacBook-Pro.local','Alisons-MBP','alisons-mbp.dynamic.ucsd.edu'}
         % Alison local computer
         gitpath = '/Users/alaferri/GIT/sio_code/sio_research';
         if use_remote % use jonah
@@ -27,7 +27,7 @@ switch hostname(1:end-1)
             fprintf('Using local path to Novus on Alison''s computer\n')
             data_basedir = '/Volumes/Novus/ONR_DRIFTER/';
             procdata_basedir = '/Volumes/Novus/Analysis';     
-            envdir = '/Users/alaferri/Databases';
+            envdir = '/Volumes/Novus/Environments';
         end
     case 'macmussel-2.ucsd.edu'
         % this is for macmussel / Alison

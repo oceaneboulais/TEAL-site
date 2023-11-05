@@ -13,6 +13,9 @@ function S = applyDrifterSensitivity(S,F,type,sensor)
 
 Nch = size(S,3);
 
+nbits = 24; % drifter daq is 24 bits
+volts = 5; % drifter daq is +/- 5V
+
 if Nch ==16
     keyboard
     hydro_sens = getSensitivity(F,'HTI-92WB');
@@ -21,8 +24,9 @@ if Nch ==16
     sens_dB = [hydro_sens(:).*ones(1,8) omni_sens(:) directional_sens(:).*ones(1,2) zeros(length(F),5)];
 elseif Nch==1
 %     [sens_dB,sens_phase_deg] = getSensitivity(F,sensor);
-    H = getSensitivity(F,sensor);
-    H = H*(2^32); % sensitivity given in uPa/count, data read +/-1 from audioread
+    nbits = 24;
+    H = getSensitivity(F,sensor,'nbits',24);
+    H = H*(2^(nbits-1)); % sensitivity given in uPa/count, data read +/-1 from audioread
 end
 
 switch type
