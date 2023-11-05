@@ -26,9 +26,9 @@ avg_type = 'Median'; % what type of average accross time do I want ?
 
 % el_plot = [-90:16:90]; % which elevations to plot from beamformer (choose from -90:2:90)
 
-savefolder = fullfile(procdata_basedir,mfilename);
-if ~isfolder(savefolder)
-    mkdir(savefolder)
+savefolderbase = fullfile(procdata_basedir,mfilename);
+if ~isfolder(savefolderbase)
+    mkdir(savefolderbase)
 end
 
 % the frequency bands to plot for integrated results 
@@ -105,6 +105,7 @@ if save_to_ppt
 end
 
 deployment_set = unique(driftlog.Deployment).';
+
 for deployment = deployment_set
     Ssavefilename = []; Bsavefilename = [];
 
@@ -121,9 +122,15 @@ for deployment = deployment_set
 
     param_spec = sprintf('fs%1.0f_nfft%i',fs_spec,nfft_spec);
 
-    Ssavefilename = fullfile(savefolder,param_spec,driftlog.ExperimentName{didx},sprintf('Spectra_%s',event_name));
+    thissavefolder = fullfile(savefolderbase,param_spec,driftlog.ExperimentName{didx});
 
-    Bsavefilename = fullfile(savefolder,driftlog.ExperimentName{didx},sprintf('Beam_Spectra_%s',event_name));
+    if ~isfolder(thisavefolder)
+        mkdir(thissavefolder)
+    end
+
+    Ssavefilename = fullfile(thissavefolder,sprintf('Spectra_%s',event_name));
+
+    Bsavefilename = fullfile(thissavefolder,sprintf('Beam_Spectra_%s',event_name));
 
     hx = []; hy = []; hz = []; hp = []; F = [];
     h1 = []; savename = []; beamdata = [];
