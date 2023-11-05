@@ -20,9 +20,9 @@ switch hostname(1:end-1)
         gitpath = '/Users/alaferri/GIT/sio_code/sio_research';
         if use_remote % use jonah
             fprintf('Using remote path to jonah on Alison''s computer\n')
-            data_basedir = '/Volumes/Laferriere/ONR_DRIFTER';
-            procdata_basedir = '/Volumes/Laferriere/Analysis';
-            envdir = '/Volumes/Laferriere/Databases';
+            data_basedir = '/Volumes/public/Laferriere/ONR_DRIFTER';
+            procdata_basedir = '/Volumes/public/Laferriere/Analysis';
+            envdir = '/Volumes/public/Laferriere/Databases';
         else % use external drive
             fprintf('Using local path to Novus on Alison''s computer\n')
             data_basedir = '/Volumes/Novus/ONR_DRIFTER/';
