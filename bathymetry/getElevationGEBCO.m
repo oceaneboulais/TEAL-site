@@ -1,8 +1,9 @@
-function elev = getElevationGEBCO(lons,lats)
+function elev = getElevationGEBCO(lons,lats,gebfile)
 % Alison B. Laferriere
 
-gebfile = 'GEBCO_2021.nc';
-
+if nargin<3
+    gebfile = 'GEBCO_2021.nc';
+end
 %% Read lat lon grid
 latgrid = double(ncread(gebfile,'lat'));
 longrid = double(ncread(gebfile,'lon'));
@@ -33,10 +34,4 @@ elev = double(ncread(gebfile,'elevation',Nstart,Ncount,Nstride));
 elev= interp2(latgrid(latidx), longrid(lonidx), elev, lats,lons);
     
 
-end
-
-function lon = wrap360(lon)
-positiveInput = (lon > 0);
-lon = mod(lon, 360);
-lon((lon == 0) & positiveInput) = 360;
 end

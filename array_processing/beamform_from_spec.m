@@ -1,4 +1,4 @@
-function B = beamform_from_spec(S,f,ang_deg,elev_deg,pos,w)
+function [B,Bpow] = beamform_from_spec(S,f,ang_deg,elev_deg,pos,w)
 % conventional beamformer in FFT domain:
 %
 % INPUTS:
@@ -7,7 +7,7 @@ function B = beamform_from_spec(S,f,ang_deg,elev_deg,pos,w)
 %
 % OUTPUTS:
 %       B(freq,time,angle)
-
+verbose = false;
 c = 1500;
 
 omega = 2*pi*f(:);
@@ -40,12 +40,27 @@ S = permute(S,[1 3 4 5 2]);
 
 H = v.*w.';
 try 
-    
+    % first see if we can do it all at once
     B = sum(conj(H).*S,2);
+    B = permute(B, [1,5,3,4,2]);
+    Bpow = conj(B).*B;
 catch 
-    B = zeros(Nf,1,Naz,Nel,Nt);
-    for ii = 1:size(v,3)
-        B(:,:,ii,:,:) = sum(conj(H(:,:,ii,:)).*S(:,:,:,:,:),2);
+    % if that fails,
+    % % loop over freq, the first dimension
+    % B = zeros(Nf,1,Naz,Nel,Nt);
+    % for ii = 1:size(v,1)
+    %     B(ii,:,:,:,:) = sum(conj(H(ii,:,:,:)).*S(ii,:,:,:,:),2);
+    % end
+    % loop over time, the 5th dimension
+    
+    B = zeros(Nf,Nt,Naz,Nel);
+    Bpow = zeros(Nf,Nt,Nel,Naz);
+    for ii = 1:Nt
+        if verbose
+            fprintf('%i of %i\n',ii,Nt)
+        end
+        B(:,ii,:,:,:) = sum(conj(H(:,:,:,:)).*S(:,:,:,:,ii),2);
+        Bpow(:,ii,:,:) = conj(B(:,ii,:,:,:) ) .* B(:,ii,:,:,:) ;
     end
 end
    
@@ -56,7 +71,7 @@ end
 
     
 % B = permute(B, [1,2,4,5,3]);
-B = permute(B, [1,5,3,4,2]);
+
 % B = squeeze(B);
 
 
