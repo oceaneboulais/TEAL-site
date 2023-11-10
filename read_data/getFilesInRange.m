@@ -4,9 +4,19 @@ if ~exist('ext','var')
     ext = '.wav';
 end
 
-filelist = dir(fullfile(data_dir,['*' ext]));
+% allow "data_dir" variable to be either a directory name or a list of
+% files
+if ischar(data_dir)
+    filelist = dir(fullfile(data_dir,['*' ext]));
+else
+    filelist = data_dir;
+end
+
 if isempty(filelist)
-    error('No files found!')
+    warning('No files found!')
+    file_time_utc = [];
+    filenames = [];
+    return
 end
 
 

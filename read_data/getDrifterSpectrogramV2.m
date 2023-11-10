@@ -1,4 +1,4 @@
-function [S,F,T,ch_select] = getDrifterSpectrogramV2(y,nfft,noverlp,fs,config_file,type)
+function [S,F,T,ch_select,sensor_type] = getDrifterSpectrogramV2(y,nfft,noverlp,fs,config_file,type)
 % nfft can be either the fft length, or a specified window to use
 if  isempty(noverlp)
     noverlp = floor(nfft/2);
@@ -25,7 +25,8 @@ for ich = 1:size(y,2)
     k = k+1;
     ch_select(k) = ich;
     [S(:,:,k),F,T] = spectrogram(y(:,ich),win,noverlp,nfft,fs);
-    S(:,:,k) = applyDrifterSensitivity(S(:,:,k),F,'mag',acoustic_config.sensor_type{ich});
+    sensor_type(k) = string(acoustic_config.sensor_type{ich});
+    S(:,:,k) = applyDrifterSensitivity(S(:,:,k),F,'mag',sensor_type(k));
 end
 
 switch type

@@ -17,7 +17,7 @@ drifters = []; % process only these drifters
 dateset_local = []; % process only between these times 
 deployments =[];
 
-overwrite_data = true; 
+overwrite_data = false; 
 
 save_plots = false;  % save out figures as png and fig
 save_to_ppt = true; % print figures to powerpoint 
@@ -136,8 +136,26 @@ for deployment = deployment_set
     h1 = []; savename = []; beamdata = [];
 
     % get full path to this data set
-    data_dir = fullfile(data_basedir,data_subdir,'AcousticData');
-    [filelist,filetimes_utc] = getFilesInRange(data_dir,t0_utc,tend_utc);
+    if iscell(data_basedir)
+        % more than one base directory has been supplied, we'll want to
+        % check them all
+        filelist = []; idir = 0;
+        for idir=1:length(data_basedir) 
+            data_dir = fullfile(data_basedir{idir},data_subdir,'AcousticData');
+            [filelist,filetimes_utc] = getFilesInRange(data_dir,t0_utc,tend_utc);
+            if ~isempty(filelist)
+                break
+            end
+        end 
+    else
+        data_dir = fullfile(data_basedir,data_subdir,'AcousticData');
+        [filelist,filetimes_utc] = getFilesInRange(data_dir,t0_utc,tend_utc);
+    end
+
+    % no files were found, we'll skip to the next deployment
+    if isempty(filelist)
+        continue
+    end
 
     config_file = fullfile(data_dir,driftlog.AcousticConfig{didx});
     acoustic_config = readtable(config_file);
@@ -566,15 +584,16 @@ if do_plots
 end
 
 % close all
-
-end
-
 %% Save presentation and close presentation -- overwrite file if it already exists
 % Filename automatically checked for proper extension
 if save_to_ppt
-    newFile     = pptx.save('long_term_spectra');
-    newFile2     = pptx_bf.save('beamform_output');
+    newFile     = pptx.save(fullfile(thissavefolder,'long_term_spectra'));
+    newFile2     = pptx_bf.save(fullfile(thissavefolder,'beamform_output'));
 end
+
+end
+
+
 
 
 
