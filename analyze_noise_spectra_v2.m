@@ -6,7 +6,7 @@ close all, clear all
 % path/filename that is descriptive of all relevant parameters that can be
 % adjusted
 [data_basedir,procdata_basedir,gitpath] = setUpDrifterPaths(0,1);
-
+data_basedir = {'/Volumes/TFOFA23_1','/Volumes/TFO_FA23_D1'};
 do_raw_data = true;
 do_bf_data = false; % bf part still needs to be updated
 do_plots = true;
@@ -85,7 +85,7 @@ NL_dB_3 = getWentzWindNoise(3, freq);
 NL_dB_6 = getWentzWindNoise(6, freq);
 
 % start the parallel pool 
-Nworkers = 8;
+Nworkers = 4;
 parpool(Nworkers)
 
 if save_to_ppt
@@ -106,7 +106,7 @@ end
 
 deployment_set = unique(driftlog.Deployment).';
 
-for deployment = deployment_set
+for deployment = 20 %deployment_set
     Ssavefilename = []; Bsavefilename = [];
 
     % get the index of this deployment in the table
@@ -143,6 +143,7 @@ for deployment = deployment_set
         for idir=1:length(data_basedir) 
             data_dir = fullfile(data_basedir{idir},data_subdir,'AcousticData');
             [filelist,filetimes_utc] = getFilesInRange(data_dir,t0_utc,tend_utc);
+            logdir = fullfile(data_basedir{idir},data_subdir,'ControlSystem');
             if ~isempty(filelist)
                 break
             end
@@ -150,8 +151,9 @@ for deployment = deployment_set
     else
         data_dir = fullfile(data_basedir,data_subdir,'AcousticData');
         [filelist,filetimes_utc] = getFilesInRange(data_dir,t0_utc,tend_utc);
+        logdir = fullfile(data_basedir,data_subdir,'ControlSystem');
     end
-
+    
     % no files were found, we'll skip to the next deployment
     if isempty(filelist)
         continue
@@ -185,8 +187,11 @@ for deployment = deployment_set
        %for ifile = 1:length(filelist)
        Nfiles = length(filelist);
        Spow_avg = zeros(Nfiles,nfft_spec/2+1,length(ch_select));
+       Spow_med = zeros(Nfiles,nfft_spec/2+1,length(ch_select));
        F_spec = zeros(Nfiles,nfft_spec/2+1);
-       parfor (ifile = 1:length(filelist),Nworkers)
+       Tfile = NaT(Nfiles,1);
+%        parfor (ifile = 1:length(filelist),Nworkers)
+        for ifile = 1:length(filelist)
             savename = '';
             F = [];
             tic
@@ -332,7 +337,7 @@ if do_plots
     % imu = loadIMUData(Tfile,data_dir);
 
     % load the USBL data
-    logdir = fullfile(data_basedir,data_subdir,'ControlSystem');
+    
     [driftcam,control_label] = loadDrifterLogDataV2(Tfile,logdir,driftlog.DrifterNumber(didx));
     %%
     ax = [];
@@ -369,7 +374,7 @@ if do_plots
             set(gca,'fontweight','bold','fontsize',14);
             set(gca,'XTickLabelRotation',90)
             ax2 = gca; ax2.XTick = linspace(Tfile(1),Tfile(end),80);
-            ax(end+1) = ax2;
+%             ax(end+1) = ax2;
             datetick('x','mm-dd, HH:MM:SS','keepticks')
 
             ch_str = sprintf('CH%i %s',ch_select(sensID),acoustic_config.sensor_type{ch_select(sensID)});
@@ -419,10 +424,14 @@ if do_plots
             title( legend_str{iband})
             ax2 = gca(); ax2.XTick = linspace(Tfile(1),Tfile(end),80);
             ax2.XTickLabel = '';
-
+%             ax(end+1) = ax2;
         end
-        ax2 = gca(); ax2.XTick = linspace(Tfile(1),Tfile(end),80);
+        set(gca,'XTickLabelRotation',90)
+        ax2 = gca; ax2.XTick = linspace(Tfile(1),Tfile(end),80);
+%         ax(end+1) = ax2;
+        datetick('x','mm-dd, HH:MM:SS','keepticks')
 
+        linkaxes(ax,'x')
         legend(nexttile(1),h1,rawdata_legend_str,'location','northeastoutside ')
 
         sgtitle('Single Channel Noise Levels','fontweight','bold','fontsize',18)
@@ -432,8 +441,17 @@ if do_plots
             saveas(gcf,fullfile(Ssavefilename),'png')
         end
 
+        if save_to_ppt
+        
+            slideId = pptx.addSlide();
+            fprintf('Added slide %d\n',slideId);
+            pptx.addTextbox([title_slide ' ' subtitle_slide]);
+            pptx.addPicture(gcf);
+        end
+
     end
     linkaxes(ax,'x')
+    xlim([min(Tfile) max(Tfile)])
     if do_bf_data
         switch avg_type
             case 'Median'
@@ -527,6 +545,7 @@ if do_plots
 
         end
         linkaxes(ax,'x')
+        xlim([min(Tfile) max(Tfile)])
             % saveas(gcf,fullfile(Bsavefilename),'fig')
             % saveas(gcf,fullfile(Bsavefilename),'png')
 %%
@@ -566,6 +585,9 @@ if do_plots
             
             sgtitle( sprintf('Beamformer Output, One Minute %s', avg_type),'fontweight','bold','fontsize',18)
             
+            linkaxes(ax,'x')
+            xlim([min(Tfile) max(Tfile)])
+
             if save_to_ppt
                 linkaxes(ax,'x')
                 xlim([min(Tfile) max(Tfile)])
@@ -579,11 +601,10 @@ if do_plots
     
 
 
-    linkaxes(ax,'x')
-    xlim([min(Tfile) max(Tfile)])
+    
 end
 
-% close all
+close all
 %% Save presentation and close presentation -- overwrite file if it already exists
 % Filename automatically checked for proper extension
 if save_to_ppt
