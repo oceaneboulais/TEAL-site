@@ -106,7 +106,7 @@ end
 
 deployment_set = unique(driftlog.Deployment).';
 
-for deployment = 20 %deployment_set
+for deployment = deployment_set
     Ssavefilename = []; Bsavefilename = [];
 
     % get the index of this deployment in the table
@@ -190,8 +190,8 @@ for deployment = 20 %deployment_set
        Spow_med = zeros(Nfiles,nfft_spec/2+1,length(ch_select));
        F_spec = zeros(Nfiles,nfft_spec/2+1);
        Tfile = NaT(Nfiles,1);
-%        parfor (ifile = 1:length(filelist),Nworkers)
-        for ifile = 1:length(filelist)
+       parfor (ifile = 1:length(filelist),Nworkers)
+%         for ifile = 1:length(filelist)
             savename = '';
             F = [];
             tic
