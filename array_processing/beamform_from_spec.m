@@ -39,12 +39,18 @@ S = permute(S,[1 3 4 5 2]);
 [~,minDim] = min([Nt Nf Naz Nel]);
 
 H = v.*w.';
-try 
+% try 
+num_elements = Nt*Nf*Nch*Naz*Nel;
+array_size_GB = 2*num_elements*8/1024^3;
+if array_size_GB < 20
+
+
     % first see if we can do it all at once
     B = sum(conj(H).*S,2);
     B = permute(B, [1,5,3,4,2]);
     Bpow = conj(B).*B;
-catch 
+% catch 
+else
     % if that fails,
     % % loop over freq, the first dimension
     % B = zeros(Nf,1,Naz,Nel,Nt);
