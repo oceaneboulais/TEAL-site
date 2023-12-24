@@ -47,6 +47,7 @@ switch sensor
         htab = [-185 -171 -160 -160];
         %phitab = [-90 -90 -160 -160];
         phitab = -90*ones(size(htab));
+        % phitab = 90*ones(size(htab));
     case 'VS-301-omni'
         % based on nominal - measured sensitivity TBD
         ftab =  [3 1e3 2e3 20e3];
@@ -69,6 +70,8 @@ switch sensor
         h_uPa = a_sens_g./g_to_uPa; % units of V/uPa
         htab = 20*log10(h_uPa); % units of dB re V/uPa
         phitab = -90*ones(size(htab));
+    otherwise
+        error('Unknown sensor type!')
 end
 if any(f==0)
     fidx = f>=3;
