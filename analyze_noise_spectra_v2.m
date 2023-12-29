@@ -363,7 +363,7 @@ if do_plots
             tiledlayout(5,1);
             ax(end+1) = nexttile;
 
-            driftcamStatusPlot(driftcam,control_label,driftlog.SunsetUTC(didx),driftlog.SunriseUTC(didx));
+            driftcamStatusPlot(driftcam,driftlog.SunsetUTC(didx),driftlog.SunriseUTC(didx));
 
             ax(end+1) = nexttile([4 1]);
             pcolor(Tfile,F_spec_plot/1e3,10*log10(Spowplot(:,:,sensID)).'); shading flat
@@ -471,7 +471,7 @@ if do_plots
 
             ax(end+1) = nexttile;
           
-            driftcamStatusPlot(driftcam,control_label,sunset_app_utc,sunrise_app_utc);
+            driftcamStatusPlot(driftcam,sunset_app_utc,sunrise_app_utc);
 
             ax(end+1) = nexttile;
             
@@ -516,7 +516,7 @@ if do_plots
 
             ax(end+1) = nexttile;
             
-            driftcamStatusPlot(driftcam,control_label,sunset_app_utc,sunrise_app_utc);
+            driftcamStatusPlot(driftcam,sunset_app_utc,sunrise_app_utc);
 
             ax(end+1) = nexttile([4 1]); B_incoh_dB = [];
             for iband = 1:size(fband,1)
@@ -557,7 +557,7 @@ if do_plots
 
             ax(end+1) = nexttile;
 
-            driftcamStatusPlot(driftcam,control_label,driftlog.SunsetUTC(didx),driftlog.SunriseUTC(didx));
+            driftcamStatusPlot(driftcam,driftlog.SunsetUTC(didx),driftlog.SunriseUTC(didx));
 
           
 
