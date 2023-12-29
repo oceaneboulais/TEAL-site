@@ -31,11 +31,16 @@ switch hostname(1:end-1)
         end
     case 'macmussel-2.ucsd.edu'
         % this is for macmussel / Alison
-        fprintf('Using remote path to Jonah on Alison''s macmussel account\n')
-        gitpath = '/Volumes/public/Laferriere/GIT/sio_research_jonah';
-        data_basedir = '/Volumes/public/Laferriere/ONR_DRIFTER';
-        procdata_basedir = '/Volumes/public/Laferriere/Analysis';
-        envdir = '/Volumes/public/Laferriere/Databases';
+%         fprintf('Using remote path to Jonah on Alison''s macmussel account\n')
+%         gitpath = '/Volumes/public/Laferriere/GIT/sio_research_jonah';
+%         data_basedir = '/Volumes/public/Laferriere/ONR_DRIFTER';
+%         procdata_basedir = '/Volumes/public/Laferriere/Analysis';
+%         envdir = '/Volumes/public/Laferriere/Databases';
+        fprintf('Using remote path to Jonah2 on Alison''s macmussel account\n')
+        gitpath = '/Volumes/homes/alaferriere/GIT/sio_research';
+        data_basedir = '/Volumes/Shared/ONR_DRIFTER';
+        procdata_basedir = '/Volumes/homes/alaferriere/Analysis';
+        envdir = '/Volumes/homes/alaferriere/Databases';
     otherwise 
         error('set your path!')
 end
