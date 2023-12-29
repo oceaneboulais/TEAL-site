@@ -21,6 +21,10 @@ for ifile = 1:length(log_filelist)
     ssr_data = loadDrifterLog(ssr_file);
 
     [ssr_time,iuniq] = unique(datetime(ssr_data.Timestamp,'ConvertFrom','posixtime'));
+    % if none of the times are in the set, skip them
+    if all(ssr_time<min(time_utc_in))||all(ssr_time>max(time_utc_in))
+        continue
+    end
     if isempty(time_utc_in)
         time_utc = ssr_time;
     elseif size(time_utc_in,2)==2&size(time_utc_in,1)==1
@@ -32,19 +36,29 @@ for ifile = 1:length(log_filelist)
     yaw_deg = interp1(ssr_time,ssr_data.Yaw(iuniq),time_utc);
     pitch_deg = interp1(ssr_time,ssr_data.Pitch(iuniq),time_utc);
     roll_deg = interp1(ssr_time,ssr_data.Roll(iuniq),time_utc);
-    if isfield(ssr_data,'Control_State')
-        control_state =interp1(ssr_time,ssr_data.Control_State(iuniq),time_utc)-1;
-        control_label = {'Control','Hibernate', 'Dive', 'Surface', 'Interval'};
+    control_label = strings(size(depth_m));
+    if isfield(ssr_data,"Control_State")
+        % control_state =interp1(ssr_time,ssr_data.Control_State(iuniq),time_utc)-1;
+        % control_label = {'Control','Hibernate', 'Dive', 'Surface', 'Interval'};
+        control_state =interp1(ssr_time,ssr_data.Control_State(iuniq),time_utc);
+        control_label_list = ["Control","Hibernate", "Dive", "Surface", "Interval"];
+        control_label(~isnan(control_state)) = control_label_list((int8(control_state(~isnan(control_state))))).';
     elseif length(unique(ssr_data.OP))==5
-        control_state =interp1(ssr_time,ssr_data.OP(iuniq),time_utc)-1;
-        control_label = {'Control','Hibernate', 'Dive', 'Surface', 'Interval'};        
+        % control_state =interp1(ssr_time,ssr_data.OP(iuniq),time_utc)-1;
+        control_state =interp1(ssr_time,ssr_data.OP(iuniq),time_utc);
+        % control_label = {'Control','Hibernate', 'Dive', 'Surface', 'Interval'};        
+        control_label_list = ["Control","Hibernate", "Dive", "Surface", "Interval"];    
+        control_label(~isnan(control_state)) = control_label_list((int8(control_state(~isnan(control_state))))).';
     else
         control_state = interp1(ssr_time,ssr_data.OP(iuniq),time_utc);
-        control_label = {'Control','Hibernate'};%??
+        % control_label = {'Control','Hibernate'};%??
+        control_label_list = ["Control","Hibernate"];%??
+        control_label(~isnan(control_state)) = control_label_list((int8(control_state(~isnan(control_state)))+1)).';
     end
+    
     % control_label = cell(size(control_state))
     % control_label(~isnan(control_state)) = control_label{control_state(~isnan(control_state))+1};
-    driftcam = vertcat(driftcam,table(time_utc,depth_m,yaw_deg,roll_deg,pitch_deg,control_state));
+    driftcam = vertcat(driftcam,table(time_utc,depth_m,yaw_deg,roll_deg,pitch_deg,control_state,control_label));
 end
 end
 function t = convertLogTime(filelist)
