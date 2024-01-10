@@ -6,7 +6,8 @@ close all, clear all
 % path/filename that is descriptive of all relevant parameters that can be
 % adjusted
 [data_basedir,procdata_basedir,gitpath] = setUpDrifterPaths(0,1);
-data_basedir = {'/Volumes/TFOFA23_1','/Volumes/TFO_FA23_D1'};
+% data_basedir = '/Volumes/Shared-1/ONR_DRIFTER';
+% data_basedir = {'/Volumes/TFOFA23_1','/Volumes/TFO_FA23_D1'};
 do_raw_data = true;
 do_bf_data = false; % bf part still needs to be updated
 do_plots = true;
@@ -41,7 +42,7 @@ fband = [
 % this will not impact bf results because those are being loaded in from
 % preprocessed data
 do_resample = true;
-fres = 100;
+fres = 100; % freq resolution in Hz
 fs_resample = 55e3;
 
 if do_resample
@@ -190,7 +191,7 @@ for deployment = deployment_set
        Spow_med = zeros(Nfiles,nfft_spec/2+1,length(ch_select));
        F_spec = zeros(Nfiles,nfft_spec/2+1);
        Tfile = NaT(Nfiles,1);
-       parfor (ifile = 1:length(filelist),Nworkers)
+       parfor (ifile = 1:length(filelist),Nworkers) % paralell for loop
 %         for ifile = 1:length(filelist)
             savename = '';
             F = [];
@@ -339,6 +340,8 @@ if do_plots
     % load the USBL data
     
     [driftcam,control_label] = loadDrifterLogDataV2(Tfile,logdir,driftlog.DrifterNumber(didx));
+    % temporary hack to add ship distance ****
+    drift_track = load('/Volumes/homes/alaferriere/Analysis/drift_track.mat');
     %%
     ax = [];
     if do_raw_data
@@ -360,10 +363,25 @@ if do_plots
             ssize = get(groot, 'ScreenSize'); 
             set(gcf, 'Position', ssize);
 
-            tiledlayout(5,1);
+            tiledlayout(6,1);
             ax(end+1) = nexttile;
 
             driftcamStatusPlot(driftcam,control_label,driftlog.SunsetUTC(didx),driftlog.SunriseUTC(didx));
+
+            ax(end+1) = nexttile;
+            di = drift_track.deployment == deployment;
+            hold on
+            for kk = 1:size(drift_track.drift_time,2)
+                if isempty(drift_track.drift_time{di,kk})
+                    continue
+                end
+                plot([drift_track.drift_time{di,kk}],[drift_track.ship_dist_m{di}(kk,:)]/1e3,'k','linewidth',2);
+            end
+            ylabel('Distance, km')
+            title('Drifter-Ship Distance')
+            set(gca,'fontweight','bold','fontsize',14);
+            set(gca,'XTickLabel','')
+            grid on
 
             ax(end+1) = nexttile([4 1]);
             pcolor(Tfile,F_spec_plot/1e3,10*log10(Spowplot(:,:,sensID)).'); shading flat
