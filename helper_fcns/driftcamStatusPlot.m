@@ -1,5 +1,6 @@
-function ax2 = driftcamStatusPlot(driftcam,control_label,sunset_time,sunrise_time)
+function ax2 = driftcamStatusPlot(driftcam,sunset_time,sunrise_time)
 
+control_label = unique(driftcam.control_label);
 if ~exist('sunset_time','var')
     sunset_time = [];
 end
