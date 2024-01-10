@@ -30,6 +30,17 @@ for ich = 1:size(y,2)
 end
 
 % make sure the order of the channels is x-y, and E-W, N-S....
+% add more checks here..
+
+% need to swap for the M-35 to be consistent with later processing
+% (that is, metric computations use atan(Ix,Iy) so they compute the angle
+
+if contains(sensor_type(10),"NS")&&contains(sensor_type(11),"EW")
+    StmpEW = S(:,:,11);
+    StmpNS = S(:,:,10);
+    S(:,:,10) = StmpEW;
+    S(:,:,11) = StmpNS;
+end
 
 switch type
     case 'psd'
