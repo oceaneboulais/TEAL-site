@@ -1,73 +1,113 @@
-function [B,Bpow] = beamform_from_spec(S,f,ang_deg,elev_deg,pos,w)
+function [B,Bpow] = beamform_from_spec(S,f,az_deg,elev_deg,pos,w,do_power)
 % conventional beamformer in FFT domain:
 %
 % INPUTS:
-%       pos(chan,xy)    position of sensors
-%       ang_deg(na,1)   angle from x-axis to y-axis in array coordinates
+%       pos   position of sensors
+%       az_deg   angle from x-axis to y-axis in array coordinates
+%       elev_deg        elevation up from the horizontal
 %
 % OUTPUTS:
-%       B(freq,time,angle)
+%       B(freq,time,azimuth,elevation)
 verbose = false;
 c = 1500;
-
-omega = 2*pi*f(:);
 
 Nt = size(S,2);
 Nf = length(f);
 Nch = size(pos,1);
-Naz = length(ang_deg);
+Naz = length(az_deg);
 Nel = length(elev_deg);
 
+if ~exist('do_power','var')
+    do_power = false;
+end
+
 if ~exist('w','var')||isempty(w)
-    w = ones(Nch,1)/Nch;
+    w(1,1,:) = ones(Nch,1)/Nch;
+else
+    w(1,1,:) = w(:);
 end
 
 % Put all quantities in the following dimensions
 % (freq,time,chan,ang,xy)
 % ang_deg = permute(ang_deg(:), [2,3,4,5,1,6]);
 % elev_deg = permute(elev_deg(:), [2,3,4,1,5]);
-ang_deg = permute(ang_deg(:), [2,3,4,1,5]);
+az_deg = permute(az_deg(:), [2,3,4,1,5]);
 elev_deg = permute(elev_deg(:),[2,3,1,4] );
 
-v = getReplicaVector(f,pos,elev_deg,ang_deg,c);
+v = getReplicaVector(f,pos,elev_deg,az_deg,c);
 
-S = permute(S,[1 3 4 5 2]);
+v = permute(v,[1 5 2 3 4]);
+% S = permute(S,[1 3 4 5 2]);
 % for fidx = 1:length(f)
 %     B(fidx,:,:) = sum((w.'.*S(fidx,:,:,:,:) .* v(fidx,:,:,:)),2);
 % end
 
 [~,minDim] = min([Nt Nf Naz Nel]);
 
-H = v.*w.';
+H = v.*w;
 % try 
 num_elements = Nt*Nf*Nch*Naz*Nel;
 array_size_GB = 2*num_elements*8/1024^3;
+B = zeros(Nf,Nt,Naz,Nel);
+if do_power
+    Bpow = zeros(Nf,Nt,Naz,Nel);
+end
 if array_size_GB < 20
-
-
+    fprintf('BF: vectorized direct multiplication\n')
     % first see if we can do it all at once
     B = sum(conj(H).*S,2);
     B = permute(B, [1,5,3,4,2]);
-    Bpow = conj(B).*B;
+    if do_power
+        Bpow = conj(B).*B;
+    end
 % catch 
 else
     % if that fails,
     % % loop over freq, the first dimension
-    % B = zeros(Nf,1,Naz,Nel,Nt);
-    % for ii = 1:size(v,1)
-    %     B(ii,:,:,:,:) = sum(conj(H(ii,:,:,:)).*S(ii,:,:,:,:),2);
+    % tic
+    % B = zeros(Nf,Nt,Naz,Nel);
+    % Bpow = zeros(Nf,Nt,Naz,Nel);
+    % for ii = 1:Nf
+    %     B(ii,:,:,:,:) = sum(conj(H(ii,:,:,:,:)).*S(ii,:,:,:,:),3);
+    %     Bpow(ii,:,:,:) = squeeze(conj(B(ii,:,:,:,:)  ) .* B(ii,:,:,:,:) ) ;
     % end
-    % loop over time, the 5th dimension
+    % toc
+
     
-    B = zeros(Nf,Nt,Naz,Nel);
-    Bpow = zeros(Nf,Nt,Nel,Naz);
-    for ii = 1:Nt
-        if verbose
-            fprintf('%i of %i\n',ii,Nt)
+    if Nel>1 & Naz==1
+        % loop over elevation 
+        fprintf('BF: looping over elevation\n')
+        for ii = 1:Nel
+            B(:,:,:,ii) = sum(conj(H(:,:,:,:,ii)).*S,3);
+            if do_power
+                Bpow(:,:,:,ii) = squeeze(conj(B(:,:,:,ii)  ) .* B(:,:,:,ii) ) ;
+            end
         end
-        B(:,ii,:,:,:) = sum(conj(H(:,:,:,:)).*S(:,:,:,:,ii),2);
-        Bpow(:,ii,:,:) = conj(B(:,ii,:,:,:) ) .* B(:,ii,:,:,:) ;
+
+    elseif Naz>1 & Nel==1
+        % loop over azimuth
+        fprintf('BF: looping over azimuth\n')
+        for ii = 1:Naz
+            B(:,:,ii,:) = sum(conj(H(:,:,:,ii,:)).*S,3);
+            if do_power
+                Bpow(:,:,ii,:) = squeeze(conj(B(:,:,ii,:)  ) .* B(:,:,ii,:) ) ;
+            end
+        end
+    else
+        %loop over time, the 5th dimension
+        fprintf('BF: looping over time\n')
+        for ii = 1:Nt
+            if verbose
+                fprintf('%i of %i\n',ii,Nt)
+            end
+            B(:,ii,:,:,:) = sum(conj(H(:,:,:,:,:)).*S(:,ii,:,:,:),3);
+            if do_power
+                Bpow(:,ii,:,:) = conj(B(:,ii,:,:,:) ) .* B(:,ii,:,:,:) ;
+            end
+        end
     end
+
+
 end
    
         
