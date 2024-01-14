@@ -16,16 +16,18 @@
 %
 % params.debug.image=false;
 
-function [output] = computeVSHistogramMatrixND(avsdata,params,tabs,output,Ifile)
+function computeVSHistogramMatrixND(avsdata,params,tabs,Ifile)
 % Compute histograms using entire contents of vsdata (1 minute for drifter)
 %persistent Ifile
+
+global avs_hist
 
 params.params_chc='AziVsSome2D_Time';
 params.grid.azi=2:4:360;  %Dominant azimuth grid
 params.grid.el=-90:2:90;
-params.grid.ItoE=0:0.01:1;  %Transport velocity
+params.grid.ItoE=0:0.02:1;  %Transport velocity
 params.grid.KEtoPE=-6:1:6;
-params.grid.PdB=40:1:160;  %Standard power spectral density, dB re 1uPa^2/Hz
+params.grid.PdB=40:2:160;  %Standard power spectral density, dB re 1uPa^2/Hz
 params.grid.IntensityPhase=0:2:90;  %arctangent of reactive to active intensity
 
 
@@ -46,24 +48,24 @@ if Ifile==1  %Initialize ouputs, now that we have FF
             mid_grid.KEtoPE=0.5*(params.grid.KEtoPE(1:(end-1))+params.grid.KEtoPE(2:end));
             mid_grid.IntensityPhase=0.5*(params.grid.IntensityPhase(1:(end-1))+params.grid.IntensityPhase(2:end));
 
-            output.AziVsEl=MatrixND([],{mid_grid.azi,mid_grid.el,FF,tabs},{'Azimuth','Elevation','Frequency','Time'});
-            output.AziVsPdB=MatrixND([],{mid_grid.azi,mid_grid.PdB,FF,tabs},{'Azimuth','PSD','Frequency','Time'});
-            output.AziVsItoE=MatrixND([],{mid_grid.azi,mid_grid.ItoE,FF,tabs},{'Azimuth','ItoE','Frequency','Time'});
+            avs_hist.AziVsEl=MatrixND([],{mid_grid.azi,mid_grid.el,FF,tabs},{'Azimuth','Elevation','Frequency','Time'});
+            avs_hist.AziVsPdB=MatrixND([],{mid_grid.azi,mid_grid.PdB,FF,tabs},{'Azimuth','PSD','Frequency','Time'});
+            avs_hist.AziVsItoE=MatrixND([],{mid_grid.azi,mid_grid.ItoE,FF,tabs},{'Azimuth','ItoE','Frequency','Time'});
         case 'AziVsAll2D_Time'
 
             mid_grid.KEtoPE=0.5*(params.grid.KEtoPE(1:(end-1))+params.grid.KEtoPE(2:end));
             mid_grid.IntensityPhase=0.5*(params.grid.IntensityPhase(1:(end-1))+params.grid.IntensityPhase(2:end));
 
-            output.AziVsEl=MatrixND([],{mid_grid.azi,mid_grid.el,FF,tabs},{'Azimuth','Elevation','Frequency','Time'});
-            output.AziVsPdB=MatrixND([],{mid_grid.azi,mid_grid.PdB,FF,tabs},{'Azimuth','PSD','Frequency','Time'});
-            output.AziVsItoE=MatrixND([],{mid_grid.azi,mid_grid.ItoE,FF,tabs},{'Azimuth','ItoE','Frequency','Time'});
-            output.AziVsKEtoPE=MatrixND([],{mid_grid.azi,mid_grid.KEtoPE,FF,tabs},{'Azimuth','KEtoPE','Frequency','Time'});
-            output.AziVsIntensityPhase=MatrixND([],{mid_grid.azi,mid_grid.IntensityPhase,FF,tabs},{'Azimuth','IntensityPhase','Frequency','Time'});
-            output.PdBVsItoE=MatrixND([],{mid_grid.PdB,mid_grid.ItoE,FF,tabs},{'PSD','ItoE','Frequency','Time'});
+            avs_hist.AziVsEl=MatrixND([],{mid_grid.azi,mid_grid.el,FF,tabs},{'Azimuth','Elevation','Frequency','Time'});
+            avs_hist.AziVsPdB=MatrixND([],{mid_grid.azi,mid_grid.PdB,FF,tabs},{'Azimuth','PSD','Frequency','Time'});
+            avs_hist.AziVsItoE=MatrixND([],{mid_grid.azi,mid_grid.ItoE,FF,tabs},{'Azimuth','ItoE','Frequency','Time'});
+            avs_hist.AziVsKEtoPE=MatrixND([],{mid_grid.azi,mid_grid.KEtoPE,FF,tabs},{'Azimuth','KEtoPE','Frequency','Time'});
+            avs_hist.AziVsIntensityPhase=MatrixND([],{mid_grid.azi,mid_grid.IntensityPhase,FF,tabs},{'Azimuth','IntensityPhase','Frequency','Time'});
+            avs_hist.PdBVsItoE=MatrixND([],{mid_grid.PdB,mid_grid.ItoE,FF,tabs},{'PSD','ItoE','Frequency','Time'});
         case 'AziVsPdBVsItoE'
-            output.AziVsPdBVsItoE=MatrixND([],{mid_grid.azi,mid_grid.PdB,mid_grid.ItoE,FF},{'Azimuth','PSD','ItoE','Frequency'});
+            avs_hist.AziVsPdBVsItoE=MatrixND([],{mid_grid.azi,mid_grid.PdB,mid_grid.ItoE,FF},{'Azimuth','PSD','ItoE','Frequency'});
         case 'AziVsPdBVsItoEVsPhase'
-            output.AVTP=MatrixND([],{mid_grid.azi,mid_grid.PdB,mid_grid.ItoE,mid_grid.Phase,FF},{'Azimuth','PSD','ItoE','IntensityPhase','Frequency'});
+            avs_hist.AVTP=MatrixND([],{mid_grid.azi,mid_grid.PdB,mid_grid.ItoE,mid_grid.Phase,FF},{'Azimuth','PSD','ItoE','IntensityPhase','Frequency'});
 
     end
 
@@ -76,25 +78,25 @@ for If=1:length(FF)
     switch params.params_chc
         case 'AziVsSome2D_Time'
             if ~isempty(avsdata.elegram)
-                output.AziVsEl.N(:,:,If,Ifile)=single(histcounts2(avsdata.azigram(If,:),avsdata.elegram(If,:),params.grid.azi,params.grid.el));
+                avs_hist.AziVsEl.N(:,:,If,Ifile)=single(histcounts2(avsdata.azigram(If,:),avsdata.elegram(If,:),params.grid.azi,params.grid.el));
             end
-            output.AziVsPdB.N(:,:,If,Ifile)=single(histcounts2(avsdata.azigram(If,:),avsdata.PdB(If,:),params.grid.azi,params.grid.PdB));
-            output.AziVsItoE.N(:,:,If,Ifile)=single(histcounts2(avsdata.azigram(If,:),avsdata.normalized_transport_velocity(If,:),params.grid.azi,params.grid.ItoE));
+            avs_hist.AziVsPdB.N(:,:,If,Ifile)=single(histcounts2(avsdata.azigram(If,:),avsdata.PdB(If,:),params.grid.azi,params.grid.PdB));
+            avs_hist.AziVsItoE.N(:,:,If,Ifile)=single(histcounts2(avsdata.azigram(If,:),avsdata.normalized_transport_velocity(If,:),params.grid.azi,params.grid.ItoE));
 
         case 'AziVsAll2D_Time'
             if ~isempty(avsdata.elegram)
-                output.AziVsEl.N(:,:,If,Ifile)=single(histcounts2(avsdata.azigram(If,:),avsdata.elegram(If,:),params.grid.azi,params.grid.el));
+                avs_hist.AziVsEl.N(:,:,If,Ifile)=single(histcounts2(avsdata.azigram(If,:),avsdata.elegram(If,:),params.grid.azi,params.grid.el));
             end
-            output.AziVsPdB.N(:,:,If,Ifile)=single(histcounts2(avsdata.azigram(If,:),avsdata.PdB(If,:),params.grid.azi,params.grid.PdB));
-            output.AziVsItoE.N(:,:,If,Ifile)=single(histcounts2(avsdata.azigram(If,:),avsdata.normalized_transport_velocity(If,:),params.grid.azi,params.grid.ItoE));
-            output.AziVsKEtoPE.N(:,:,If,Ifile)=single(histcounts2(avsdata.azigram(If,:),avsdata.KEtoPEratio(If,:),params.grid.azi,params.grid.KEtoPE));
-            output.AziVsIntensityPhase.N(:,:,If,Ifile)=single(histcounts2(avsdata.azigram(If,:),avsdata.intensity_phase(If,:),params.grid.azi,params.grid.IntensityPhase));
-            output.PdBVsItoE.N(:,:,If,Ifile)=single(histcounts2(avsdata.PdB(If,:),avsdata.normalized_transport_velocity(If,:),params.grid.PdB,params.grid.ItoE));
+            avs_hist.AziVsPdB.N(:,:,If,Ifile)=single(histcounts2(avsdata.azigram(If,:),avsdata.PdB(If,:),params.grid.azi,params.grid.PdB));
+            avs_hist.AziVsItoE.N(:,:,If,Ifile)=single(histcounts2(avsdata.azigram(If,:),avsdata.normalized_transport_velocity(If,:),params.grid.azi,params.grid.ItoE));
+            avs_hist.AziVsKEtoPE.N(:,:,If,Ifile)=single(histcounts2(avsdata.azigram(If,:),avsdata.KEtoPEratio(If,:),params.grid.azi,params.grid.KEtoPE));
+            avs_hist.AziVsIntensityPhase.N(:,:,If,Ifile)=single(histcounts2(avsdata.azigram(If,:),avsdata.intensity_phase(If,:),params.grid.azi,params.grid.IntensityPhase));
+            avs_hist.PdBVsItoE.N(:,:,If,Ifile)=single(histcounts2(avsdata.PdB(If,:),avsdata.normalized_transport_velocity(If,:),params.grid.PdB,params.grid.ItoE));
         case 'AziVsPdBVsItoE'
-            output.AziVsPdBVsItoE.N(:,:,:,If)=output.AziVsPdBVsItoE.N(:,:,:,If)+single(histcounts3(avsdata.azigram(If,:),avsdata.PdB(If,:),avsdata.normalized_transport_velocity(If,:), ...
+            avs_hist.AziVsPdBVsItoE.N(:,:,:,If)=avs_hist.AziVsPdBVsItoE.N(:,:,:,If)+single(histcounts3(avsdata.azigram(If,:),avsdata.PdB(If,:),avsdata.normalized_transport_velocity(If,:), ...
                 params.grid.azi,params.grid.PdB,params.grid.ItoE));
         case 'AziVsPdBVsItoEVsPhase'
-            output.AVTP.N(:,:,:,:,If)=output.AVTP.N(:,:,:,:,If)+single(histcounts4(avsdata.azigram(If,:),avsdata.PdB(If,:),avsdata.normalized_transport_velocity(If,:), avsdata.intensity_phase(If,:), ...
+            avs_hist.AVTP.N(:,:,:,:,If)=avs_hist.AVTP.N(:,:,:,:,If)+single(histcounts4(avsdata.azigram(If,:),avsdata.PdB(If,:),avsdata.normalized_transport_velocity(If,:), avsdata.intensity_phase(If,:), ...
                 params.grid.azi,params.grid.PdB,params.grid.ItoE,params.grid.IntensityPhase));
     end
 end

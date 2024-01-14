@@ -633,6 +633,7 @@ classdef MatrixND
                     
                     
             end
+            matrixx = []; % clear this from memory
             xlabel(plot_label{2});ylabel(plot_label{1});
             title(sprintf('%s,%i samples',tit_str,Ntotal));
             strr='yx';

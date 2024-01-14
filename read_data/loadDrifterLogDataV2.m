@@ -32,10 +32,10 @@ for ifile = 1:length(log_filelist)
     else
         time_utc = time_utc_in(:);
     end
-    depth_m = interp1(ssr_time,ssr_data.Depth(iuniq),time_utc);
-    yaw_deg = interp1(ssr_time,ssr_data.Yaw(iuniq),time_utc);
-    pitch_deg = interp1(ssr_time,ssr_data.Pitch(iuniq),time_utc);
-    roll_deg = interp1(ssr_time,ssr_data.Roll(iuniq),time_utc);
+    depth_m = single(interp1(ssr_time,ssr_data.Depth(iuniq),time_utc));
+    yaw_deg = single(interp1(ssr_time,ssr_data.Yaw(iuniq),time_utc));
+    pitch_deg = single(interp1(ssr_time,ssr_data.Pitch(iuniq),time_utc));
+    roll_deg = single(interp1(ssr_time,ssr_data.Roll(iuniq),time_utc));
     control_label = strings(size(depth_m));
     if isfield(ssr_data,"Control_State")
         % control_state =interp1(ssr_time,ssr_data.Control_State(iuniq),time_utc)-1;
