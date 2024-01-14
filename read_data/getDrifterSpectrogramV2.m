@@ -15,7 +15,11 @@ end
 k = 0;
 
 % get the channel configuration from the acoustic config file 
-acoustic_config = readtable(config_file);
+if ischar(config_file)
+    acoustic_config = readtable(config_file);
+else
+    acoustic_config = config_file;
+end
 
 % first, do the hydrophone spectrograms
 for ich = 1:size(y,2)    
