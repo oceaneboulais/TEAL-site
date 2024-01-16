@@ -7,7 +7,7 @@ end
 % allow "data_dir" variable to be either a directory name or a list of
 % files
 if ischar(data_dir)
-    filelist = dir(fullfile(data_dir,['*' ext]));
+    filelist = dir(fullfile(data_dir,['drifter*' ext]));
 else
     filelist = data_dir;
 end

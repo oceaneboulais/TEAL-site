@@ -23,7 +23,7 @@ function computeVSHistogramMatrixND(avsdata,params,tabs,Ifile)
 global avs_hist
 
 params.params_chc='AziVsSome2D_Time';
-params.grid.azi=2:4:360;  %Dominant azimuth grid
+params.grid.azi=4:4:360;  %Dominant azimuth grid
 params.grid.el=-90:2:90;
 params.grid.ItoE=0:0.02:1;  %Transport velocity
 params.grid.KEtoPE=-6:1:6;
