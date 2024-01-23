@@ -27,7 +27,7 @@ params.grid.azi=4:4:360;  %Dominant azimuth grid
 params.grid.el=-90:2:90;
 params.grid.ItoE=0:0.02:1;  %Transport velocity
 params.grid.KEtoPE=-6:1:6;
-params.grid.PdB=40:2:160;  %Standard power spectral density, dB re 1uPa^2/Hz
+params.grid.PdB=50:2:176;  %Standard power spectral density, dB re 1uPa^2/Hz
 params.grid.IntensityPhase=0:2:90;  %arctangent of reactive to active intensity
 
 
