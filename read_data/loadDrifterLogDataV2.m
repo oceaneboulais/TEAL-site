@@ -43,7 +43,7 @@ for ifile = 1:length(log_filelist)
         control_state =interp1(ssr_time,ssr_data.Control_State(iuniq),time_utc);
         control_label_list = ["Control","Hibernate", "Dive", "Surface", "Interval"];
         control_label(~isnan(control_state)) = control_label_list((int8(control_state(~isnan(control_state))))).';
-    elseif length(unique(ssr_data.OP))==5
+    elseif length(unique(ssr_data.OP))==5||max(ssr_data.OP)==5
         % control_state =interp1(ssr_time,ssr_data.OP(iuniq),time_utc)-1;
         control_state =interp1(ssr_time,ssr_data.OP(iuniq),time_utc);
         % control_label = {'Control','Hibernate', 'Dive', 'Surface', 'Interval'};        
