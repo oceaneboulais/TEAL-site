@@ -56,21 +56,27 @@ for ii = 1:length(imu_files)
     imu_roll = cat(1,imu_roll,imudata.euler(:,1));
 end
 
-time_utc = imu_time;
-time_utc.TimeZone = ''; % remove time zone info, this can cause issues in a lot of the other code
-yaw_deg = wrapTo180(90-imu_yaw);
+
+
+if size(time_utc_in,2)==2&size(time_utc_in,1)==1
+    time_utc = imu_time;
+else
+    time_utc = time_utc_in;
+    imu_pitch = interp1(imu_time,imu_pitch,time_utc);
+    imu_yaw = interp1(imu_time,imu_yaw,time_utc);
+    imu_roll = interp1(imu_time,imu_roll,time_utc);   
+end
+
+% remove time zone info, this can cause issues in a lot of the other code
+time_utc.TimeZone = ''; 
+
+% the IMU reads 0 when pointed North, goes POSITIVE towards the West and
+% NEGATIVE towards the East. We want to have the yaw in standard compass
+% form, which is in degrees North To East.
+yaw_deg = wrapTo180(-imu_yaw);
 pitch_deg = imu_pitch;
 roll_deg = imu_roll;
 imu = table(time_utc,yaw_deg,roll_deg,pitch_deg);
 
 end
 
-% end
-
-
-
-function t = convertLogTime(filelist)
-
-t=datetime(filelist(end-16:end-11),'InputFormat','yyMMdd');
-
-end
