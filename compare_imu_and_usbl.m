@@ -1,20 +1,23 @@
 clear all, close all
 
 addpath(genpath('../drifter'))
-data_drive = '/Volumes/Shared/ONR_DRIFTER/';
+
 
 % select the drifter number and the time you want to load 
 drifter_num = 4;
 time_utc = [datetime(2023,10,9,18,20,20) datetime(2023,10,10,12,50,00)];
 
-% fyi - these functions to load in the IMU and driftlog will run faster if you
-% point them directly to the deployment folder, rather than the base data directory.
+% fyi - if you just give these functions the base data drive they will find 
+% the log files, but they will run much faster if you
+% point them directly to the deployment folder's subdirectory, rather than the base data directory.
+% data_drive = '/Volumes/Shared/ONR_DRIFTER/';
+data_drive = '/Volumes/Shared/ONR_DRIFTER/2023_Fall_Kelvin_Seamount/Drifter4_Acoustic1_20231009T021100_20231011T112900';
 
 %% load IMU data
-imu = loadIMUDataV2(time_utc,data_drive,drifter_num);
+imu = loadIMUDataV2(time_utc,fullfile(data_drive,'IMU'),drifter_num);
 
 %% load driftcam log
-[driftcam,control_label] = loadDrifterLogDataV2(time_utc,data_drive,drifter_num);
+[driftcam,control_label] = loadDrifterLogDataV2(time_utc,fullfile(data_drive,'ControlSystem'),drifter_num);
 
 %% plot both
 figure

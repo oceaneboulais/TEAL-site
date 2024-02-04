@@ -12,7 +12,7 @@ if ~strcmp(D,'IMU')
 else
     % if you provide the directory of the IMU files directly, this function
     % will be faster..
-    log_filelist = dir(fullfile(datadrive,'*.mtb.mat'));
+    imu_files = dir(fullfile(datadrive,'*.mtb.mat'));
 end
 
 % note that the IMU filenames are saved in WHATEVER TIME ZONE THE ACOUSTIC

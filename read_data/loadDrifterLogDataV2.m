@@ -20,7 +20,9 @@ for ifile = 1:length(log_filelist)
     ssr_file = fullfile(log_filelist(ifile).folder,log_filelist(ifile).name);
     ssr_data = loadDrifterLog(ssr_file);
 
+    % sometimes there are duplicate time stamps...
     [ssr_time,iuniq] = unique(datetime(ssr_data.Timestamp,'ConvertFrom','posixtime'));
+%     duplicate_indices = setdiff( 1:numel(ssr_data.Timestamp), iuniq );
     % if none of the times are in the set, skip them
     if all(ssr_time<min(time_utc_in))||all(ssr_time>max(time_utc_in))
         continue
@@ -40,7 +42,15 @@ for ifile = 1:length(log_filelist)
     if isfield(ssr_data,"Control_State")
         % control_state =interp1(ssr_time,ssr_data.Control_State(iuniq),time_utc)-1;
         % control_label = {'Control','Hibernate', 'Dive', 'Surface', 'Interval'};
+        zeroIdx = ssr_data.Control_State(iuniq)==0;
+        if any(zeroIdx)
+            warning('Removing control_state=0 from %i samples',sum(zeroIdx))
+            iuniq(zeroIdx)=[];
+            ssr_time(zeroIdx) = [];
+        end
+            
         control_state =interp1(ssr_time,ssr_data.Control_State(iuniq),time_utc);
+
         control_label_list = ["Control","Hibernate", "Dive", "Surface", "Interval"];
         control_label(~isnan(control_state)) = control_label_list((int8(control_state(~isnan(control_state))))).';
     elseif length(unique(ssr_data.OP))==5||max(ssr_data.OP)==5
