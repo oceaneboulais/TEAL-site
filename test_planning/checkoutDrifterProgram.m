@@ -173,6 +173,7 @@ end
 
 title1 = sprintf('Cameras will turn on for %1.0f minutes every %1.0f minutes',cameraTon/60,cameraToff/60);
 title2 = sprintf('Beacon will flash for %1.0f seconds every %1.0f seconds',beaconPulseTime,beaconTimeBetween);
+title3 = sprintf('USBL will ping every %1.0f minutes',fixPeriod/60);
 
 t_cameraOn_sec = 0:(cameraTon+cameraToff):missionEndTimer;
 t_cameraOff_sec = cameraTon:(cameraTon+cameraToff):missionEndTimer;
@@ -205,6 +206,7 @@ if exist('deploy_time','var')
 
     if exist('t_fix_sec','var')
         cmap = lines(length(t_fix_sec));
+        % cmap = 'm';
         for ii = 1:length(t_fix_sec)
             t_fix = deploy_time + seconds(t_fix_sec{ii});   
             hL = plot([t_fix(:) t_fix(:)],[-endMissionDepthThreshold ya(2)],'color',cmap(ii,:));
@@ -214,7 +216,7 @@ if exist('deploy_time','var')
     end
 
     title({sprintf('Dive Profile: Platform ID %i',platformID),...
-        sprintf('Mission Start: %s',deploy_time),title1,title2})
+        sprintf('Mission Start: %s',deploy_time),title1,title2,title3})
 
     h(1) = plot(t,-depth_mission,'linewidth',2);
     grid on; grid minor;

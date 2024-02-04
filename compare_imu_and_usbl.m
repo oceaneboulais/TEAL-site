@@ -1,58 +1,48 @@
 clear all, close all
 
-addpath(genpath('H:\My Drive\GIT\sio_research'))
-addpath('H:\My Drive\SIO_DATA\Databases')
+addpath(genpath('../drifter'))
+data_drive = '/Volumes/Shared/ONR_DRIFTER/';
 
-% datadrive = 'E:\';
-datadrive = 'E:\Sep_2022'
+% select the drifter number and the time you want to load 
+drifter_num = 4;
+time_utc = [datetime(2023,10,9,18,20,20) datetime(2023,10,10,12,50,00)];
+
+% fyi - these functions to load in the IMU and driftlog will run faster if you
+% point them directly to the deployment folder, rather than the base data directory.
+
 %% load IMU data
-imu_filelist =  {
-    fullfile(datadrive,'1st_Deployment\*.mtb.mat');
-    fullfile(datadrive,'2nd_Deployment\*.mtb.mat');
-    fullfile(datadrive,'3rd_Deployment\*.mtb.mat');
-    fullfile(datadrive,'4th_Deployment\*.mtb.mat');
-    fullfile(datadrive,'5th_Deployment\*.mtb.mat');
-    };
-   
-idx = 5;
+imu = loadIMUDataV2(time_utc,data_drive,drifter_num);
 
-imu_files = dir(imu_filelist{idx});
-imu_time = [];
-imu_pitch = [];
-imu_yaw = [];
-imu_roll = [];
-for ii = 1:length(imu_files)
-    imudata = load(fullfile(imu_files(ii).folder,imu_files(ii).name));
-    imu_sec = (imudata.Time - imudata.Time(1))/1e4;
-    this_time = datetime(imu_files(ii).name(9:27),'Inputformat','dd_MM_yyyy_HH_mm_SS') + seconds(imu_sec)+hours(7);
-    imu_time = cat(1,imu_time,this_time);
-    imu_pitch = cat(1,imu_pitch,imudata.euler(:,2));
-    imu_yaw = cat(1,imu_yaw,imudata.euler(:,3));
-    imu_roll = cat(1,imu_roll,imudata.euler(:,1));
-end
-
-%% load driftcam data and interp to gps time
-ssr_file = dir(fullfile(datadrive,'220914 SSR TFO Cruise Data',sprintf('Deployment %i',idx),sprintf('* Dive %i.txt',idx)));
-ssr_data = load_Driftcam_data_Ver3(fullfile(ssr_file.folder,ssr_file.name));
-
-ssr_time = datetime(ssr_data.Timestamp,'ConvertFrom','posixtime');
+%% load driftcam log
+[driftcam,control_label] = loadDrifterLogDataV2(time_utc,data_drive,drifter_num);
 
 %% plot both
 figure
-plot(imu_time,imu_yaw,'.')
+subplot(3,1,1)
+plot(imu.time_utc,imu.yaw_deg,'.-')
 hold on
-plot(ssr_time,ssr_data.Yaw,'.')
+plot(driftcam.time_utc,driftcam.yaw_deg,'.-')
 grid on
+ylim([-180 180])
+ylabel('Yaw, deg')
+legend('IMU','USBL')
 
-imu_interp = interp1(imu_time,imu_yaw,ssr_time);
-figure
-plot(ssr_time,imu_interp,'-.')
+
+subplot(3,1,2)
+plot(imu.time_utc,imu.pitch_deg,'.-')
 hold on
-plot(ssr_time,ssr_data.Yaw,'-.')
-% figure
-% plot(imu_time,imu_pitch,'.')
-% hold on
-% plot(ssr_time,ssr_data.Pitch,'.')
-% 
-% figure
-% plot(ssr_time,-ssr_data.Depth)
+plot(driftcam.time_utc,driftcam.pitch_deg,'.-')
+grid on
+ylim([-90 90])
+ylabel('Pitch, deg')
+legend('IMU','USBL')
+
+subplot(3,1,3)
+plot(imu.time_utc,imu.roll_deg,'.-')
+hold on
+plot(driftcam.time_utc,driftcam.roll_deg,'.-')
+grid on
+ylim([-90 90])
+ylabel('Roll, deg')
+legend('IMU','USBL')
+
