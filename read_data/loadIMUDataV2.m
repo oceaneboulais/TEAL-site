@@ -1,4 +1,15 @@
-function imu = loadIMUDataV2(time_utc_in,datadrive,drifter_num)
+function [imu,imu_yaw] = loadIMUDataV2(time_utc_in,datadrive,drifter_num)
+%Inputs:
+%   time_utc_in (datetime format): % if time_utc_in is a 1x2 vector, these are interpreted as the limits of
+%           the times to get and the result is given in the native sampling times of the 
+%           IMU, if it is a longer vector or a 2x1 vector, it is
+%           interpreted as the times you would like to interpolate to
+%   datadrive: path name to data
+%   drifter_num: integer of drifter number (e.g. Drifter4).
+
+%Outputs:
+% imu = table(time_utc,yaw_deg,roll_deg,pitch_deg);
+% imu_yaw:  raw yaw values that range from -180 to 180 degrees (0 is North)
 
 % if the time zone property is empty, we will assume it is in UTC time
 if isempty(time_utc_in.TimeZone)
@@ -47,6 +58,9 @@ imu_pitch = [];
 imu_yaw = [];
 imu_roll = [];
 for ii = 1:length(imu_files)
+    if ii==1|rem(ii,10)==0
+        fprintf('Loading file %i of %i...\n',ii,length(imu_files));
+    end
     imudata = load(fullfile(imu_files(ii).folder,imu_files(ii).name));
     imu_sec = (imudata.TimeFine - imudata.TimeFine(1))/1e4;
     this_time = file_times(ii) + seconds(imu_sec);
