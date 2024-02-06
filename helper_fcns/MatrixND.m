@@ -108,7 +108,7 @@ classdef MatrixND
                 fixed_label=temp;
             end
             
-            if ~iscell(fixed_val)&isnumeric(fixed_val)
+            if ~iscell(fixed_val)&(isnumeric(fixed_val)|isdatetime(fixed_val))
                 %disp('converting fixed_val char to cell')
                 temp{1}=fixed_val;
                 fixed_val=temp;

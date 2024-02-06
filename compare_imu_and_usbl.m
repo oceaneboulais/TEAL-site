@@ -9,8 +9,9 @@ addpath(genpath('../drifter'))
 
 
 % select the drifter number and the time you want to load
-drifter_num_all = 6:6;
+drifter_num_all = 5:5;
 time_utc = [datetime(2023,10,9,18,20,20) datetime(2023,10,10,12,50,00)];
+%time_utc = [datetime(2023,10,11,15,20,20) datetime(2023,10,13,18,0,00)];
 
 % fyi - if you just give these functions the base data drive they will find
 % the log files, but they will run much faster if you
@@ -22,16 +23,19 @@ for Inum=1:length(drifter_num_all)
     switch drifter_num
         case 4
             data_drive = '/Volumes/Shared/ONR_DRIFTER/2023_Fall_Kelvin_Seamount/Drifter4_Acoustic1_20231009T021100_20231011T112900';
+            %data_drive = '/Volumes/Shared/ONR_DRIFTER/2023_Fall_Kelvin_Seamount/Drifter4_Acoustic1_20231012T183000_20231013T170000';
             time_offset=duration(0,6,21-53+23);
             yaw_offset=+232-9;
         case 5
             data_drive = '/Volumes/Shared/ONR_DRIFTER/2023_Fall_Kelvin_Seamount/Drifter5_Acoustic3_20231009T182000_20231010T125000';
+            %data_drive = '/Volumes/Shared/ONR_DRIFTER/2023_Fall_Kelvin_Seamount/Drifter5_Acoustic3_20231011T153600_20231013T182600';
             time_offset=duration(0,6,21-53+23);
             yaw_offset=+232-9;
         case 6
             time_offset=duration(0,6,21-53+23);
             yaw_offset=+232-9;
             data_drive = '/Volumes/Shared/ONR_DRIFTER/2023_Fall_Kelvin_Seamount/Drifter6_Acoustic4_20231009T020700_20231011T134500';
+            %data_drive = '/Volumes/Shared/ONR_DRIFTER/2023_Fall_Kelvin_Seamount/Drifter6_Acoustic4_20231012T183500_20231013T170000';
 
 
     end
@@ -85,5 +89,6 @@ for Inum=1:length(drifter_num_all)
         orient landscape
         set(gcf,'Position',[ 73          60        1792        1068])
         print('-djpeg','-r300',sprintf('%s.jpg',print_name));
+        saveas(gcf,sprintf('%s.fig',print_name),'fig');
     end
 end
