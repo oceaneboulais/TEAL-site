@@ -1,4 +1,4 @@
-function [driftcam,control_label] = loadDrifterLogDataV2(time_utc_in,datadrive,drifter)
+function [driftcam,control_label] = loadDrifterLogDataV2(time_utc_in,datadrive,drifter_num)
 % if time_utc is empty, load all the time points for this drifter in the data drive
 % if time_utc is 1 x 2 vector, use that as the limits of the times to load
 % otherwise, interpolate the log to the time points in time_utc
@@ -6,7 +6,7 @@ function [driftcam,control_label] = loadDrifterLogDataV2(time_utc_in,datadrive,d
 
 [~,D] = fileparts(datadrive);
 if ~strcmp(D,'ControlSystem')
-    log_filelist = dir(fullfile(datadrive,'**',sprintf('Drifter%i*',drifter),'ControlSystem','*.txt'));
+    log_filelist = dir(fullfile(datadrive,'**',sprintf('Drifter%i*',drifter_num),'ControlSystem','*.txt'));
 else
     log_filelist = dir(fullfile(datadrive,'*.txt'));
 end
@@ -17,6 +17,9 @@ end
 driftcam = []; 
 control_label = [];
 for ifile = 1:length(log_filelist)
+    if ifile==1|rem(ifile,10)==0
+        fprintf('Loading file %i of %i...\n',ifile,length(log_filelist));
+    end
     ssr_file = fullfile(log_filelist(ifile).folder,log_filelist(ifile).name);
     ssr_data = loadDrifterLog(ssr_file);
 
@@ -69,7 +72,7 @@ for ifile = 1:length(log_filelist)
     % control_label = cell(size(control_state))
     % control_label(~isnan(control_state)) = control_label{control_state(~isnan(control_state))+1};
     driftcam = vertcat(driftcam,table(time_utc,depth_m,yaw_deg,roll_deg,pitch_deg,control_state,control_label));
-end
+end %ifile
 end
 function t = convertLogTime(filelist)
 [~,filename,~]=fileparts(filelist);
