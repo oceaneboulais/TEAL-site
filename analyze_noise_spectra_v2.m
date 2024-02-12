@@ -13,7 +13,7 @@ do_bf_data = false; % bf part still needs to be updated
 do_plots = true;
 
 % limit the data to process to the following:
-expt = '2023_Fall_Kelvin_Seamount'; % process only this experiment
+expt = '2023_Sep_CA'; % process only this experiment
 drifters = []; % process only these drifters 
 dateset_local = []; % process only between these times 
 deployments =[];
@@ -202,7 +202,13 @@ for deployment = deployment_set
             
             if process_raw_data
                 wav_filename = fullfile(filelist(ifile).folder,filelist(ifile).name);
-                [y,fs0] = audioread(wav_filename);
+                try
+                    [y,fs0] = audioread(wav_filename);
+                catch
+                    warning('Error reading file, skipping file %s',filelist(ifile).name)
+                    continue
+                end
+           
                 if do_resample
                     y = resample(y,fs_spec,fs0);
                 end
@@ -368,20 +374,24 @@ if do_plots
 
             driftcamStatusPlot(driftcam,driftlog.SunsetUTC(didx),driftlog.SunriseUTC(didx));
 
-            ax(end+1) = nexttile;
+            
+            
             di = drift_track.deployment == deployment;
-            hold on
-            for kk = 1:size(drift_track.drift_time,2)
-                if isempty(drift_track.drift_time{di,kk})
-                    continue
+            if any(di)
+                ax(end+1) = nexttile;
+                hold on
+                for kk = 1:size(drift_track.drift_time,2)
+                    if isempty(drift_track.drift_time{di,kk})
+                        continue
+                    end
+                    plot([drift_track.drift_time{di,kk}],[drift_track.ship_dist_m{di}(kk,:)]/1e3,'k','linewidth',2);
                 end
-                plot([drift_track.drift_time{di,kk}],[drift_track.ship_dist_m{di}(kk,:)]/1e3,'k','linewidth',2);
+                ylabel('Distance, km')
+                title('Drifter-Ship Distance')
+                set(gca,'fontweight','bold','fontsize',14);
+                set(gca,'XTickLabel','')
+                grid on
             end
-            ylabel('Distance, km')
-            title('Drifter-Ship Distance')
-            set(gca,'fontweight','bold','fontsize',14);
-            set(gca,'XTickLabel','')
-            grid on
 
             ax(end+1) = nexttile([4 1]);
             pcolor(Tfile,F_spec_plot/1e3,10*log10(Spowplot(:,:,sensID)).'); shading flat
