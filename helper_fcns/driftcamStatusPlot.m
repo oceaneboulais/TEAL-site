@@ -1,6 +1,6 @@
 function ax2 = driftcamStatusPlot(driftcam,sunset_time,sunrise_time)
 
-control_label = unique(driftcam.control_label);
+
 if ~exist('sunset_time','var')
     sunset_time = [];
 end
@@ -8,6 +8,8 @@ if ~exist('sunrise_time','var')
     sunrise_time = [];
 end
 if ~isempty(driftcam)
+    control_label = unique(driftcam.control_label);
+    
     yyaxis left
     plot(driftcam.time_utc,-driftcam.depth_m,'linewidth',2)
     ylabel('Depth,m')

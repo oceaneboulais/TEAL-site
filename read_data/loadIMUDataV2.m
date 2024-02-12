@@ -48,9 +48,15 @@ file_times.TimeZone = 'UTC';
 % get the files that are in this time range
 include_files = file_times >= min(time_utc_in) & file_times <= max(time_utc_in);
 
-imu_files = imu_files(include_files);
-file_names = file_names(include_files);
-file_times = file_times(include_files);
+file_idx = find(include_files);
+if file_idx(1)>1
+    %always include one before to make sure we get all the files needed 
+    file_idx = [file_idx(1)-1; file_idx];
+end
+
+imu_files = imu_files(file_idx);
+file_names = file_names(file_idx);
+file_times = file_times(file_idx);
 
 
 imu_time = [];
