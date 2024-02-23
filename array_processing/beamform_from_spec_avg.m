@@ -1,4 +1,4 @@
-function [Bpow,elev_hist,Fout] = beamform_from_spec_avg(S,T,freq,az_deg,elev_deg,pos,w,hist_param,fband)
+function [Bpow,elev_hist,Fout,Itindex] = beamform_from_spec_avg(S,T,freq,az_deg,elev_deg,pos,w,hist_param,fband,time_avg)
 % conventional beamformer in FFT domain:
 %
 % INPUTS:
@@ -29,8 +29,6 @@ else
 end
 
 % Put all quantities in the following dimensions
-% ang_deg = permute(ang_deg(:), [2,3,4,5,1,6]);
-% elev_deg = permute(elev_deg(:), [2,3,4,1,5]);
 az_deg = permute(az_deg(:), [2,3,4,1,5]);
 elev_deg = permute(elev_deg(:),[2,3,1,4] );
 
@@ -96,10 +94,10 @@ if array_size_GB < 100
         disp('Finished histogram, starting time averaging')
         
         %Consolidate time bins
-        time_avg=0.1; %Averaging time in seconds
         Ninc=ceil(time_avg./T(1));  %%Number of samples per beampattern.
         Nbeam_count=floor(Nt./Ninc);
-
+        Itindex=Ninc:Ninc:Nt;
+        Itindex=Itindex-round(Ninc/2);
         for Ibeam=1:Nbeam_count
             indexx=1+(Ibeam-1)*Ninc+(0:(Ninc-1));
             Bpow{Iband}(:,:,:,Ibeam)=sum(Bpow{Iband}(:,:,:,indexx),4);
