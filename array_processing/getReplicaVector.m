@@ -1,4 +1,4 @@
-function v = getReplicaVector(f,p,elev_deg,ang_deg,c)
+function v = getReplicaVector(freq,p,elev_deg,ang_deg,c)
 % Computes the array manifold vector (replica vector)
 % INPUTS
 % f: freq in Hz
@@ -9,7 +9,7 @@ function v = getReplicaVector(f,p,elev_deg,ang_deg,c)
 % OUTPUTS
 % v: the array maniford vector freq x Nchannels x azimuths x elevations
 
-omega = 2*pi*f(:);
+omega = 2*pi*freq(:);
 
 ang_deg = permute(ang_deg(:), [2,3,4,1,5]);
 elev_deg = permute(elev_deg(:),[2,3,1,4] );

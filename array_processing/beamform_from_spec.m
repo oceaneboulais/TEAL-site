@@ -2,9 +2,10 @@ function [B,Bpow] = beamform_from_spec(S,f,az_deg,elev_deg,pos,w,do_power)
 % conventional beamformer in FFT domain:
 %
 % INPUTS:
+%       S:    complex spectrogram [freq time element]
 %       pos   position of sensors
-%       az_deg   angle from x-axis to y-axis in array coordinates
-%       elev_deg        elevation up from the horizontal
+%       az_deg   (vector) angle from x-axis to y-axis in array coordinates
+%       elev_deg     (vector)   elevation up from the horizontal
 %
 % OUTPUTS:
 %       B(freq,time,azimuth,elevation)
@@ -28,15 +29,16 @@ else
 end
 
 % Put all quantities in the following dimensions
-% (freq,time,chan,ang,xy)
 % ang_deg = permute(ang_deg(:), [2,3,4,5,1,6]);
 % elev_deg = permute(elev_deg(:), [2,3,4,1,5]);
 az_deg = permute(az_deg(:), [2,3,4,1,5]);
 elev_deg = permute(elev_deg(:),[2,3,1,4] );
 
 v = getReplicaVector(f,pos,elev_deg,az_deg,c);
+%%Output of v is [Nfreq Nel Nazi Nelevation]
 
 v = permute(v,[1 5 2 3 4]);
+%%v now has [f ? Nel ? Nelevation]
 % S = permute(S,[1 3 4 5 2]);
 % for fidx = 1:length(f)
 %     B(fidx,:,:) = sum((w.'.*S(fidx,:,:,:,:) .* v(fidx,:,:,:)),2);
@@ -44,7 +46,7 @@ v = permute(v,[1 5 2 3 4]);
 
 [~,minDim] = min([Nt Nf Naz Nel]);
 
-H = v.*w;
+H = v.*w;  %%Final array weight  [freq ? Nel ? Nelevation]
 % try 
 num_elements = Nt*Nf*Nch*Naz*Nel;
 array_size_GB = 2*num_elements*8/1024^3;
@@ -108,7 +110,7 @@ else
     end
 
 
-end
+end %if arraysize
    
         
         
