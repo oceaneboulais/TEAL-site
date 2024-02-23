@@ -7,10 +7,30 @@ function [Bpow,elev_hist,Fout,Itindex] = beamform_from_spec_avg(S,T,freq,az_deg,
 %       freq:     frequencies in Hz
 %       pos   position of sensors
 %       az_deg   (vector) angle from x-axis to y-axis in array coordinates
-%       elev_deg     (vector)   elevation up from the horizontal
+%       elev_deg     (vector)   elevation in degrees up from the horizontal
+%       hist_param: parameters for creating histograms of peak direction
+%           from instantaneous beamformer
+%       fband: Frequencies in Hz to incoherently sum beamformer over.
+%               First column is start freq, second column is end freq.
+%              Each row is a different bandwidth that produces a new cell
+%              in Bpow and Fout.
+%       time_avg: time in second over which beams are incoherently
+%           averaged.
 %
 % OUTPUTS:
-%       B(freq,elevation,azimuth,time)
+%       Bpow{freq_band}(freq,elevation,azimuth,time): cell array of linear
+%        beamformed output, with each cell corresponding to one frequency
+%           band in fband.
+%       elev_hits(elevations, freq_band): matrix whose columns  are
+%           histograms of elevation angles taken from individual beampatterns
+%           before time averaging. Each column corresponds to a different
+%           frequency band.
+%       Fout{freq_band}:  Frequencies in Hz that correspond to elements in
+%                   first dimension of Bpow.
+%       Itindex:  indicies of input time T that correspond to time-averaged
+%               time ouptuts.
+%
+
 verbose = false;
 c = 1500;
 
@@ -50,106 +70,70 @@ toc
 H = v.*w;  %%Final array weight  [freq Ntime(1) Nel Nazi Nelevation]
 % try
 num_elements = Nt*Nf*Nch*Naz*Nel;
-array_size_GB = 2*num_elements*8/1024^3;
-B = zeros(Nf,Nt,Naz,Nel);
+%array_size_GB = 2*num_elements*8/1024^3;
+%B = zeros(Nf,Nt,Naz,Nel);
 
-%if array_size_GB < 20
-if array_size_GB < 100
-    fprintf('BF: vectorized direct multiplication\n')
-    % first see if we can do it all at once
-    % H is dimension [Nfreq 1 Nchan Nazi Nelv]
-    % S is dimension [Nfreq Ntime Nchan]
-    %  element-by element multiplication is replicated across all azimuths
-    %  and elevation angles.
-    %  Original command sums across time, which is a mistake before
-    %  computing the power
-    %B = sum(conj(H).*S,2);
-    %B = permute(B, [1,5,3,4,2]);  % [Nfreq Nelv Nchan]--must be error
+%%%Note: we save a lot of RAM memory by conducting matrix operations
+% independently for each frequency band.  We get rid of B variable,
+%   and average by reusing memory in original Bpow.
+% Time-averaging saves a lot of disk space:  even averaging over 0.1
+% sec reduced memory by a factor of 20.
 
+fprintf('BF: vectorized direct multiplication\n')
+% first see if we can do it all at once
+% H is dimension [Nfreq 1 Nchan Nazi Nelv]
+% S is dimension [Nfreq Ntime Nchan]
+%  element-by element multiplication is replicated across all azimuths
+%  and elevation angles.
+%  Original command sums across time, which is a mistake before
+%  computing the power
+%B = sum(conj(H).*S,2);  %This sums over time, not elements
+%B = permute(B, [1,5,3,4,2]);  % [Nfreq Nelv Nchan]--must be error
 
+disp('Start beamforming over bands')
+elev_hist=zeros(length(hist_param.el_edges)-1,length(fband),'single');
 
-    disp('Start beamforming over bands')
-    for Iband = 1:size(fband,1)
-        fprintf('Beamforming from %3.2f to %3.2f Hz\n',fband(Iband,1),fband(Iband,2));
-        Ifidx = (freq>=fband(Iband,1))&(freq<=fband(Iband,2));
-        Fout{Iband}=freq(Ifidx);
-        Bpow{Iband}=sum(conj(H(Ifidx,:,:,:,:)).*S(Ifidx,:,:),3);  %%Sum across elements
-        Bpow{Iband}=abs(Bpow{Iband}).^2;
-        Bpow{Iband}=permute(Bpow{Iband},[1,5,4,2,3]); %[Nfreq Nel Nazi Nt]
-        disp('Finished large matrix beamforming operation');
-        toc
-        %%%Create histogram of full unsorted beampatterns
-        bin_width = median(diff(hist_param.el_edges));
-        el_centers = hist_param.el_edges(1:end-1)+bin_width/2;
-        elev_deg=squeeze(elev_deg);
-        elev_hist=zeros(length(hist_param.el_edges)-1,length(fband),'single');
-
-        B_incoh = squeeze(sum(Bpow{Iband}));
-
-        [~,max_idx] = max(B_incoh);
-        elev_est= (elev_deg(max_idx));
-
-        elev_hist(:,Iband) = single(histcounts(elev_est,hist_param.el_edges,'Normalization','count'));
-        
-        disp('Finished histogram, starting time averaging')
-        
-        %Consolidate time bins
-        Ninc=ceil(time_avg./T(1));  %%Number of samples per beampattern.
-        Nbeam_count=floor(Nt./Ninc);
-        Itindex=Ninc:Ninc:Nt;
-        Itindex=Itindex-round(Ninc/2);
-        for Ibeam=1:Nbeam_count
-            indexx=1+(Ibeam-1)*Ninc+(0:(Ninc-1));
-            Bpow{Iband}(:,:,:,Ibeam)=sum(Bpow{Iband}(:,:,:,indexx),4);
-        end
-        Bpow{Iband}=Bpow{Iband}(:,:,:,1:Ibeam);
-        disp('Finished time averaging')
-        toc
-    end %Iband
-    disp('Finished beamforming processing.')
-    toc
-    %Bpow=(sum(Bpow,4))/Nt;%%%averages over time
+for Iband = 1:size(fband,1)  %For each frequency band
+    fprintf('Beamforming from %3.2f to %3.2f Hz\n',fband(Iband,1),fband(Iband,2));
+    Ifidx = (freq>=fband(Iband,1))&(freq<=fband(Iband,2));
+    Fout{Iband}=freq(Ifidx);
+    Bpow{Iband}=sum(conj(H(Ifidx,:,:,:,:)).*S(Ifidx,:,:),3);  %%Sum across elements.
+    %%%Note to Alison, I think you were summing across the wrong dimension.
+    Bpow{Iband}=abs(Bpow{Iband}).^2;
+    Bpow{Iband}=permute(Bpow{Iband},[1,5,4,2,3]); %[Nfreq Nel Nazi Nt]
+    disp('Finished large matrix beamforming operation');
     toc
 
-    %keyboard
-    % catch
-else
+    %%%Create histogram from  unaveraged beampatterns
+    bin_width = median(diff(hist_param.el_edges));
+    el_centers = hist_param.el_edges(1:end-1)+bin_width/2;
+    elev_deg=squeeze(elev_deg);
 
+    B_incoh = squeeze(sum(Bpow{Iband}));
 
-    if Nel>1 & Naz==1
-        % loop over elevation
-        fprintf('BF: looping over elevation\n')
-        for ii = 1:Nel
-            B(:,:,:,ii) = sum(conj(H(:,:,:,:,ii)).*S,3);
-            Bpow(:,:,:,ii) = squeeze(conj(B(:,:,:,ii)  ) .* B(:,:,:,ii) ) ;
+    [~,max_idx] = max(B_incoh);
+    elev_est= (elev_deg(max_idx));
 
-        end
+    elev_hist(:,Iband) = single(histcounts(elev_est,hist_param.el_edges,'Normalization','count'));
 
-    elseif Naz>1 & Nel==1
-        % loop over azimuth
-        fprintf('BF: looping over azimuth\n')
-        for ii = 1:Naz
-            B(:,:,ii,:) = sum(conj(H(:,:,:,ii,:)).*S,3);
+    disp('Finished histogram, starting time averaging')
 
-            Bpow(:,:,ii,:) = squeeze(conj(B(:,:,ii,:)  ) .* B(:,:,ii,:) ) ;
-
-        end
-    else
-        %loop over time, the 5th dimension
-        fprintf('BF: looping over time\n')
-        for ii = 1:Nt
-            if verbose
-                fprintf('%i of %i\n',ii,Nt)
-            end
-            B(:,ii,:,:,:) = sum(conj(H(:,:,:,:,:)).*S(:,ii,:,:,:),3);
-
-            Bpow(:,ii,:,:) = conj(B(:,ii,:,:,:) ) .* B(:,ii,:,:,:) ;
-
-        end
+    %Consolidate time bins
+    Ninc=ceil(time_avg./T(1));  %%Number of samples per beampattern.
+    Nbeam_count=floor(Nt./Ninc);
+    Itindex=Ninc:Ninc:Nt;
+    Itindex=Itindex-round(Ninc/2);
+    for Ibeam=1:Nbeam_count
+        indexx=1+(Ibeam-1)*Ninc+(0:(Ninc-1));
+        Bpow{Iband}(:,:,:,Ibeam)=sum(Bpow{Iband}(:,:,:,indexx),4);
     end
+    Bpow{Iband}=Bpow{Iband}(:,:,:,1:Ibeam);
+    disp('Finished time averaging')
+    toc
+end %Iband
+disp('Finished beamform_from_spec_avg.')
+toc
 
-
-end %if arraysize
 
 
 
