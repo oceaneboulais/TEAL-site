@@ -7,8 +7,14 @@ function [driftcam,control_label] = loadDrifterLogDataV2(time_utc_in,datadrive,d
 [~,D] = fileparts(datadrive);
 if ~strcmp(D,'ControlSystem')
     log_filelist = dir(fullfile(datadrive,'**',sprintf('Drifter%i*',drifter_num),'ControlSystem','*.txt'));
+    if isempty(log_filelist)
+        log_filelist = dir(fullfile(datadrive,'**',sprintf('Drifter%i*',drifter_num),'ControlSystem','*.mat'));
+    end
 else
     log_filelist = dir(fullfile(datadrive,'*.txt'));
+    if isempty(log_filelist)
+        log_filelist = dir(fullfile(datadrive,'*.mat'));
+    end
 end
 % if isempty(log_filelist)
 %     driftcam = []; 
@@ -21,8 +27,20 @@ for ifile = 1:length(log_filelist)
         fprintf('Loading file %i of %i...\n',ifile,length(log_filelist));
     end
     ssr_file = fullfile(log_filelist(ifile).folder,log_filelist(ifile).name);
-    ssr_data = loadDrifterLog(ssr_file);
-
+    ext = log_filelist(ifile).name(end-3:end);
+    switch ext
+        case '.mat'
+            ssr_data =load(ssr_file);
+            ssr_data.Timestamp = [ssr_data.Data.Timestamp];
+            ssr_data.Depth = [ssr_data.Data.Depth];
+            ssr_data.Yaw = [ssr_data.Data.Yaw];
+            ssr_data.Pitch = [ssr_data.Data.Pitch];
+            ssr_data.Roll = [ssr_data.Data.Roll];
+            ssr_data.Control_State = [ssr_data.Data.Control_State];
+        case '.txt'
+            ssr_data = loadDrifterLog(ssr_file);
+            
+    end
     % sometimes there are duplicate time stamps...
     [ssr_time,iuniq] = unique(datetime(ssr_data.Timestamp,'ConvertFrom','posixtime'));
 %     duplicate_indices = setdiff( 1:numel(ssr_data.Timestamp), iuniq );
