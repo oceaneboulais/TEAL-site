@@ -1,4 +1,4 @@
-function [Bpow,elev_hist,Fout,Itindex] = beamform_from_spec_avg(S,T,freq,az_deg,elev_deg,pos,w,hist_param,fband,time_avg)
+function [Bpow,Fout,Tout,elev_hist] = beamform_from_spec_avg(S,T,freq,az_deg,elev_deg,pos,w,fband_in,time_avg,hist_param)
 % conventional beamformer in FFT domain:
 %
 % INPUTS:
@@ -8,30 +8,33 @@ function [Bpow,elev_hist,Fout,Itindex] = beamform_from_spec_avg(S,T,freq,az_deg,
 %       pos   position of sensors
 %       az_deg   (vector) angle from x-axis to y-axis in array coordinates
 %       elev_deg     (vector)   elevation in degrees up from the horizontal
-%       hist_param: parameters for creating histograms of peak direction
-%           from instantaneous beamformer
-%       fband: Frequencies in Hz to incoherently sum beamformer over.
-%               First column is start freq, second column is end freq.
-%              Each row is a different bandwidth that produces a new cell
-%              in Bpow and Fout.
+%       fband_in: Frequencies in Hz to incoherently sum beamformer over.
+%              If array: First column is start freq, second column is end freq.
+%               Each row is a different bandwidth that produces a new cell
+%               in Bpow and Fout.
+%              If scalar: divide frequencies up into bands of this size for
+%               calculation, then recombine on output
 %       time_avg: time in second over which beams are incoherently
 %           averaged.
+%       hist_param: (optional) parameters for creating histograms of peak direction
+%           from instantaneous beamformer. if empty or omited, histogram
+%           processing is skipped.
 %
 % OUTPUTS:
-%       Bpow{freq_band}(freq,elevation,azimuth,time): cell array of linear
+%       Bpow{freq_band}(freq,time,azimuth,elevation): cell array of linear
 %        beamformed output, with each cell corresponding to one frequency
-%           band in fband.
-%       elev_hits(elevations, freq_band): matrix whose columns  are
+%           band in fband. If fband_in is a scalar, the result is
+%           concatenated into a single array.
+%       Fout{freq_band}:  Frequencies in Hz that correspond to elements in
+%                   first dimension of Bpow. If fband_in is a scalar, Fout
+%                   is concatenated into a single vector
+%       Tout:   time-averaged time ouptuts.            
+%       elev_hist(elevations, freq_band): matrix whose columns  are
 %           histograms of elevation angles taken from individual beampatterns
 %           before time averaging. Each column corresponds to a different
 %           frequency band.
-%       Fout{freq_band}:  Frequencies in Hz that correspond to elements in
-%                   first dimension of Bpow.
-%       Itindex:  indicies of input time T that correspond to time-averaged
-%               time ouptuts.
 %
 
-verbose = false;
 c = 1500;
 
 Nt = size(S,2);
@@ -40,7 +43,9 @@ Nch = size(pos,1);
 Naz = length(az_deg);
 Nel = length(elev_deg);
 
-
+if ~exist('hist_param','var')
+    hist_param = [];
+end
 
 if ~exist('w','var')||isempty(w)
     w(1,1,:) = ones(Nch,1)/Nch;
@@ -85,38 +90,50 @@ fprintf('BF: vectorized direct multiplication\n')
 % S is dimension [Nfreq Ntime Nchan]
 %  element-by element multiplication is replicated across all azimuths
 %  and elevation angles.
-%  Original command sums across time, which is a mistake before
-%  computing the power
-%B = sum(conj(H).*S,2);  %This sums over time, not elements
-%B = permute(B, [1,5,3,4,2]);  % [Nfreq Nelv Nchan]--must be error
 
-disp('Start beamforming over bands')
-elev_hist=zeros(length(hist_param.el_edges)-1,length(fband),'single');
+if isscalar(fband_in)
+    df = min(diff(freq));
+    fband1 = freq(1):fband_in:(freq(end)-fband_in);
+    fband2 = [(fband1(2)-df):fband_in:fband1(end) freq(end)];
+    fband = [fband1(:) fband2(:)];
+else
+    fband = fband_in;
+end
+
+disp('Start beamforming over bands...')
+if ~isempty(hist_param)
+    elev_hist=zeros(length(hist_param.el_edges)-1,length(fband),'single');
+end
+
 
 for Iband = 1:size(fband,1)  %For each frequency band
     fprintf('Beamforming from %3.2f to %3.2f Hz\n',fband(Iband,1),fband(Iband,2));
     Ifidx = (freq>=fband(Iband,1))&(freq<=fband(Iband,2));
     Fout{Iband}=freq(Ifidx);
     Bpow{Iband}=sum(conj(H(Ifidx,:,:,:,:)).*S(Ifidx,:,:),3);  %%Sum across elements.
-    %%%Note to Alison, I think you were summing across the wrong dimension.
-    Bpow{Iband}=abs(Bpow{Iband}).^2;
-    Bpow{Iband}=permute(Bpow{Iband},[1,5,4,2,3]); %[Nfreq Nel Nazi Nt]
-    disp('Finished large matrix beamforming operation');
+
+    Bpow{Iband}=abs(Bpow{Iband}).^2; %[Nfreq Nt 1 Naz Nel]
+    Bpow{Iband}=permute(Bpow{Iband},[1,2,4,5,3]); %[Nfreq Nt Naz Nel]
+    disp('Finished large matrix beamforming operation.');
     toc
 
-    %%%Create histogram from  unaveraged beampatterns
-    bin_width = median(diff(hist_param.el_edges));
-    el_centers = hist_param.el_edges(1:end-1)+bin_width/2;
-    elev_deg=squeeze(elev_deg);
-
-    B_incoh = squeeze(sum(Bpow{Iband}));
-
-    [~,max_idx] = max(B_incoh);
-    elev_est= (elev_deg(max_idx));
-
-    elev_hist(:,Iband) = single(histcounts(elev_est,hist_param.el_edges,'Normalization','count'));
-
-    disp('Finished histogram, starting time averaging')
+    if ~isempty(hist_param)
+        disp('Starting histogram...')
+        %%%Create histogram from  unaveraged beampatterns
+        bin_width = median(diff(hist_param.el_edges));
+        el_centers = hist_param.el_edges(1:end-1)+bin_width/2;
+        elev_deg=squeeze(elev_deg);
+    
+        B_incoh = squeeze(sum(Bpow{Iband}));
+    
+        [~,max_idx] = max(B_incoh);
+        elev_est= (elev_deg(max_idx));
+    
+        elev_hist(:,Iband) = single(histcounts(elev_est,hist_param.el_edges,'Normalization','count'));
+    
+        disp('Finished histogram.')
+    end
+    disp('Starting time averaging...')
 
     %Consolidate time bins
     Ninc=ceil(time_avg./T(1));  %%Number of samples per beampattern.
@@ -125,14 +142,21 @@ for Iband = 1:size(fband,1)  %For each frequency band
     Itindex=Itindex-round(Ninc/2);
     for Ibeam=1:Nbeam_count
         indexx=1+(Ibeam-1)*Ninc+(0:(Ninc-1));
-        Bpow{Iband}(:,:,:,Ibeam)=sum(Bpow{Iband}(:,:,:,indexx),4);
+        Bpow{Iband}(:,Ibeam,:,:)=sum(Bpow{Iband}(:,indexx,:,:),2);
     end
-    Bpow{Iband}=Bpow{Iband}(:,:,:,1:Ibeam);
-    disp('Finished time averaging')
+    Bpow{Iband}=Bpow{Iband}(:,1:Ibeam,:,:);
+    disp('Finished time averaging.')
     toc
 end %Iband
+Tout = T(Itindex);
+if isscalar(fband_in)
+% now consolidate by concatenating over the first dim
+    Bpow = vertcat(Bpow{:});
+    Fout = vertcat(Fout{:});
+end
 disp('Finished beamform_from_spec_avg.')
 toc
+
 
 
 
