@@ -7,7 +7,11 @@ end
 % allow "data_dir" variable to be either a directory name or a list of
 % files
 if ischar(data_dir)
-    filelist = dir(fullfile(data_dir,['drifter*' ext]));
+    if isfolder(fullfile(data_dir,'AcousticData'))
+        filelist = dir(fullfile(data_dir,'AcousticData',['drifter*' ext]));
+    else
+        filelist = dir(fullfile(data_dir,['drifter*' ext]));
+    end
 else
     filelist = data_dir;
 end

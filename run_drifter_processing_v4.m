@@ -25,12 +25,17 @@ array_type = 'line';
 el_res = 1;
 time_avg=0.1; %Averaging time in seconds for beamformer output
 
+% if true, only process the frequencies that correspond to frequencies in fband
+only_bf_bands = false; 
 
-%%%Frequency range parameters
 %  Note: it is much faster to have multiple small bandwidths (<= 3 kHz)
 %   than a few large bandwidths: keeps memory manageable, and one can
 %   always combine smaller bandwidths together in later analysis.
 %   Each 3 kHz bandwidth adds 3 seconds to processing time.
+bf_fband = 3e3; % divide bf processing up into bands of this size
+
+%%%Frequency bands for histogram processing , this is independent of bands
+%%%used for beamformer
 fband = [
     500 1500;
     3.5e3 6e3;
@@ -55,6 +60,7 @@ do_resample = true;
 do_filter = false; % filter first in the time domain?
 
 fres = 100; % frequency resolution of FFT in Hz
+prcnt_overlap = 0.5; % percent overlap to use in spectrogram calculation
 fs_resample = 51200;
 
 %%%%File location settings
@@ -62,22 +68,7 @@ powerpoint_template = fullfile(gitpath,'tools','myTemplate.pptx');
 
 driftlog_file = fullfile(gitpath,'drifter','TFO_Drifter_deployment_log.xlsx');
 
-driftlog = readtable(driftlog_file);
-driftlog.SunriseUTC = datetime(driftlog.SunriseUTC, "ConvertFrom", "excel",'Format','HH:mm:SS');
-driftlog.SunsetUTC = datetime(driftlog.SunsetUTC, "ConvertFrom", "excel",'Format','HH:mm:SS');
-
-
-
-% initialize the figures
-%ssize = get(groot, 'ScreenSize');
-%az_hist_fig=figure; set(gcf, 'Position', ssize);
-%el_hist_fig=figure; set(gcf, 'Position', ssize);
-
-
-% start the parallel pool 
-% Nworkers = 4;
-% parpool(Nworkers)
-
+driftlog = getDeployLog(gitpath);
 
 if save_to_ppt
     pptx    = exportToPPTX(powerpoint_template, ...
@@ -90,41 +81,33 @@ if save_to_ppt
 end
 
 
-
 if do_resample
     fs = fs_resample;
 else
     fs = 102400;
 end
 nfft = 2^nextpow2(fs/fres); %
+% overlap to use in spectrogram 
+noverlp = floor(nfft*prcnt_overlap);
 
 in2m = 0.0254;
 
-deploy_time = driftlog.DeployDateLocal + driftlog.DeployTimeLocal;
-recover_time = driftlog.RecoverDateLocal + driftlog.RecoverTimeLocal;
-
-for deployment = 19:19
+for deployment = 13%19:19
     % plot the dives separately
     dive_index = find(driftlog.Deployment ==deployment).';
     drifter_num = driftlog.DrifterNumber(dive_index(1));
+    t0_utc = driftlog.DeployTimeUTC(dive_index(1));
+    tend_utc = driftlog.RecoverTimeUTC(dive_index(1));
+
 
     sunrise_app_utc = driftlog.SunriseUTC(dive_index(1));
     sunset_app_utc = driftlog.SunsetUTC(dive_index(1));
 
-    t0_utc = deploy_time(dive_index(1)) + hours(driftlog.TimeZoneOffset(dive_index(1)));
-    tend_utc = recover_time(dive_index(1)) + hours(driftlog.TimeZoneOffset(dive_index(1)));
-    event_name = sprintf('Drifter%i_Acoustic%i_%s_%s',driftlog.DrifterNumber(dive_index(1)),driftlog.AcousticSphere(dive_index(1)),...
-        datestr(t0_utc,'YYYYmmDDThhMMss'),...
-        datestr(tend_utc,'YYYYmmDDThhMMss'));
-
-    datasubdir = fullfile(data_basedir,driftlog.ExperimentName{dive_index(1)},event_name);
-%         sprintf('Drifter%i_Acoustic%i*',driftlog.DrifterNumber(dive_index(1)),driftlog.AcousticSphere(dive_index(1)))));
+    datasubdir = fullfile(data_basedir,driftlog.ExperimentName{dive_index(1)},driftlog.event_name(dive_index(1)));
 
     savefolder = fullfile(procdata_basedir,mfilename,...
-        sprintf('%s_fs%1.0f_nfft%1.0f_dEl%i',array_type,fs,nfft,el_res),...
-        driftlog.ExperimentName{dive_index(1)},event_name);
-
-%     datasubdir = fullfile(datasubdir.folder,datasubdir.name);
+        sprintf('%s_fs%1.0f_nfft%1.0f_noverlp%1.0f_dEL%i',array_type,fs,nfft,noverlp,el_res),...
+        driftlog.ExperimentName{dive_index(1)},driftlog.event_name(dive_index(1)));
 
     if ~isfolder(savefolder)
         mkdir(savefolder)
@@ -229,21 +212,13 @@ for deployment = 19:19
                 % compute the spectrogram of each channel
                 k = 0;
 				disp('compute FFT')
-                [S,F,T,~,~,pos] = getDrifterSpectrogramV2(y,nfft,[],fs,acoustic_config,'stft');
+                [S,F,T,~,~,pos] = getDrifterSpectrogramV2(y,nfft,noverlp,fs,acoustic_config,'stft');
 				disp('FFT done')
                 toc
                 T_utc = file_time_utc(file_idx) + seconds(T);
 
                 clear y
 
-                %%%AARON: remove frequencies we don't care about.
-                Ifreq=[];
-                for Iband=1:size(fband,1)
-                    Ifreq=[Ifreq; find(F>=fband(Iband,1)&F<=fband(Iband,2))];
-                end
-                Ifreq=unique(Ifreq);  %Remove overlaps between frequency bands;
-                F=F(Ifreq);
-                S=S(Ifreq,:,:);
             end
 
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -263,21 +238,30 @@ for deployment = 19:19
                     otherwise
                         error('Array type not defined')
                 end
+
+                %%%AARON: remove frequencies we don't care about.
+                if only_bf_bands 
+                    Ifreq=[];
+                    for Iband=1:size(fband,1)
+                        Ifreq=[Ifreq; find(F>=fband(Iband,1)&F<=fband(Iband,2))];
+                    end
+                    Ifreq=unique(Ifreq);  %Remove overlaps between frequency bands;
+                else
+                    Ifreq = 1:length(F);
+                end
              
                 %%%Run conventional beamformer, averaging over time_avg
                 %%%intervals in time, and summing over frequency_bands
                 %%%defined by fband
-                [B_pow,elev_hist,Fout,Itindex] = beamform_from_spec_avg(S(:,:,bf_array_idx),T,F,0,elev_deg,pos(bf_array_idx,:),[],hist_param,fband,time_avg);
-                for Iband=1:size(fband,1)
-                    beamdata.B_pow_dB{Iband} = uint8(10*log10(B_pow{Iband}));
-                end
+                [B_pow,Fout,Tout] = beamform_from_spec_avg(...
+                    S(Ifreq,:,bf_array_idx),T,F(Ifreq),0,elev_deg,...
+                    pos(bf_array_idx,:),[],bf_fband,time_avg);
+
+                beamdata.B_pow_dB = uint8(10*log10(B_pow));
                 beamdata.F=Fout;
-%                 beamdata.B_phase = int16(10000*angle(B));
-              
-                beamdata.T_utc = T_utc(Itindex);
+                beamdata.T_utc = file_time_utc(file_idx) + seconds(Tout);
                 beamdata.elev_deg = elev_deg;
-                beamdata.fband = fband;
-               % clear B 
+
                 toc
                 disp('Beamformer done.')
                 
