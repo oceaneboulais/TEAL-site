@@ -358,7 +358,22 @@ for deployment = 13%19:19
                         B_pow = 10.^(double(beamdata.B_pow_dB)/10);
                     end
                     bin_width = median(diff(hist_param.el_edges));
-                   
+                    el_centers = hist_param.el_edges(1:end-1)+bin_width/2;
+                    for iband = 1:size(fband,1)
+                        f1 = fband(iband,1);
+                        f2 = fband(iband,2);
+        
+                        fidx = (beamdata.F>=fband(iband,1))&(beamdata.F<=fband(iband,2));
+                        B_incoh = squeeze(sum(B_pow(fidx,:,:)));
+
+                        [B_ele_max,max_idx] = max(B_incoh,[],2);
+                        elev_est= beamdata.elev_deg(max_idx);
+
+                        elev_hist(file_idx,:,iband) = single(histcounts(elev_est,hist_param.el_edges,'Normalization','count')); 
+                        clear B_incoh B_ele_max
+
+                        toc
+                    end
                     disp('Finished processing.')
                 end
                 if do_vs_processing&&(overwrite_stats||~exist(avs_hist_filename,'file'))
