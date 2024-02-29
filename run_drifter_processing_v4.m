@@ -10,7 +10,7 @@ do_processing = true; % if saved beamformer data doesn't exist, process the data
 do_vs_processing = false; % if saved avs data doesn't exist, process the data
 do_stats = true; % if true, compute the histograms
 overwrite_avs_data = false;
-overwrite_beam_data = true;
+overwrite_beam_data = false;
 overwrite_stats = false;
 save_data = true; % if this is set to true, we will save bf and avs data
 
@@ -32,7 +32,7 @@ only_bf_bands = false;
 %   than a few large bandwidths: keeps memory manageable, and one can
 %   always combine smaller bandwidths together in later analysis.
 %   Each 3 kHz bandwidth adds 3 seconds to processing time.
-bf_fband = 3e3; % divide bf processing up into bands of this size
+bf_fband = 2.5e3; % divide bf processing up into bands of this size
 
 %%%Frequency bands for histogram processing , this is independent of bands
 %%%used for beamformer
@@ -92,7 +92,7 @@ noverlp = floor(nfft*prcnt_overlap);
 
 in2m = 0.0254;
 
-for deployment = 13%19:19
+for deployment = [13 23 24]%19:19
     % plot the dives separately
     dive_index = find(driftlog.Deployment ==deployment).';
     drifter_num = driftlog.DrifterNumber(dive_index(1));
@@ -175,7 +175,12 @@ for deployment = 13%19:19
                 fprintf('Loading data..\n')
 
                 filename = fullfile(fullfile(filelist(file_idx).folder,filelist(file_idx).name));
-                [y0,fs00] = audioread(filename);
+                try 
+                    [y0,fs00] = audioread(filename);
+                catch
+                    warning('Error reading file, skipping file %s',filelist(file_idx).name)
+                    continue
+                end
                 disp('Data loaded');
                 toc
 
