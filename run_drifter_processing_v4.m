@@ -19,7 +19,12 @@ save_to_ppt = false; % save the figures in a powerpoint file
 save_figures = true; % save the figures out as png and fig files
 do_histogram_plots = true; % if true, make the histogram plots as the data is processed
 
-
+if do_histogram_plots
+    % initialize the figures
+    ssize = get(groot, 'ScreenSize');
+    az_hist_fig=figure; set(gcf, 'Position', ssize);
+    el_hist_fig=figure; set(gcf, 'Position', ssize);
+end
 %% vertical array settings
 array_type = 'line';
 el_res = 1;
