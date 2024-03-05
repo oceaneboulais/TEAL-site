@@ -18,7 +18,7 @@ success=false;
 switch hostname(1:end-1)
     case {'Alisons-MacBook-Pro.local','Alisons-MBP','alisons-mbp.dynamic.ucsd.edu'}
         % Alison local computer
-        gitpath = '/Users/alaferri/GIT/sio_code/sio_research';
+        gitpath = '/Users/alaferri/GIT/sio_code/ThodeLab';
         if use_remote % use jonah
             fprintf('Using remote path to jonah on Alison''s computer\n')
             data_basedir = '/Volumes/Shared/ONR_DRIFTER';
@@ -39,7 +39,7 @@ switch hostname(1:end-1)
         %         procdata_basedir = '/Volumes/public/Laferriere/Analysis';
         %         envdir = '/Volumes/public/Laferriere/Databases';
         fprintf('Using remote path to Jonah2 on Alison''s macmussel account\n')
-        gitpath = '/Volumes/homes/alaferriere/GIT/sio_research';
+        gitpath = '/Volumes/homes/alaferriere/GIT/ThodeLab';
         data_basedir = '/Volumes/Shared/ONR_DRIFTER';
         procdata_basedir = '/Volumes/homes/alaferriere/Analysis';
         envdir = '/Volumes/homes/alaferriere/Databases';

@@ -1,4 +1,4 @@
-function [metrics,Ix,Iy,Iz] = computeDirectionalMetrics(P,V,do_3D_metrics,compass_offset,elevation_offset)
+function [metrics,Ix,Iy,Iz] = computeDirectionalMetrics(P,V,do_3D_metrics,compass_offset,elevation_offset,T,time_avg)
 
 if ~exist('do_3D_metrics','var')
     metrics.do_3D_metrics = false;
@@ -12,6 +12,9 @@ end
 
 if ~exist('elevation_offset','var')
     elevation_offset = 0;
+end
+if ~exist('time_avg','var')
+    time_avg = [];
 end
 
 metrics.rho = 1000; 
@@ -44,61 +47,76 @@ elseif size(V,3)==2
     Vz = [];
 end
 
+Psq = abs(P).^2;
+Vxsq = abs(Vx).^2;
+Vysq = abs(Vy).^2;
+Vzsq = abs(Vz).^2;
+
 Ix=squeeze(conj(P).*Vx);
 Iy=squeeze(conj(P).*Vy);
 
 if ~isempty(Vz)
     Iz = conj(P).*Vz;
-    Ixy = sqrt(real(Ix).^2 + real(Iy).^2);
-    %elegram = atan2d(real(Iz),Ixy);
-    metrics.elegram = single(atand(real(Iz)./Ixy));
 else
     Iz = zeros(size(Ix));
     Vz = zeros(size(Vx));
     metrics.elegram = [];
 end
 
+if ~isempty(time_avg)
+
+    disp('Starting intensity time averaging...')
+
+    %Consolidate time bins
+    Ninc=ceil(time_avg./T(1));  %%Number of samples per beampattern.
+    Nt = length(T);
+    Nbeam_count=floor(Nt./Ninc);
+    Itindex=Ninc:Ninc:Nt;
+    Itindex=Itindex-round(Ninc/2);
+    for Ibeam=1:Nbeam_count
+        indexx=1+(Ibeam-1)*Ninc+(0:(Ninc-1));
+        Ix(:,Ibeam)=mean(Ix(:,indexx),2);
+        Iy(:,Ibeam)=mean(Iy(:,indexx),2);
+        Iz(:,Ibeam)=mean(Iz(:,indexx),2);
+        Psq(:,Ibeam) = mean(Psq(:,indexx),2);
+        Vxsq(:,Ibeam) = mean(Vxsq(:,indexx),2);
+        Vysq(:,Ibeam) = mean(Vysq(:,indexx),2);
+        Vzsq(:,Ibeam) = mean(Vzsq(:,indexx),2);
+    end
+    Ix = Ix(:,1:Ibeam);
+    Iy = Iy(:,1:Ibeam);
+    Iz = Iz(:,1:Ibeam);
+    Psq = Psq(:,1:Ibeam);
+    Vxsq = Vxsq(:,1:Ibeam);
+    Vysq = Vysq(:,1:Ibeam);
+    Vzsq = Vzsq(:,1:Ibeam);
+    metrics.T = T(Itindex);
+    disp('Finished time averaging.')
+end
+
+
+
 %metrics.I = single(cat(3,Ix,Iy,Iz));
-metrics.PdB = single(20*log10(abs(P)));
+metrics.PdB = single(10*log10(Psq));
 
 % we define azigram in terms of compass direction
 % assuming v dims are Vx,Vy,Vz, or Vew,Vns
 metrics.azigram = single(wrapTo360(atan2d(real(Ix),real(Iy)) + compass_offset));
-%metrics.elegram = wrapTo180(elegram + elevation_offset);
+Ixy = sqrt(real(Ix).^2 + real(Iy).^2);
+metrics.elegram = single(atand(real(Iz)./Ixy));
 
-
-
-% pressure_autospectrum=squeeze(abs(P).^2);  
-% normalized_velocity_autospectrum=squeeze(abs(Vx).^2+abs(Vy).^2);
-% energy_density=0.5*abs(normalized_velocity_autospectrum+pressure_autospectrum);
-% polarization=(real(Vx).*imag(Vy)-real(Vy).*imag(Vx));
-% polarization=-2*squeeze(polarization./(abs(Vx).^2+abs(Vy).^2));
-% 
-% mu = single(atan2d(real(Ix),real(Iy)));  %Compass convention (usually atan2d(y,x))
-% intensity=sqrt((real(Ix)).^2+(real(Iy)).^2);
-% 
-% output_array.Directionality=wrapTo360(compass_offset+mu);          
-% output_array.ItoERatio=intensity./energy_density;
-% output_array.KEtoPERatio=normalized_velocity_autospectrum./pressure_autospectrum;
-% output_array.Polarization=polarization;
-% output_array.IntensityPhase=atan2d(sqrt(imag(Ix).^2+imag(Iy).^2),sqrt((real(Ix)).^2+(real(Iy)).^2));
-% output_array.PhaseSpeed=1450*pressure_autospectrum./sqrt((real(Ix)).^2+(real(Iy)).^2);
-
-pressure_autospectrum = 0.5*squeeze(abs(P).^2)./(metrics.rho*metrics.sound_speed^2);
-%pressure_autospectrum = squeeze(abs(P).^2);
+pressure_autospectrum = 0.5*squeeze(Psq)./(metrics.rho*metrics.sound_speed^2);
 
 factor=2*metrics.sound_speed.^2;
 if metrics.do_3D_metrics && ~isempty(metrics.elegram)
-    normalized_velocity_autospectrum=0.5*metrics.rho.*(abs(Vx).^2+abs(Vy).^2+abs(Vz).^2);
-    %normalized_velocity_autospectrum=(abs(Vx).^2+abs(Vy).^2+abs(Vz).^2);
+    normalized_velocity_autospectrum=0.5*metrics.rho.*(Vxsq+Vysq+Vzsq);
     
     metrics.phase_speed =factor*pressure_autospectrum./sqrt((real(Ix)).^2+(real(Iy)).^2+(real(Iz)).^2);
     metrics.intensity=sqrt((real(Ix)).^2+(real(Iy)).^2+(real(Iz)).^2);
     metrics.intensity_phase_z = atan2d(imag(Iz),real(Iz));
     metrics.intensity_phase_z =single(metrics.intensity_phase_z);
 else
-    normalized_velocity_autospectrum=0.5*metrics.rho.*(abs(Vx).^2+abs(Vy).^2);
-    %normalized_velocity_autospectrum=(abs(Vx).^2+abs(Vy).^2);
+    normalized_velocity_autospectrum=0.5*metrics.rho.*(Vxsq+Vysq);
     
     metrics.phase_speed =factor*pressure_autospectrum./sqrt((real(Ix)).^2+(real(Iy)).^2);
     metrics.intensity=sqrt(real(Ix).^2+real(Iy).^2);
@@ -114,13 +132,11 @@ transport_velocity = metrics.intensity./metrics.energy_density;
 metrics.normalized_transport_velocity =  transport_velocity/metrics.sound_speed;
 metrics.normalized_transport_velocity = single(metrics.normalized_transport_velocity);
 
-rho = 1000; c = 1500;
-%try
-%    U = computeTransportVelocity(Ix/(rho*c),Iy/(rho*c),Vx/(rho*c),Vy/(rho*c),P,rho,c);
-%end
 
 metrics.KEtoPEratio=single(normalized_velocity_autospectrum./pressure_autospectrum);
-%metrics.KEtoPEratio=single(metrics.KEtoPEratio);
 
 metrics.intensity_phase = atan2d(sqrt(imag(Ix).^2+imag(Iy).^2),sqrt((real(Ix)).^2+(real(Iy)).^2));
 metrics.intensity_phase = single(metrics.intensity_phase);
+
+
+

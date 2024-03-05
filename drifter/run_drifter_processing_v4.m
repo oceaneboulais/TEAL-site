@@ -7,7 +7,7 @@ use_remote = false; add_path = true;
 [data_basedir,procdata_basedir,gitpath] = setUpDrifterPaths(use_remote,add_path);
 
 do_processing = true; % if saved beamformer data doesn't exist, process the data
-do_vs_processing = false; % if saved avs data doesn't exist, process the data
+do_vs_processing = true; % if saved avs data doesn't exist, process the data
 do_stats = true; % if true, compute the histograms
 overwrite_avs_data = false;
 overwrite_beam_data = false;
@@ -42,11 +42,9 @@ bf_fband = 2.5e3; % divide bf processing up into bands of this size
 %%%Frequency bands for histogram processing , this is independent of bands
 %%%used for beamformer
 fband = [
-    500 1500;
-    3.5e3 6e3;
-    6e3 9e3;
-    9e3 12e3;
-    12e3 15e3;
+    500 1.5e3
+    2.5e3 7e3;
+    9e3 25e3;
   ];
 
 % histogram edges/(grids in degrees)
@@ -330,7 +328,11 @@ for deployment = [13 23 24]%19:19
                         Ifreq_want=find(F<=25000);
 
                 end
-                avsdata = computeDirectionalMetrics(S(Ifreq_want,:,9),S(Ifreq_want,:,10:end),do_3D_metrics,compass_offset,elevation_offset);
+
+
+
+                avsdata = computeDirectionalMetrics(S(Ifreq_want,:,9),S(Ifreq_want,:,10:end),...
+                    do_3D_metrics,compass_offset,elevation_offset,T,time_avg);
                 toc
                 disp('AVS processing completed')
                 % truncate to specified freq band

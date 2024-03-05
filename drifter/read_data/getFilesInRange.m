@@ -6,7 +6,7 @@ end
 
 % allow "data_dir" variable to be either a directory name or a list of
 % files
-if ischar(data_dir)
+if ischar(data_dir)||isstring(data_dir)
     if isfolder(fullfile(data_dir,'AcousticData'))
         filelist = dir(fullfile(data_dir,'AcousticData',['drifter*' ext]));
     else
