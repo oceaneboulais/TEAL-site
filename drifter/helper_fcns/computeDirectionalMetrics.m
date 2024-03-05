@@ -96,7 +96,7 @@ end
 
 
 
-%metrics.I = single(cat(3,Ix,Iy,Iz));
+metrics.I = single(cat(3,Ix,Iy,Iz));
 metrics.PdB = single(10*log10(Psq));
 
 % we define azigram in terms of compass direction
