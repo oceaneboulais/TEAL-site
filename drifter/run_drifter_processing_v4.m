@@ -296,9 +296,7 @@ for deployment = [13 23 24]%19:19
 
                 fprintf('Computing Azigram and Elegram: %s\n',vssavename)
 
-                
-                % [azigram,elegram,F,T,metrics] = computeDirectionality(y,nfft,nfft/2,fs,vector_sensor,1,1);
-
+               
                 % correct for magnetic declination
                 % use the "time of the last sat fix" for the
                 dlat = driftlog.LatLastSat(di);
@@ -328,7 +326,9 @@ for deployment = [13 23 24]%19:19
                         Ifreq_want=find(F<=25000);
 
                 end
-                avsdata = computeDirectionalMetrics(S(Ifreq_want,:,9),S(Ifreq_want,:,10:end),do_3D_metrics,compass_offset,elevation_offset);
+                avsdata = computeDirectionalMetrics(S(Ifreq_want,:,9),S(Ifreq_want,:,10:end),...
+                    do_3D_metrics,compass_offset,elevation_offset,T,time_avg);
+
                 toc
                 disp('AVS processing completed')
                 % truncate to specified freq band
