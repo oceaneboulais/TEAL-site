@@ -178,8 +178,8 @@ classdef MatrixND
                 S.subs{Iindex(I)} = Islice{I}; % Specifiy index to extract
                 
             end
-            out = MatrixND(squeeze(subsref(obj.N,S)),out_grid,out_label,obj.permitted_labels,obj.plot_labels); %Subsref is generic indexing reference command
-            
+%             out = MatrixND(squeeze(subsref(obj.N,S)),out_grid,out_label,obj.permitted_labels,obj.plot_labels); %Subsref is generic indexing reference command
+             out = MatrixND(subsref(obj.N,S),out_grid,out_label,obj.permitted_labels,obj.plot_labels); %Subsref is generic indexing reference command
         end
         
         %%%%%%%%%%%%%%%%%%sum_slice.m%%%%%%%%%%%%%%%%%%%%%%
