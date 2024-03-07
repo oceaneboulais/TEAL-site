@@ -57,8 +57,8 @@ end
 if array_size_GB < 20
     fprintf('BF: vectorized direct multiplication\n')
     % first see if we can do it all at once
-    B = sum(conj(H).*S,2);
-    B = permute(B, [1,5,3,4,2]);
+    B = sum(conj(H).*S,3);
+    B=permute(B,[1,2,4,5,3]); %[Nfreq Nt Naz Nel]
     if do_power
         Bpow = conj(B).*B;
     end

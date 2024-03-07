@@ -52,6 +52,9 @@ if ~exist('w','var')||isempty(w)
 else
     w(1,1,:) = w(:);
 end
+if ~exist('time_avg','var')
+    time_avg = [];
+end
 
 % Put all quantities in the following dimensions
 az_deg = permute(az_deg(:), [2,3,4,1,5]);
@@ -133,20 +136,25 @@ for Iband = 1:size(fband,1)  %For each frequency band
     
         disp('Finished histogram.')
     end
-    disp('Starting time averaging...')
+    
 
     %Consolidate time bins
-    Ninc=ceil(time_avg./T(1));  %%Number of samples per beampattern.
-    Nbeam_count=floor(Nt./Ninc);
-    Itindex=Ninc:Ninc:Nt;
-    Itindex=Itindex-round(Ninc/2);
-    for Ibeam=1:Nbeam_count
-        indexx=1+(Ibeam-1)*Ninc+(0:(Ninc-1));
-        Bpow{Iband}(:,Ibeam,:,:)=sum(Bpow{Iband}(:,indexx,:,:),2);
+    if ~isempty(time_avg)
+        disp('Starting time averaging...')
+        Ninc=ceil(time_avg./T(1));  %%Number of samples per beampattern.
+        Nbeam_count=floor(Nt./Ninc);
+        Itindex=Ninc:Ninc:Nt;
+        Itindex=Itindex-round(Ninc/2);
+        for Ibeam=1:Nbeam_count
+            indexx=1+(Ibeam-1)*Ninc+(0:(Ninc-1));
+            Bpow{Iband}(:,Ibeam,:,:)=sum(Bpow{Iband}(:,indexx,:,:),2);
+        end
+        Bpow{Iband}=Bpow{Iband}(:,1:Ibeam,:,:);
+        disp('Finished time averaging.')
+    else
+        Itindex = 1:length(T);
     end
-    Bpow{Iband}=Bpow{Iband}(:,1:Ibeam,:,:);
-    disp('Finished time averaging.')
-    toc
+        toc
 end %Iband
 Tout = T(Itindex);
 if isscalar(fband_in)

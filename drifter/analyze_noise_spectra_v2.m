@@ -8,9 +8,9 @@ close all, clear all
 [data_basedir,procdata_basedir,gitpath] = setUpDrifterPaths(0,1);
 % data_basedir = '/Volumes/Shared-1/ONR_DRIFTER';
 % data_basedir = {'/Volumes/TFOFA23_1','/Volumes/TFO_FA23_D1'};
-do_raw_data = true;
+do_raw_data = true; % process the spectrograms
 do_bf_data = false; % bf part still needs to be updated
-do_plots = true;
+do_plots = true; % save out each plot as a png and fig file
 
 % limit the data to process to the following:
 expt = '2023_Sep_CA'; % process only this experiment
@@ -20,7 +20,7 @@ deployments =[];
 
 overwrite_data = false; 
 
-save_plots = false;  % save out figures as png and fig
+save_plots = true;  % save out figures as png and fig
 save_to_ppt = true; % print figures to powerpoint 
 
 avg_type = 'Median'; % what type of average accross time do I want ?
@@ -155,10 +155,6 @@ for deployment = deployment_set
         logdir = fullfile(data_basedir,data_subdir,'ControlSystem');
     end
     
-    % no files were found, we'll skip to the next deployment
-    if isempty(filelist)
-        continue
-    end
 
     config_file = fullfile(data_dir,driftlog.AcousticConfig{didx});
     acoustic_config = readtable(config_file);
@@ -183,6 +179,12 @@ for deployment = deployment_set
 
     process_raw_data = do_raw_data&(~exist([Ssavefilename '.mat'],'file')|overwrite_data);
     process_bf_data = do_bf_data&(~exist([Bsavefilename '.mat'],'file')|overwrite_data);
+
+    % no files were found, we'll skip to the next deployment
+    if isempty(filelist)&&(process_raw_data||process_bf_data)
+        continue
+    end
+
 
     if process_raw_data || process_bf_data
        %for ifile = 1:length(filelist)
@@ -370,7 +372,7 @@ if do_plots
             set(gcf, 'Position', ssize);
 
             tiledlayout(6,1);
-            ax(end+1) = nexttile;
+            ax(end+1) = nexttile([1 1]);
 
             driftcamStatusPlot(driftcam,driftlog.SunsetUTC(didx),driftlog.SunriseUTC(didx));
 
@@ -391,9 +393,12 @@ if do_plots
                 set(gca,'fontweight','bold','fontsize',14);
                 set(gca,'XTickLabel','')
                 grid on
+                ax(end+1) = nexttile([4 1]);
+            else
+                ax(end+1) = nexttile([5 1]);
             end
 
-            ax(end+1) = nexttile([4 1]);
+            
             pcolor(Tfile,F_spec_plot/1e3,10*log10(Spowplot(:,:,sensID)).'); shading flat
             colormap jet
             colorbar
@@ -422,6 +427,16 @@ if do_plots
                 fprintf('Added slide %d\n',slideId);
                 pptx.addTextbox([title_slide ' ' subtitle_slide ch_str]);
                 pptx.addPicture(gcf);
+            end
+            if save_plots
+                png_savename = sprintf('Drifter_%i_Acoustic%i_CH%i_%s_%s_%s',...
+                    driftlog.DrifterNumber(didx),driftlog.AcousticSphere(didx), ...
+                    ch_select(sensID),acoustic_config.sensor_type{ch_select(sensID)},...
+                    datetime(t0_utc,'format','yyyyMMdd''T''HHmmSS'),...
+                    datetime(tend_utc,'format','yyyyMMdd''T''HHmmSS'));
+
+                saveas(gcf,fullfile(thissavefolder,[png_savename '.png']))
+                saveas(gcf,fullfile(thissavefolder,[png_savename '.fig']))
             end
         end
 
@@ -641,6 +656,7 @@ if save_to_ppt
 end
 
 end
+delete(gcp('nocreate'))
 
 
 

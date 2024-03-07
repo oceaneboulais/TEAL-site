@@ -8,15 +8,19 @@ if ~exist('sunrise_time','var')
     sunrise_time = [];
 end
 if ~isempty(driftcam)
-    control_label = unique(driftcam.control_label);
-    
+    [control_label,label_idx] = unique(driftcam.control_label);
+    islabel = ~(control_label=="");
+    control_label = control_label(islabel);
+    [label_num,label_sort_idx] = sort(driftcam.control_state(label_idx(islabel)));
+    control_label = control_label(label_sort_idx);
+
     yyaxis left
     plot(driftcam.time_utc,-driftcam.depth_m,'linewidth',2)
     ylabel('Depth,m')
     
     yyaxis right
     plot(driftcam.time_utc,driftcam.control_state,'linewidth',2)
-    yticks([1:length(control_label)]-1)
+    yticks(label_num)
     yticklabels(control_label);
     set(gca,'fontweight','bold','fontsize',14);
     ylabel('Control State')
