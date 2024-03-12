@@ -9,13 +9,14 @@ if exist('deploy_no','var')&~isempty(deploy_no)
     driftlog = driftlog(deploy_no==driftlog.Deployment,:);
 end
 
-deploy_time = driftlog.DeployDateLocal + driftlog.DeployTimeLocal;
-recover_time = driftlog.RecoverDateLocal + driftlog.RecoverTimeLocal;
+% deploy_time = driftlog.DeployDateLocal + driftlog.DeployTimeLocal;
+% recover_time = driftlog.RecoverDateLocal + driftlog.RecoverTimeLocal;
+% driftlog.DeployTimeUTC  = deploy_time + hours(driftlog.TimeZoneOffset);
+% driftlog.RecoverTimeUTC = recover_time + hours(driftlog.TimeZoneOffset);
 
-driftlog.DeployTimeUTC  = deploy_time + hours(driftlog.TimeZoneOffset);
 t0_utc = string(datetime(driftlog.DeployTimeUTC ,'Format','yyyyMMdd''T''HHmmss'));
 t0_utc(ismissing(t0_utc)) = '';
-driftlog.RecoverTimeUTC = recover_time + hours(driftlog.TimeZoneOffset);
+
 tend_utc = string(datetime(driftlog.RecoverTimeUTC,'Format','yyyyMMdd''T''HHmmss'));
 tend_utc(ismissing(tend_utc)) = '';
 
