@@ -50,7 +50,7 @@ end
 Psq = abs(P).^2;
 Vxsq = abs(Vx).^2;
 Vysq = abs(Vy).^2;
-Vzsq = abs(Vz).^2;
+
 
 Ix=squeeze(conj(P).*Vx);
 Iy=squeeze(conj(P).*Vy);
@@ -62,6 +62,7 @@ else
     Vz = zeros(size(Vx));
     metrics.elegram = [];
 end
+Vzsq = abs(Vz).^2;
 
 if ~isempty(time_avg)
 
