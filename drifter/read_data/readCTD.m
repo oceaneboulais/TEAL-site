@@ -1,4 +1,6 @@
+%function ctd_data = readCTD(filename,lat)
 function ctd_data = readCTD(filename,lat)
+% filename: full pathname string to file ending in AML
 % Define the CSV file name
 if nargin==0
     filename = '/Volumes/Novus/ONR_DRIFTER/2023_Fall_Kelvin_Seamount/Drifter5_Acoustic3_20231009T182000_20231010T125000/CTD/aml_log_2023-10-09_18-22-30.aml';
