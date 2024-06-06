@@ -15,6 +15,8 @@ if ~exist('elevation_offset','var')
 end
 if ~exist('time_avg','var')
     time_avg = [];
+elseif time_avg==0
+    time_avg=[];
 end
 
 metrics.rho = 1000; 
@@ -102,6 +104,8 @@ metrics.PdB = single(10*log10(Psq));
 
 % we define azigram in terms of compass direction
 % assuming v dims are Vx,Vy,Vz, or Vew,Vns
+
+%%%%%Azigram computation
 metrics.azigram = single(wrapTo360(atan2d(real(Ix),real(Iy)) + compass_offset));
 Ixy = sqrt(real(Ix).^2 + real(Iy).^2);
 metrics.elegram = single(atand(real(Iz)./Ixy));

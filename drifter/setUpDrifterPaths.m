@@ -56,8 +56,8 @@ end
 %%%Lines to allow Aaron to test scripts on his laptop
 %case 'thode-lt.local'
 if contains(hostname,'thode-lt')
-    fprintf('Using Alison''s GIT repository on Aaron''s laptop\n')
-    gitpath = '~/Desktop/alison_GIT_scripts.dir';
+    fprintf('Using ThodeLab GIT repository on Aaron''s laptop\n')
+    gitpath = '~/Desktop/ThodeLab';
 
     data_basedir = '/Users/thode/Projects/ONR_drifter/Deployments/October2023_LangsethAtlantic_Cruise/DataSamples/';
     procdata_basedir = '.';
