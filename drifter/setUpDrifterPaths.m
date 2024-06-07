@@ -55,11 +55,12 @@ end
 
 %%%Lines to allow Aaron to test scripts on his laptop
 %case 'thode-lt.local'
-if contains(hostname,'thode-lt')
+if contains(hostname,'thode-lt')||contains(hostname,'vpn-mpl')
     fprintf('Using ThodeLab GIT repository on Aaron''s laptop\n')
     gitpath = '~/Desktop/ThodeLab';
 
     data_basedir = '/Users/thode/Projects/ONR_drifter/Deployments/October2023_LangsethAtlantic_Cruise/DataSamples/';
+    data_basedir = '/Volumes/Shared/ONR_DRIFTER/';
     procdata_basedir = '.';
     envdir = '/Volumes/Novus/Environments';
 else

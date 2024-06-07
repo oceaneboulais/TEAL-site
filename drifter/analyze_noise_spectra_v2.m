@@ -13,12 +13,12 @@ do_bf_data = false; % bf part still needs to be updated
 do_plots = true; % save out each plot as a png and fig file
 
 % limit the data to process to the following:
-expt = '2023_Sep_CA'; % process only this experiment
+expt = '2024_May_CA'; % process only this experiment
 drifters = []; % process only these drifters 
 dateset_local = []; % process only between these times 
 deployments =[];
 
-overwrite_data = false; 
+overwrite_data = true; 
 
 save_plots = true;  % save out figures as png and fig
 save_to_ppt = true; % print figures to powerpoint 
@@ -86,8 +86,10 @@ NL_dB_3 = getWentzWindNoise(3, freq);
 NL_dB_6 = getWentzWindNoise(6, freq);
 
 % start the parallel pool 
+try
 Nworkers = 4;
 parpool(Nworkers)
+end
 
 if save_to_ppt
     pptx    = exportToPPTX('../tools/myTemplate.pptx', ...

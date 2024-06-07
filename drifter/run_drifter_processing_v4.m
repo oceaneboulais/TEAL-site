@@ -95,7 +95,7 @@ noverlp = floor(nfft*prcnt_overlap);
 
 in2m = 0.0254;
 
-for deployment = [13 23 24]%19:19
+for deployment = [25]%19:19
     % plot the dives separately
     dive_index = find(driftlog.Deployment ==deployment).';
     drifter_num = driftlog.DrifterNumber(dive_index(1));
