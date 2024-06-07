@@ -15,6 +15,7 @@ end
 success=false;
 
 [~,hostname] = system('hostname');
+[~,user_name]=system('whoami');
 switch hostname(1:end-1)
     case {'Alisons-MacBook-Pro.local','Alisons-MBP','alisons-mbp.dynamic.ucsd.edu'}
         % Alison local computer
@@ -32,18 +33,29 @@ switch hostname(1:end-1)
         end
         success=true;
     case 'macmussel-2.ucsd.edu'
-        % this is for macmussel / Alison
-        %         fprintf('Using remote path to Jonah on Alison''s macmussel account\n')
-        %         gitpath = '/Volumes/public/Laferriere/GIT/sio_research_jonah';
-        %         data_basedir = '/Volumes/public/Laferriere/ONR_DRIFTER';
-        %         procdata_basedir = '/Volumes/public/Laferriere/Analysis';
-        %         envdir = '/Volumes/public/Laferriere/Databases';
-        fprintf('Using remote path to Jonah2 on Alison''s macmussel account\n')
-        gitpath = '/Volumes/homes/alaferriere/GIT/ThodeLab';
-        data_basedir = '/Volumes/Shared/ONR_DRIFTER';
-        procdata_basedir = '/Volumes/homes/alaferriere/Analysis';
-        envdir = '/Volumes/homes/alaferriere/Databases';
-        success=true;
+        if strcmpi(deblank(user_name),'alison')
+            % this is for macmussel / Alison
+            %         fprintf('Using remote path to Jonah on Alison''s macmussel account\n')
+            %         gitpath = '/Volumes/public/Laferriere/GIT/sio_research_jonah';
+            %         data_basedir = '/Volumes/public/Laferriere/ONR_DRIFTER';
+            %         procdata_basedir = '/Volumes/public/Laferriere/Analysis';
+            %         envdir = '/Volumes/public/Laferriere/Databases';
+            fprintf('Using remote path to Jonah2 on Alison''s macmussel account\n')
+            gitpath = '/Volumes/homes/alaferriere/GIT/ThodeLab';
+            data_basedir = '/Volumes/Shared/ONR_DRIFTER';
+            procdata_basedir = '/Volumes/homes/alaferriere/Analysis';
+            envdir = '/Volumes/homes/alaferriere/Databases';
+            success=true;
+        elseif strcmpi(deblank(user_name),'thode')
+            fprintf('Using direct drive on AaronThode''s macmussel account\n')
+            gitpath = '/Users/thode/Desktop/ThodeLab';
+            %data_basedir = '/Volumes/Shared/ONR_DRIFTER'; %%%Jonah2
+            data_basedir = '/Volumes/TFO_2024';
+
+            procdata_basedir = '.';
+            envdir = '/Volumes/homes/alaferriere/Databases';
+            success=true;
+        end
 end
 
 if success
