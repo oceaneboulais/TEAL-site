@@ -73,7 +73,8 @@ setm(ax,'MLineLocation',lon_width/8,'Grid','on','ParallelLabel','on','PLineLocat
     'MeridianLabel','on','Frame','on','plabelround',-1,'mlabelround',-1,...
     'mlabellocation',lon_width/4,'PLabelLocation',lat_width/4,'flinewidth',4)
 axis off; framem on; gridm on; tightmap
-geoshow(LATS,LONS,bathymetry,'displaytype','texturemap')
+ag = geoshow(LATS,LONS,bathymetry,'displaytype','texturemap'); 
+ag.ZData = ag.CData; % make the bathy show up on data tip
 hold on
 [C,h]=contourm(LATS,LONS,bathymetry,'k');
 t=clabelm(C,h,'labelspacing',2000);
