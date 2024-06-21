@@ -11,6 +11,8 @@ if nargin==0
     deploy_time = datetime(2023,9,6,9,0,0); 
 end
 
+surfaceVelocity = -0.1; % guess the surface velocity 
+
 filetext = fileread(filename);
 
 platformID = str2double(extractBetween(filetext,'''w1 ',''''));
@@ -99,7 +101,6 @@ t_sec = missionStartSetpoint:dt:missionEndTimer;
 
 depth_mission = nan(1,length(t_sec));
 depth_mission(1) = 0;
-surfaceVelocity = -0.1; % guess the surface velocity 
 surfIdx = 1;
 
 t_count_sec = 0;
@@ -213,6 +214,8 @@ if exist('deploy_time','var')
             h(end+1) = hL(1);
             leg_str{ii} = sprintf('Ping %i',fixAddress(ii));
         end
+    else
+        leg_str = '';
     end
 
     title({sprintf('Dive Profile: Platform ID %i',platformID),...
@@ -222,7 +225,7 @@ if exist('deploy_time','var')
     grid on; grid minor;
     xlabel('Time')
     ylabel('Depth,m')
-    dx = hours(2);
+    dx = hours(1);
     ax2 = gca(); ax2.XTick = t(1):dx:t(end);
     set(gca,'XTickLabelRotation',90)
     datetick('x','mm-dd, HH:MM:SS','keepticks')
