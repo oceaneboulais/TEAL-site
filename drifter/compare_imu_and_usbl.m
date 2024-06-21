@@ -9,7 +9,7 @@ addpath(genpath('../drifter'))
 
 
 % select the drifter number and the time you want to load
-drifter_num_all = 5:5;
+drifter_num_all = 7 %5:5;
 time_utc = [datetime(2023,10,9,18,20,20) datetime(2023,10,10,12,50,00)];
 %time_utc = [datetime(2023,10,11,15,20,20) datetime(2023,10,13,18,0,00)];
 
@@ -18,6 +18,7 @@ time_utc = [datetime(2023,10,9,18,20,20) datetime(2023,10,10,12,50,00)];
 % point them directly to the deployment folder's subdirectory, rather than the base data directory.
 % data_drive = '/Volumes/Shared/ONR_DRIFTER/';
 %
+
 for Inum=1:length(drifter_num_all)
     drifter_num=drifter_num_all(Inum);
     switch drifter_num
@@ -37,7 +38,12 @@ for Inum=1:length(drifter_num_all)
             data_drive = '/Volumes/Shared/ONR_DRIFTER/2023_Fall_Kelvin_Seamount/Drifter6_Acoustic4_20231009T020700_20231011T134500';
             %data_drive = '/Volumes/Shared/ONR_DRIFTER/2023_Fall_Kelvin_Seamount/Drifter6_Acoustic4_20231012T183500_20231013T170000';
 
-
+        case 7 
+            data_drive = '/Volumes/Shared/ONR_DRIFTER/2024_Jan_CA/Drifter5_Acoustic3_20240126T201400_20240129T214500';
+            yaw_offset = 0;
+            time_offset = 0;
+            drifter_num = 5;
+            time_utc = [datetime(2024,1,26,20,14,0) datetime(2024,1,29,21,45,00)];
     end
     %% load IMU data
     disp('loading IMU data');
@@ -52,7 +58,7 @@ for Inum=1:length(drifter_num_all)
     ax(1)=subplot(4,1,1);
     plot(driftcam.time_utc,driftcam.control_state,'o');grid on
     ylabel('Control State');
-    title(data_drive)
+    title(data_drive,'Interpreter','none')
 
     ax(2)=subplot(4,1,2);
     plot(imu.time_utc,imu.yaw_deg,'.-')
