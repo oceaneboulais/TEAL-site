@@ -1,4 +1,5 @@
 function v = getReplicaVector(freq,p,elev_deg,ang_deg,c)
+% v = getReplicaVector(freq,p,elev_deg,ang_deg,c)
 % Computes the array manifold vector (replica vector)
 % INPUTS
 % f: freq in Hz
@@ -8,6 +9,8 @@ function v = getReplicaVector(freq,p,elev_deg,ang_deg,c)
 % c: sound speed in m/s
 % OUTPUTS
 % v: the array maniford vector freq x Nchannels x azimuths x elevations
+%
+% A. Laferriere, 2023
 
 omega = 2*pi*freq(:);
 
