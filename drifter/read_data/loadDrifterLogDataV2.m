@@ -45,8 +45,10 @@ for ifile = 1:length(log_filelist)
     [ssr_time,iuniq] = unique(datetime(ssr_data.Timestamp,'ConvertFrom','posixtime'));
 %     duplicate_indices = setdiff( 1:numel(ssr_data.Timestamp), iuniq );
     % if none of the times are in the set, skip them
-    if all(ssr_time<min(time_utc_in))||all(ssr_time>max(time_utc_in))
-        continue
+    if ~isempty(time_utc_in)
+        if all(ssr_time<min(time_utc_in))||all(ssr_time>max(time_utc_in))
+            continue
+        end
     end
     if isempty(time_utc_in)
         time_utc = ssr_time;
