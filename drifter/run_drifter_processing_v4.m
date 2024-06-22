@@ -7,7 +7,7 @@ use_remote = false; add_path = true;
 [data_basedir,procdata_basedir,gitpath] = setUpDrifterPaths(use_remote,add_path);
 
 do_processing = true; % if saved beamformer data doesn't exist, process the data
-do_vs_processing = false; % if saved avs data doesn't exist, process the data
+do_vs_processing = true; % if saved avs data doesn't exist, process the data
 do_stats = true; % if true, compute the histograms
 overwrite_avs_data = false;
 overwrite_beam_data = false;
