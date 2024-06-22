@@ -19,7 +19,7 @@ def connect_ftp():
     try:
         ftp = ftplib.FTP(ftp_server)
         ftp.login(user=username, passwd=password)
-        ftp.cwd('2024-06-21')  # Uncomment and specify the directory if needed
+        ftp.cwd('2024-06-22')  # Uncomment and specify the directory if needed
         # Set transfer mode to binary
         ftp.sendcmd('TYPE I')
     except ftplib.all_errors as e:

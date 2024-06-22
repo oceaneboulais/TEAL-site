@@ -1,4 +1,4 @@
-function gpsData = readLatestGPS(filename)
+function gpsData = readLatestGPS(filename,est_velocity)
 % gpsData = readLatestGPS(filename)
 % this function parses a GPS serial log and gets the latest GPS point from
 % the $GPGGA line. Use readGPS.m instead to parse the whole file.
@@ -15,6 +15,9 @@ function gpsData = readLatestGPS(filename)
 % A. Laferriere, 2024
 
 fileID = fopen(filename, 'rt');
+if ~exist('est_velocity','var')
+    est_velocity = false;
+end
 
 % the GPS time in the $GPGGA line is a relative time to the date
 % lets get the date for the filename, which will depend on the format of
@@ -51,17 +54,26 @@ while ftell(fileID) > 0
         line = buffer;
         buffer = '';
         
-        % if (contains(line, '$GPGNS') || contains(line, '$GPZDA') || contains(line, '$GPDTM')) && k == 0
-        %     startdaystr = extractBefore(line, 'T');
-        %     startday = datetime(startdaystr);
-        %     k = 1;
         if contains(line, '$GPGGA')
-            if isempty(startday)
-                continue;
+            if isempty(gpsData)
+                % this is the last gps point
+                % Parse the sentence and store it in gpsData
+                gpsData = parseGPGGA(line, startday);
+                if ~est_velocity
+                    break;  % Exit the loop after finding the last valid GPS data point
+                end
+            else
+                % this is the second to last one, lets use it to estimate
+                % our heading and speed
+                gpsData2 = parseGPGGA(line, startday);
+                [gpsData.dist_from_last_m,gpsData.heading_deg] = ...
+                    distance(gpsData2.latitude,gpsData2.longitude,...
+                    gpsData.latitude,gpsData.longitude,wgs84Ellipsoid);
+                    gpsData.time_from_last = seconds(gpsData.time_utc - gpsData2.time_utc);
+                    gpsData.speed_mps = gpsData.dist_from_last_m/gpsData.time_from_last;
+                    gpsData.speed_kts = gpsData.speed_mps*1.94384;
+                    break;  % Exit the loop after finding the last valid GPS data point
             end
-            % Parse the sentence and store it in gpsData
-            gpsData = parseGPGGA(line, startday);
-            break;  % Exit the loop after finding the last valid GPS data point
         end
     else
         buffer = [char buffer];  % Prepend the character to the buffer
