@@ -1,6 +1,8 @@
 import ftplib
 import os
 import time
+from datetime import datetime
+import pytz
 
 # FTP server details
 ftp_server = 'ftp.metocean.com'  # Replace with your FTP server address
@@ -19,7 +21,8 @@ def connect_ftp():
     try:
         ftp = ftplib.FTP(ftp_server)
         ftp.login(user=username, passwd=password)
-        ftp.cwd('2024-06-22')  # Uncomment and specify the directory if needed
+        now_utc = datetime.now(pytz.utc)
+        ftp.cwd(now_utc.strftime('%Y-%m-%d'))  # Uncomment and specify the directory if needed
         # Set transfer mode to binary
         ftp.sendcmd('TYPE I')
     except ftplib.all_errors as e:
