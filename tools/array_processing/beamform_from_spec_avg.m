@@ -96,8 +96,15 @@ fprintf('BF: vectorized direct multiplication\n')
 
 if isscalar(fband_in)
     df = min(diff(freq));
-    fband1 = freq(1):fband_in:(freq(end)-fband_in);
-    fband2 = [(fband1(2)-df):fband_in:fband1(end) freq(end)];
+    nbands = ceil(freq(end)/fband_in);
+    fband1(1) = 0;
+    fband2(1) = freq(find(freq<=fband_in,1,'last'));
+    for ff = 2:nbands
+        fband1(ff) = fband2(ff-1)+df;
+        fband2(ff) = freq(find(freq<=fband_in*ff,1,'last'));
+    end
+    % fband1 = freq(1):fband_in:(freq(end)-fband_in);
+    % fband2 = [(fband1(2)-df):fband_in:fband1(end) freq(end)];
     fband = [fband1(:) fband2(:)];
 else
     fband = fband_in;
