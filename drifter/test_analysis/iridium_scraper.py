@@ -22,7 +22,10 @@ def connect_ftp():
         ftp = ftplib.FTP(ftp_server)
         ftp.login(user=username, passwd=password)
         now_utc = datetime.now(pytz.utc)
-        ftp.cwd(now_utc.strftime('%Y-%m-%d'))  # Uncomment and specify the directory if needed
+        try:
+            ftp.cwd(now_utc.strftime('%Y-%m-%d'))  # Uncomment and specify the directory if needed
+        except:
+            print(f"Error switching directories")
         # Set transfer mode to binary
         ftp.sendcmd('TYPE I')
     except ftplib.all_errors as e:
@@ -114,7 +117,7 @@ try:
     while True:
         if not is_ftp_connected(ftp):
             connect_ftp()
-        ftp.voidcmd('NOOP')
+        #ftp.voidcmd('NOOP')
         check_for_new_files(downloaded_files)
         time.sleep(check_interval)
 except KeyboardInterrupt:
