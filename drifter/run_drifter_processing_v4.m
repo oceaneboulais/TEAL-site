@@ -550,8 +550,10 @@ for deployment = deployment_set
                     
     
                     hold on
-                    hy = plot(driftcam.time_utc,wrapTo360(medfilt1(driftcam.yaw_deg,200)),'--k');
-                    legend(hy,'Drifter Yaw','location','southeast')
+                    if ~isempty(driftcam)
+                        hy = plot(driftcam.time_utc,wrapTo360(medfilt1(driftcam.yaw_deg,200)),'--k');
+                        legend(hy,'Drifter Yaw','location','southeast')
+                    end
     
                     linkaxes(ax,'x'); 
                     xlim(ax,[min(file_time_utc) max(file_time_utc)])

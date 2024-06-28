@@ -6,7 +6,10 @@ function ax2 = driftcamStatusPlot(driftcam,sunset_time,sunrise_time)
 %   sunrise_time: (optional) a datetime representing the sunrise in UTC
 %
 % A. Laferriere 2024
-
+if isempty(driftcam)
+    ax2 = [];
+    return
+end
 if ~exist('sunset_time','var')
     sunset_time = [];
 end
