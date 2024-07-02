@@ -1,4 +1,4 @@
-function [metrics,Ix,Iy,Iz] = computeDirectionalMetrics(P,V,do_3D_metrics,compass_offset,elevation_offset,T,time_avg)
+function [metrics,Ix,Iy,Iz] = computeDirectionalMetrics(P,V,do_3D_metrics,compass_offset,elevation_offset,T,time_avg,v_is_scaled)
 
 if ~exist('do_3D_metrics','var')
     metrics.do_3D_metrics = false;
@@ -18,6 +18,9 @@ if ~exist('time_avg','var')
 elseif time_avg==0
     time_avg=[];
 end
+if ~exist('v_is_scaled','var')
+    v_is_scaled = true;
+end
 
 metrics.rho = 1000; 
 metrics.sound_speed = 1500;
@@ -27,7 +30,15 @@ metrics.elevation_offset = elevation_offset;
 P = squeeze(P);
 
 % convert the "velocity" channels to velocity units
-VtoP = (metrics.rho*metrics.sound_speed);
+if ~v_is_scaled
+    % v is already in velocity units, don't scale
+    VtoP = 1;
+else
+    % V has already been scaled to have pressure units, convert it back
+    VtoP = (metrics.rho*metrics.sound_speed);
+end
+% scale velocity BACK to velocity units if it has been scaled to pressure
+% units
 V = V/VtoP;
 
 if size(V,1)==3

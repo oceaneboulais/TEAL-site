@@ -7,12 +7,19 @@ use_remote = false; add_path = true;
 [data_basedir,procdata_basedir,gitpath] = setUpDrifterPaths(use_remote,add_path);
 
 do_processing = true; % if saved beamformer data doesn't exist, process the data
-do_vs_processing = false; % if saved avs data doesn't exist, process the data
+do_vs_processing = true; % if saved avs data doesn't exist, process the data
 do_stats = true; % if true, compute the histograms
 overwrite_avs_data = false;
 overwrite_beam_data = false;
 overwrite_stats = false;
 save_data = true; % if this is set to true, we will save bf and avs data
+
+
+% limit the data to process to the following:
+expt = '2024_Seamounts'; % process only this experiment
+drifters = 4; % process only these drifters
+dateset_local = []; % process only between these times
+deployments =[]; % process only these deployments 
 
 %% plot settings
 save_to_ppt = false; % save the figures in a powerpoint file
@@ -73,6 +80,25 @@ driftlog_file = fullfile(gitpath,'drifter','TFO_Drifter_deployment_log.xlsx');
 
 driftlog = getDeployLog(gitpath);
 
+% downselect to the desired processing set
+process_set = true(size(driftlog,1),1);
+if ~isempty(deployments)
+    process_set = ismember(driftlog.Deployment,deployments);
+end
+if ~isempty(drifters)
+    process_set = ismember(driftlog.DrifterNumber,drifters)&process_set;
+end
+if ~isempty(expt)
+    process_set = process_set&ismember(driftlog.ExperimentName,expt);
+end
+if ~isempty(dateset_local)
+    isintime = deploy_time >= dateset_local(1) & recover_time <= dateset_local(2);
+    process_set = process_set&isintime;
+end
+driftlog = driftlog(process_set,:);
+
+deployment_set = unique(driftlog.Deployment).';
+
 if save_to_ppt
     pptx    = exportToPPTX(powerpoint_template, ...
         'Dimensions',[12 6], ...
@@ -95,7 +121,7 @@ noverlp = floor(nfft*prcnt_overlap);
 
 in2m = 0.0254;
 
-for deployment = [25]%19:19
+for deployment = deployment_set
     % plot the dives separately
     dive_index = find(driftlog.Deployment ==deployment).';
     drifter_num = driftlog.DrifterNumber(dive_index(1));
@@ -524,8 +550,10 @@ for deployment = [25]%19:19
                     
     
                     hold on
-                    hy = plot(driftcam.time_utc,wrapTo360(medfilt1(driftcam.yaw_deg,200)),'--k');
-                    legend(hy,'Drifter Yaw','location','southeast')
+                    if ~isempty(driftcam)
+                        hy = plot(driftcam.time_utc,wrapTo360(medfilt1(driftcam.yaw_deg,200)),'--k');
+                        legend(hy,'Drifter Yaw','location','southeast')
+                    end
     
                     linkaxes(ax,'x'); 
                     xlim(ax,[min(file_time_utc) max(file_time_utc)])

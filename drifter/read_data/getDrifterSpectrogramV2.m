@@ -15,7 +15,7 @@ end
 k = 0;
 
 % get the channel configuration from the acoustic config file 
-if ischar(config_file)
+if ischar(config_file)||isstring(config_file)
     acoustic_config = readtable(config_file);
 else
     acoustic_config = config_file;

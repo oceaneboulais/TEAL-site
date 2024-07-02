@@ -39,7 +39,9 @@ if M>1 & N>1
     % this is a grid not a list of points
     lats = lat_list(:); 
     lons = lon_list(:);
-
+else
+    lats = lat_list;
+    lons = lon_list;
 end
 
 % for now, hardcode the model selection

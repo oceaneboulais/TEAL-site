@@ -1,5 +1,5 @@
 close all, clear all
-
+addpath(genpath('/Users/alaferri/GIT/sio_code/ThodeLab'))
 % add ship GPS tracks over the map?
 add_ship_track = false;
 
@@ -10,7 +10,8 @@ plot_driftcam_status = false;
 use_remote_path = true;
 [data_basedir,procdata_basedir,gitpath,envdir]= setUpDrifterPaths(use_remote_path);
 
-gebfile = '/Volumes/homes/alaferriere/Databases/GEBCO_2021.nc'; % this is the bathymetry data file
+% gebfile = '/Volumes/homes/alaferriere/Databases/GEBCO_2021.nc'; % this is the bathymetry data file
+gebfile = '/Users/alaferri/Databases/GEBCO_2021.nc';
 
 driftlog_file = fullfile(gitpath,'drifter','TFO_Drifter_deployment_log.xlsx');
 driftlog = getDeployLog(gitpath);
@@ -21,7 +22,7 @@ if add_ship_track
 end
 
 % plot all these deployments on one map:
-deployment =[14:16];
+deployment =29;
 
 %% set some plotting options 
 markercolors = lines(length(deployment));
@@ -64,6 +65,8 @@ bathymetry = reshape(elev,size(LATS));
 %% get the approximate drifter tracks from the log entries
 [drift_time,drift_lat,drift_lon] = getLinearDriftTrack(driftlog,deployment);
 
+% get the distance and average speed 
+
 %% make the plot of bathymetry using a map axis
 f1=figure;
 ax = axesm('MapProjection','mercator');
@@ -73,7 +76,8 @@ setm(ax,'MLineLocation',lon_width/8,'Grid','on','ParallelLabel','on','PLineLocat
     'MeridianLabel','on','Frame','on','plabelround',-1,'mlabelround',-1,...
     'mlabellocation',lon_width/4,'PLabelLocation',lat_width/4,'flinewidth',4)
 axis off; framem on; gridm on; tightmap
-geoshow(LATS,LONS,bathymetry,'displaytype','texturemap')
+ag = geoshow(LATS,LONS,bathymetry,'displaytype','texturemap'); 
+ag.ZData = ag.CData; % make the bathy show up on data tip
 hold on
 [C,h]=contourm(LATS,LONS,bathymetry,'k');
 t=clabelm(C,h,'labelspacing',2000);

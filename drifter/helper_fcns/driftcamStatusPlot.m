@@ -1,6 +1,15 @@
 function ax2 = driftcamStatusPlot(driftcam,sunset_time,sunrise_time)
-
-
+% creates a plot of driftcam depth and control state vs time
+% INPUTS: 
+%   driftcam: the output of the function loadDrifterLogDataVs or loadDrifterMatFile
+%   sunset_time: (optional) a datetime representing the sunset in UTC
+%   sunrise_time: (optional) a datetime representing the sunrise in UTC
+%
+% A. Laferriere 2024
+if isempty(driftcam)
+    ax2 = [];
+    return
+end
 if ~exist('sunset_time','var')
     sunset_time = [];
 end

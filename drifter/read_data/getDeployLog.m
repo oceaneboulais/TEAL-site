@@ -2,8 +2,12 @@ function driftlog = getDeployLog(gitpath,deploy_no)
 
 driftlog_file = fullfile(gitpath,'drifter','TFO_Drifter_deployment_log.xlsx');
 driftlog = readtable(driftlog_file);
-driftlog.SunriseUTC = datetime(driftlog.SunriseUTC, "ConvertFrom", "excel",'Format','HH:mm:SS');
-driftlog.SunsetUTC = datetime(driftlog.SunsetUTC, "ConvertFrom", "excel",'Format','HH:mm:SS');
+% driftlog.SunriseUTC = datetime(driftlog.SunriseUTC, "ConvertFrom", "excel",'Format','HH:mm:SS');
+% driftlog.SunsetUTC = datetime(driftlog.SunsetUTC, "ConvertFrom", "excel",'Format','HH:mm:SS');
+
+% calculate the sunrise and sunset based on lat/lon/date of drifter dive
+[driftlog.SunsetUTC, driftlog.SunriseUTC] = calculateSunriseSunset(...
+    driftlog.LatLastSat,driftlog.LonLastSat,driftlog.TimeLastSatUTC);
 
 if exist('deploy_no','var')&~isempty(deploy_no)
     driftlog = driftlog(deploy_no==driftlog.Deployment,:);

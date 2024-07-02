@@ -5,7 +5,8 @@ close all, clear all
 % as not to lose any progress. data will be saved to a specific
 % path/filename that is descriptive of all relevant parameters that can be
 % adjusted
-[data_basedir,procdata_basedir,gitpath] = setUpDrifterPaths(0,1);
+use_remote = false;
+[data_basedir,procdata_basedir,gitpath] = setUpDrifterPaths(use_remote,1);
 % data_basedir = '/Volumes/Shared-1/ONR_DRIFTER';
 % data_basedir = {'/Volumes/TFOFA23_1','/Volumes/TFO_FA23_D1'};
 do_raw_data = true; % process the spectrograms
@@ -13,12 +14,12 @@ do_bf_data = false; % bf part still needs to be updated
 do_plots = true; % save out each plot as a png and fig file
 
 % limit the data to process to the following:
-expt = '2024_May_CA'; % process only this experiment
-drifters = []; % process only these drifters
+expt = '2024_Seamounts'; % process only this experiment
+drifters = 4; % process only these drifters
 dateset_local = []; % process only between these times
 deployments =[];
 
-overwrite_data = true;
+overwrite_data = false;
 
 save_plots = true;  % save out figures as png and fig
 save_to_ppt = true; % print figures to powerpoint
@@ -52,14 +53,7 @@ else
 end
 nfft_spec = 2^nextpow2(fs_spec/fres); %
 
-driftlog_file = fullfile(gitpath,'drifter','TFO_Drifter_deployment_log.xlsx');
-opts = detectImportOptions(driftlog_file);
-driftlog = readtable(driftlog_file);
-driftlog.SunriseUTC = datetime(driftlog.SunriseUTC, "ConvertFrom", "excel",'Format','HH:mm:SS');
-driftlog.SunsetUTC = datetime(driftlog.SunsetUTC, "ConvertFrom", "excel",'Format','HH:mm:SS');
-
-deploy_time = driftlog.DeployDateLocal + driftlog.DeployTimeLocal;
-recover_time = driftlog.RecoverDateLocal + driftlog.RecoverTimeLocal;
+driftlog = getDeployLog(gitpath);
 
 % downselect to the desired processing set
 process_set = true(size(driftlog,1),1);
@@ -77,8 +71,6 @@ if ~isempty(dateset_local)
     process_set = process_set&isintime;
 end
 driftlog = driftlog(process_set,:);
-deploy_time = deploy_time(process_set);
-recover_time = recover_time(process_set);
 
 freq = 0:28000;
 NL_dB_0 = getWentzWindNoise(0, freq);
@@ -115,11 +107,10 @@ for deployment = deployment_set
     % get the index of this deployment in the table
     didx = find(driftlog.Deployment==deployment,1,'first');
 
-    t0_utc = deploy_time(didx) + hours(driftlog.TimeZoneOffset(didx));
-    tend_utc = recover_time(didx) + hours(driftlog.TimeZoneOffset(didx));
-    event_name = sprintf('Drifter%i_Acoustic%i_%s_%s',driftlog.DrifterNumber(didx),driftlog.AcousticSphere(didx),...
-        datestr(t0_utc,'YYYYmmDDThhMMss'),...
-        datestr(tend_utc,'YYYYmmDDThhMMss'));
+    t0_utc = driftlog.DeployTimeUTC(didx);
+    tend_utc = driftlog.RecoverTimeUTC(didx);
+    event_name = driftlog.event_name(didx);
+
 
     data_subdir = fullfile(driftlog.ExperimentName{didx},event_name);
 
