@@ -12,7 +12,7 @@ function [imu,imu_yaw] = loadIMUDataV2(time_utc_in,datadrive,drifter_num)
 % imu_yaw:  raw yaw values that range from -180 to 180 degrees (0 is North)
 
 % if the time zone property is empty, we will assume it is in UTC time
-if isempty(time_utc_in.TimeZone)
+if ~isempty(time_utc_in)&isempty(time_utc_in.TimeZone)
     time_utc_in.TimeZone = 'UTC';
 end
 
@@ -46,8 +46,12 @@ file_times.TimeZone = 'UTC';
 % interpreted as the times you would like to interpolate to
 
 % get the files that are in this time range
-include_files = file_times >= min(time_utc_in) & file_times <= max(time_utc_in);
-
+if isempty(time_utc_in)
+    include_files = true(size(file_times));
+    time_utc_in = [min(file_times) max(file_times)];
+else
+    include_files = file_times >= min(time_utc_in) & file_times <= max(time_utc_in);
+end
 file_idx = find(include_files);
 if file_idx(1)>1
     %always include one before to make sure we get all the files needed 

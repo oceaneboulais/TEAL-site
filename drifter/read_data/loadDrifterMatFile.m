@@ -1,10 +1,11 @@
-function driftcam = loadDrifterMatFile(time_utc_in,Data)
+function driftcam = loadDrifterMatFile(Data,time_utc_in)
 % this function loads in the SSR "Data" mat file and returns a structure
 % INPUTS
 %   time_utc_in: if time_utc is empty, load all the time points in ssr_data
 %       if time_utc is 1 x 2 vector, use that as the limits of the times to load
 %       otherwise, interpolate the log to the time points in time_utc
-%   Data: the "Data" structure output from the SSR buoyancy engine
+%   Data: the "Data" structure output from the SSR buoyancy engine, or a
+%       path pointing to the mat file
 % driftcam:
 %   time_utc: a datetime in UTC
 %   depth_m: the depth in meters as measured by the USBL
@@ -14,6 +15,13 @@ function driftcam = loadDrifterMatFile(time_utc_in,Data)
 %   control_state: the control state of the bouyancy engine 
 %
 % A. Laferriere 2024
+if ischar(Data)
+    % this is a path to the directory of "Data" mat file
+    load(Data,'Data');
+end
+if ~exist("time_utc_in",'var')
+    time_utc_in = [];
+end
 
 ssr_data.Timestamp = [Data.Timestamp];
 ssr_data.Depth = [Data.Depth];
