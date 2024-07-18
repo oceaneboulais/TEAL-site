@@ -19,7 +19,7 @@ success=false;
 switch hostname(1:end-1)
     case {'Alisons-MacBook-Pro.local','Alisons-MBP','alisons-mbp.dynamic.ucsd.edu'}
         % Alison local computer
-        gitpath = '/Users/alaferri/GIT/sio_code/ThodeLab';
+        gitpath = '..'; % assuming I'm running from "drifter" directory
         if use_remote % use jonah
             fprintf('Using remote path to jonah on Alison''s computer\n')
             data_basedir = '/Volumes/Shared/ONR_DRIFTER';
