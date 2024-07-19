@@ -103,17 +103,18 @@ switch selectedButton.Text
     case 'Beamformer Power'
 
         updateBFData(app)
-        
-        el_index = app.PlotElev.Value;
-        p=pcolor(current_axes,Tvar,app.B_F/1e3,10*log10(squeeze(app.bf_data.B_pow(:,:,:,el_index==app.elev_deg))));
-        p.ZData = p.CData;
-        p.AlphaData = transp; 
-        p.FaceAlpha = 'flat';
-        p.AlphaDataMapping = 'none';
-        shading(current_axes,'flat');% 
-        colorbar(current_axes)
-        colormap(current_axes,'jet')
-        set(current_axes,'FontSize',14,'FontWeight','bold')
+        if ~isempty(app.B_pow)
+            el_index = app.PlotElev.Value;
+            p=pcolor(current_axes,Tvar,app.B_F/1e3,10*log10(squeeze(app.bf_data.B_pow(:,:,:,el_index==app.elev_deg))));
+            p.ZData = p.CData;
+            p.AlphaData = transp; 
+            p.FaceAlpha = 'flat';
+            p.AlphaDataMapping = 'none';
+            shading(current_axes,'flat');% 
+            colorbar(current_axes)
+            colormap(current_axes,'jet')
+        end
+         set(current_axes,'FontSize',14,'FontWeight','bold')
         title_str = sprintf('Beamformer Power, Elev = %1.2fdeg',app.PlotElev.Value);
         xlabel(current_axes,Tlabel)
         ylabel(current_axes,'Freq, kHz')

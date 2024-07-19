@@ -15,7 +15,7 @@ bf_data.B_coh = squeeze(abs(sum(app.B_pow(fidx,:,:,:))));
 bf_data.B_incoh = squeeze(sum(app.B_pow(fidx,:,:,:)));
 [AZ,EL] = meshgrid(app.az_deg,app.elev_deg);
 bf_data.max_pow_el = squeeze(EL(pow_idx));
-bf_data.max_pow_az = squeeze(AZ(pow_idx));
+bf_data.max_pow_az = squeeze(AZ(pow_idx));app = 
 bf_data.el_deg = app.elev_deg;
 bf_data.az_deg = app.az_deg;
 
