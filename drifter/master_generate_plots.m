@@ -89,9 +89,14 @@ if do_raw_data
         set(gcf, 'Position', ssize);
 
         tiledlayout(6,1);
-        ax(end+1) = nexttile([1 1]);
+        if ~isempty(driftcam)
+            ax(end+1) = nexttile([1 1]);
+            driftcamStatusPlot(driftcam,driftlog.SunsetUTC(didx),driftlog.SunriseUTC(didx));
+        else 
+            nexttile([1 1]);
+        end
 
-        driftcamStatusPlot(driftcam,driftlog.SunsetUTC(didx),driftlog.SunriseUTC(didx));
+        
 
         %%%Plot ship position, if available
         if exist('drift_track','var')
