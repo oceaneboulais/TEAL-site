@@ -9,6 +9,9 @@ app.ExperimentDropDown.Items = getFolders(app.SelectDirectory.Value);
 subdirlist = getFolders(fullfile(app.SelectDirectory.Value,app.ExperimentDropDown.Value,'Drifter*'));
 app.SelectDrifter.Items = unique(extractBetween(subdirlist,'Drifter','_Acoustic'));
 
+if isempty(subdirlist)
+    return
+end
 %now only get the ones that correspond to selected drifters 
 subdirlist = getFolders(fullfile(app.SelectDirectory.Value,...
     app.ExperimentDropDown.Value,['Drifter' app.SelectDrifter.Value '*']));
