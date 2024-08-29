@@ -16,8 +16,8 @@ save_data = true; % if this is set to true, we will save bf and avs data
 
 
 % limit the data to process to the following:
-expt = '2024_Seamounts'; % process only this experiment
-drifters = 4; % process only these drifters
+expt = '2024_Jun_Seamounts'; % process only this experiment
+drifters = []; % process only these drifters
 dateset_local = []; % process only between these times
 deployments =[]; % process only these deployments 
 
@@ -154,18 +154,44 @@ for deployment = deployment_set
     for di = dive_index
         T_utc_save = [];
 
-        time_start_utc = driftlog.TimeLastSatUTC(di);
-        time_stop_utc = driftlog.TimeFirstSatUTC(di);
+        dive_time_start_utc = driftlog.TimeLastSatUTC(di);
+        dive_time_stop_utc = driftlog.TimeFirstSatUTC(di);
+        if isnat(dive_time_stop_utc) && di==max(dive_index)
+            % if there was no dive end time, just use the recover time
+            dive_time_stop_utc = driftlog.RecoverTimeUTC(di);
+        end
 
         vector_sensor = driftlog.VectorSensor{di};
         acoustic_num = driftlog.AcousticSphere(di);
 
-        event_name = sprintf('Drifter%i_Acoustic%i_%s_%s',driftlog.DrifterNumber(di),driftlog.AcousticSphere(di),...
-            datestr(time_start_utc,'YYYYmmDDThhMMss'),...
-            datestr(time_stop_utc,'YYYYmmDDThhMMss'));
+        
 
-        bf_hist_filename = fullfile(savefolder,[event_name '_bf_hist.mat']);
-        avs_hist_filename = fullfile(savefolder,[event_name '_avs_hist.mat']);
+        max_plot_time_hrs = 32;
+        dive_duration_hrs = hours(dive_time_stop_utc - dive_time_start_utc);
+        if  dive_duration_hrs > max_plot_time_hrs 
+            % this plot and histogram object will be too large, split it up
+            % into parts to process separately 
+            Nparts = ceil(dive_duration_hrs/max_plot_time_hrs);
+            parts_time_start_utc = dive_time_start_utc + hours(max_plot_time_hrs*(0:(Nparts-1)));
+            parts_time_stop_utc = dive_time_start_utc + hours(max_plot_time_hrs*(1:(Nparts-1)));
+            % the last time should alwasy be the end of the dive
+            parts_time_stop_utc = [parts_time_stop_utc dive_time_stop_utc];
+        else 
+            Nparts = 1;
+            parts_time_start_utc = dive_time_start_utc;
+            parts_time_stop_utc = dive_time_stop_utc;
+        end
+        for ni = 1:Nparts
+            
+            time_start_utc = parts_time_start_utc(ni);
+            time_stop_utc = parts_time_stop_utc(ni);
+
+            this_event_name = sprintf('Drifter%i_Acoustic%i_%s_%s',driftlog.DrifterNumber(di),driftlog.AcousticSphere(di),...
+                datestr(time_start_utc,'YYYYmmDDThhMMss'),...
+                datestr(time_stop_utc,'YYYYmmDDThhMMss'));
+
+            bf_hist_filename = fullfile(savefolder,[this_event_name '_bf_hist.mat']);
+            avs_hist_filename = fullfile(savefolder,[this_event_name '_avs_hist.mat']);
         
        [filelist,file_time_utc,filenames] = getFilesInRange(acoustic_files,time_start_utc,time_stop_utc);
         
@@ -582,6 +608,7 @@ for deployment = deployment_set
                 newFile = pptx.save(fullfile(savefolder,'directional_histograms'));
             end
             
+        end
         end
     end
 end
