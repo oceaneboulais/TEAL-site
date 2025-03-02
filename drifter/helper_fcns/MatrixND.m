@@ -656,7 +656,8 @@ classdef MatrixND
             
             axis xy
             set(gca,'fontweight','bold','fontsize',14);
-            colorbar('East','color','w')
+            colorbar('eastoutside','color','k')
+            xlim([min(xplot) max(xplot)])
             set(gca,'gridcolor','w');grid on
             
         end

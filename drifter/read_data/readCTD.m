@@ -97,6 +97,13 @@ else
     units(end) =[];
 end
 % lets check if the seawater library exists, return now if not
+if exist('sw_dpth','file')
+    if exist('lat','var')
+        ctd_data.Depth = sw_dpth(ctd_data.Pressure,lat);
+    else
+        ctd_data.Depth = nan(size(ctd_data.Pressure));
+    end
+end
 if exist('sw_c3515','file')
 
     % get conductivity ratio, conductivity in units mS/cm

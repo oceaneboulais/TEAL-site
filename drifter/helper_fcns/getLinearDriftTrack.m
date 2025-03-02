@@ -16,9 +16,12 @@ function [drift_time,drift_lat,drift_lon,drift_speed_mps,drift_speed_kts] = ...
 %   lon
 %
 % A. Laferriere 2024
-
+do_interp = false;
 if ~exist('dt','var')
     dt = 60;
+elseif ~isscalar(dt)
+    % then it is a vector of times
+    do_interp = true;
 end
 
 
@@ -34,12 +37,14 @@ for deploy_idx = 1:length(deployments)
             warning('No GPS fix data for this dive')
             drift_lat{deploy_idx,dive_idx} = nan; 
             drift_lon{deploy_idx,dive_idx} = nan;
-            drift_time{deploy_idx,dive_idx} = nat;
+            drift_time{deploy_idx,dive_idx} = NaT;
             continue
         end
-
-        drift_time{deploy_idx,dive_idx} = driftlog.TimeLastSatUTC(di):seconds(dt):driftlog.TimeFirstSatUTC(di);
-    
+        if do_interp
+            drift_time{deploy_idx,dive_idx} = dt;
+        else
+            drift_time{deploy_idx,dive_idx} = driftlog.TimeLastSatUTC(di):seconds(dt):driftlog.TimeFirstSatUTC(di);
+        end
         % get GPS points for tracks along the ellipsoid 
         [lattrk,lontrk] = track2(driftlog.LatLastSat(di),driftlog.LonLastSat(di),...
             driftlog.LatFirstSat(di),driftlog.LonFirstSat(di),wgs84Ellipsoid);

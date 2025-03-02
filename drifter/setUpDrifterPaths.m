@@ -23,8 +23,8 @@ switch hostname(1:end-1)
         if use_remote % use jonah
             fprintf('Using remote path to jonah on Alison''s computer\n')
             data_basedir = '/Volumes/Shared/ONR_DRIFTER';
-            procdata_basedir = '/Volumes/homes/alaferriere/Analysis';
-            envdir = '/Volumes/homes/alaferriere/Databases';
+            procdata_basedir = '/Volumes/Shared/Analysis';
+            envdir = '/Volumes/Shared/Databases';
         else % use external drive
             fprintf('Using local path to Novus on Alison''s computer\n')
             data_basedir = '/Volumes/Novus/ONR_DRIFTER/';
@@ -43,8 +43,8 @@ switch hostname(1:end-1)
             fprintf('Using remote path to Jonah2 on Alison''s macmussel account\n')
             gitpath = '/Volumes/homes/alaferriere/GIT/ThodeLab';
             data_basedir = '/Volumes/Shared/ONR_DRIFTER';
-            procdata_basedir = '/Volumes/homes/alaferriere/Analysis';
-            envdir = '/Volumes/homes/alaferriere/Databases';
+            procdata_basedir = '/Volumes/Shared/Analysis';
+            envdir = '/Volumes/Shared/Databases';
             success=true;
         elseif strcmpi(deblank(user_name),'thode')
             fprintf('Using direct drive on AaronThode''s macmussel account\n')
@@ -53,7 +53,7 @@ switch hostname(1:end-1)
             data_basedir = '/Volumes/TFO_2024';
 
             procdata_basedir = '.';
-            envdir = '/Volumes/homes/alaferriere/Databases';
+            envdir = '/Volumes/Shared/Databases';
             success=true;
         end
 end
@@ -74,7 +74,7 @@ if contains(hostname,'thode-lt')||contains(hostname,'vpn-mpl')
     data_basedir = '/Users/thode/Projects/ONR_drifter/Deployments/October2023_LangsethAtlantic_Cruise/DataSamples/';
     data_basedir = '/Volumes/Shared/ONR_DRIFTER/';
     procdata_basedir = '.';
-    envdir = '/Volumes/Novus/Environments';
+    envdir = '/Volumes/Shared/Databases';
 else
     error('set your path!')
     keyboard
