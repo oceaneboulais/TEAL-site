@@ -3,10 +3,10 @@ clear all
 
 global avs_hist
 
-use_remote = false; add_path = true;
+use_remote = true; add_path = true;
 [data_basedir,procdata_basedir,gitpath] = setUpDrifterPaths(use_remote,add_path);
 
-do_processing = true; % if saved beamformer data doesn't exist, process the data
+do_bf_processing = true; % if saved beamformer data doesn't exist, process the data
 do_vs_processing = true; % if saved avs data doesn't exist, process the data
 do_stats = true; % if true, compute the histograms
 overwrite_avs_data = false;
@@ -29,8 +29,9 @@ do_histogram_plots = true; % if true, make the histogram plots as the data is pr
 if do_histogram_plots
     % initialize the figures
     ssize = get(groot, 'ScreenSize');
-    az_hist_fig=figure; set(gcf, 'Position', ssize);
-    el_hist_fig=figure; set(gcf, 'Position', ssize);
+    avs_az_hist_fig=figure; set(gcf, 'Position', ssize);
+    avs_el_hist_fig=figure; set(gcf, 'Position', ssize);
+    bf_el_hist_fig=figure; set(gcf, 'Position', ssize);
 end
 %% vertical array settings
 array_type = 'line';
@@ -225,7 +226,7 @@ for deployment = deployment_set
             end
 
             % only load the data if we are going to process or reprocess
-            if (do_processing&&((~bffile_exists||overwrite_beam_data))||(do_vs_processing&&(~vsfile_exists||overwrite_avs_data)))
+            if (do_bf_processing&&((~bffile_exists||overwrite_beam_data))||(do_vs_processing&&(~vsfile_exists||overwrite_avs_data)))
                 % load the data and process
                 fprintf('Loading data..\n')
 
@@ -284,12 +285,12 @@ for deployment = deployment_set
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %%%%%%Vertical beamforming option%%%%%%%%%%
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            if bffile_exists&&do_processing
+            if bffile_exists&&do_bf_processing
                 fprintf('Beamform Data Exists in: %s\n',bfsavename)
             end
             % if the file doesn't exist, or if we are overwriting the data
             % run the freq domain beamformer
-            if do_processing&&(~bffile_exists||overwrite_beam_data)
+            if do_bf_processing&&(~bffile_exists||overwrite_beam_data)
                 fprintf('Running Beamformer: %s\n',bfsavename)
 
                 switch array_type
@@ -332,7 +333,7 @@ for deployment = deployment_set
                     toc
                 end
 
-            elseif do_stats&&do_processing&&bffile_exists&&(~exist(bf_hist_filename,'file')||overwrite_stats)
+            elseif do_stats&&do_bf_processing&&bffile_exists&&(~exist(bf_hist_filename,'file')||overwrite_stats)
                 disp('Loading beamformer data...')
                 load(bfsavename,'beamdata');
                 toc
@@ -380,8 +381,11 @@ for deployment = deployment_set
                         Ifreq_want=find(F<=25000);
 
                 end
-                avsdata = computeDirectionalMetrics(S(Ifreq_want,:,9),S(Ifreq_want,:,10:end),...
-                    do_3D_metrics,compass_offset,elevation_offset,T,time_avg);
+                opts.do_3D_metrics = do_3D_metrics;
+                opts.compass_offset = compass_offset;
+                opts.elevation_offset = elevation_offset;
+                opts.time_avg = time_avg;
+                avsdata = computeDirectionalMetrics(S(Ifreq_want,:,9),S(Ifreq_want,:,10:end),opts,T);
 
                 toc
                 disp('AVS processing completed')
@@ -412,7 +416,7 @@ for deployment = deployment_set
 
             
             if do_stats
-                if do_processing&&(overwrite_stats||~exist(bf_hist_filename,'file'))
+                if do_bf_processing&&(overwrite_stats||~exist(bf_hist_filename,'file'))
                     disp('Starting beamformer histogram processing...')
                     if bffile_exists&&~overwrite_beam_data
                         % we need to get the power in linear units if we
@@ -466,7 +470,7 @@ for deployment = deployment_set
                     mkdir(fullfile(savefolder))
                 end
     
-                if do_processing
+                if do_bf_processing
                     save(bf_hist_filename,'file_time_utc','hist_param','elev_hist','fband','-v7.3')
                 end
                 disp('Save complete.')
@@ -516,8 +520,8 @@ for deployment = deployment_set
                 
                 fprintf('Producing histograms for Deployment %i, Dive %i: freq %1.2fkHz to %1.2fkHz \n',deployment,dive_num,f1/1e3,f2/1e3)
 
-                if do_processing
-                    set(groot,'CurrentFigure',el_hist_fig); clf;
+                if do_bf_processing
+                    set(groot,'CurrentFigure',bf_el_hist_fig); clf;
                     tiledlayout(5,1)
         
                     ax(1) = nexttile;
@@ -550,7 +554,7 @@ for deployment = deployment_set
                         saveas(gcf,fullfile(savefolder,[png_savename '.png']))
                         saveas(gcf,fullfile(savefolder,[png_savename '.fig']))
                     end
-                    set(groot,'CurrentFigure',el_hist_fig); clf;
+                    set(groot,'CurrentFigure',bf_el_hist_fig); clf;
                 end
 
             
@@ -562,7 +566,7 @@ for deployment = deployment_set
                     title_str = {'AVS Azimuth Histogram',sprintf('Freq Band %1.2fkhz-%1.2fkHz',f1/1e3,f2/1e3)};
                     title_str = cat(2,{sprintf('%s to %s',datestr(time_start_utc),datestr(time_stop_utc))},title_str);
     
-                    set(groot,'CurrentFigure',az_hist_fig); clf;
+                    set(groot,'CurrentFigure',avs_az_hist_fig); clf;
                     tiledlayout(5,1)
     
                     ax(1) = nexttile;
@@ -599,7 +603,7 @@ for deployment = deployment_set
                         saveas(gcf,fullfile(savefolder,[png_savename '.png']))
                         saveas(gcf,fullfile(savefolder,[png_savename '.fig']))
                     end
-                    set(groot,'CurrentFigure',az_hist_fig); clf;
+                    set(groot,'CurrentFigure',avs_az_hist_fig); clf;
                 end
             end
             avs_hist = [];
