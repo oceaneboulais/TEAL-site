@@ -1,0 +1,65 @@
+MATLAB is selecting SOFTWARE OPENGL rendering.
+
+                                                                              < M A T L A B (R) >
+                                                                    Copyright 1984-2020 The MathWorks, Inc.
+                                                                    R2020b (9.9.0.1467703) 64-bit (glnxa64)
+                                                                                August 26, 2020
+
+ 
+To get started, type doc.
+For product information, visit www.mathworks.com.
+ 
+>> >> >> >> >> >> >> >> Advecting "deployed" assets for timesetp 1 of 50
+Advecting "deployed" assets for timesetp 2 of 50
+Advecting "deployed" assets for timesetp 3 of 50
+Advecting "deployed" assets for timesetp 4 of 50
+Advecting "deployed" assets for timesetp 5 of 50
+Advecting "deployed" assets for timesetp 6 of 50
+Advecting "deployed" assets for timesetp 7 of 50
+Advecting "deployed" assets for timesetp 8 of 50
+Advecting "deployed" assets for timesetp 9 of 50
+Advecting "deployed" assets for timesetp 10 of 50
+Advecting "deployed" assets for timesetp 11 of 50
+Advecting "deployed" assets for timesetp 12 of 50
+Advecting "deployed" assets for timesetp 13 of 50
+Advecting "deployed" assets for timesetp 14 of 50
+Advecting "deployed" assets for timesetp 15 of 50
+Advecting "deployed" assets for timesetp 16 of 50
+Advecting "deployed" assets for timesetp 17 of 50
+Advecting "deployed" assets for timesetp 18 of 50
+Advecting "deployed" assets for timesetp 19 of 50
+Advecting "deployed" assets for timesetp 20 of 50
+Advecting "deployed" assets for timesetp 21 of 50
+Advecting "deployed" assets for timesetp 22 of 50
+Advecting "deployed" assets for timesetp 23 of 50
+Advecting "deployed" assets for timesetp 24 of 50
+Advecting "deployed" assets for timesetp 25 of 50
+Advecting "deployed" assets for timesetp 26 of 50
+Advecting "deployed" assets for timesetp 27 of 50
+Advecting "deployed" assets for timesetp 28 of 50
+Advecting "deployed" assets for timesetp 29 of 50
+Advecting "deployed" assets for timesetp 30 of 50
+Advecting "deployed" assets for timesetp 31 of 50
+Advecting "deployed" assets for timesetp 32 of 50
+Advecting "deployed" assets for timesetp 33 of 50
+Advecting "deployed" assets for timesetp 34 of 50
+Advecting "deployed" assets for timesetp 35 of 50
+Advecting "deployed" assets for timesetp 36 of 50
+Advecting "deployed" assets for timesetp 37 of 50
+Advecting "deployed" assets for timesetp 38 of 50
+Advecting "deployed" assets for timesetp 39 of 50
+Advecting "deployed" assets for timesetp 40 of 50
+Advecting "deployed" assets for timesetp 41 of 50
+Advecting "deployed" assets for timesetp 42 of 50
+Advecting "deployed" assets for timesetp 43 of 50
+Advecting "deployed" assets for timesetp 44 of 50
+Advecting "deployed" assets for timesetp 45 of 50
+Advecting "deployed" assets for timesetp 46 of 50
+Advecting "deployed" assets for timesetp 47 of 50
+Advecting "deployed" assets for timesetp 48 of 50
+Advecting "deployed" assets for timesetp 49 of 50
+Advecting "deployed" assets for timesetp 50 of 50
+Saved advected data in /home/aandriat/Data/HYCOM/LJCT_Hycom_Timeseries_advection.mat
+Elapsed time is 112.700570 seconds.
+
+>> >> 

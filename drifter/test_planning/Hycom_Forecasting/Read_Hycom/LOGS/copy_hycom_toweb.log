@@ -1,0 +1,14 @@
+sending incremental file list
+>f.st...... LJCT_Hycom_Timeseries.mat
+         32.77K   0%    0.00kB/s    0:00:00          154.44M   5%  147.25MB/s    0:00:18          306.74M  10%  146.32MB/s    0:00:17          511.28M  17%  162.63MB/s    0:00:14          724.27M  24%  172.80MB/s    0:00:12          880.84M  29%  173.32MB/s    0:00:11            1.06G  35%  179.45MB/s    0:00:10            1.28G  42%  182.26MB/s    0:00:09            1.48G  49%  179.65MB/s    0:00:08            1.67G  55%  189.41MB/s    0:00:06            1.82G  60%  182.43MB/s    0:00:06            1.99G  66%  171.14MB/s    0:00:05            2.15G  71%  161.03MB/s    0:00:05            2.31G  76%  151.49MB/s    0:00:04            2.48G  82%  155.77MB/s    0:00:03            2.68G  89%  165.24MB/s    0:00:01            2.93G  97%  186.26MB/s    0:00:00            3.00G 100%  175.54MB/s    0:00:16 (xfr#1, to-chk=0/1)
+
+sent 3.00G bytes  received 35 bytes  171.65M bytes/sec
+total size is 3.00G  speedup is 1.00
+sending incremental file list
+>f.st...... LJCT_Hycom_Timeseries_Center.mat
+         32.77K  19%    0.00kB/s    0:00:00          166.84K 100%  127.86MB/s    0:00:00 (xfr#1, to-chk=0/1)
+
+sent 167.01K bytes  received 35 bytes  334.10K bytes/sec
+total size is 166.84K  speedup is 1.00
+Rsynced files at: 15:26:15
+Runtime:  17  seconds

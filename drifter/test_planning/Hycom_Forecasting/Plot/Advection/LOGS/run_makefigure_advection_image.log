@@ -1,0 +1,16 @@
+MATLAB is selecting SOFTWARE OPENGL rendering.
+
+                                                                              < M A T L A B (R) >
+                                                                    Copyright 1984-2020 The MathWorks, Inc.
+                                                                    R2020b (9.9.0.1467703) 64-bit (glnxa64)
+                                                                                August 26, 2020
+
+ 
+To get started, type doc.
+For product information, visit www.mathworks.com.
+ 
+>> >> >> >> [Warning: MATLAB has disabled some advanced graphics rendering features by switching to software OpenGL. For more information, click <a href="matlab:opengl('problems')">here</a>.] 
+Writing frame 1 of 1
+Saved figure in /home/aandriat/Data/HYCOM/Figures/HYCOM_forecast_advection_200_zoom
+Elapsed time is 14.929989 seconds.
+>> >> 
