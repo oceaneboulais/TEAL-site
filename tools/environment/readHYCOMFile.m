@@ -109,11 +109,22 @@ for itime = 1:length(time_list)
     out_dir = fullfile(save_dir,hycom_model,data_set,'data',sub_dir,year_subdir);
 
     hycom_file_path = fullfile(out_dir,hycom_file);
+
+    % url = sprintf('http://tds.hycom.org/thredds/dodsC/%s/%s/%s/%s',hycom_model,data_set,data_type,year_subdir);
+
+    % hycom_file_path = fullfile(url,hycom_file);
     
     fprintf('Loading %s file from %s\n',hycom_file,sub_dir)
+
+    % Open once, reuse the handle
+    % ncid = netcdf.open(url,'NOWRITE');
+    % time_id   = netcdf.inqVarID(ncid,'time');
+    % time_vals = netcdf.getVar(ncid,time_id,'double');  % numeric time axis
     
     % represent date as number of hours since January 1, 2000
     hycom.time(itime) = hours(ncread(hycom_file_path,'time')) + t0; 
+
+
     
     
     %% find the closest lat/lon points
