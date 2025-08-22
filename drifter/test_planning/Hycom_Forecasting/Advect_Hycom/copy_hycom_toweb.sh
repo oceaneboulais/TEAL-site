@@ -5,11 +5,12 @@
 # Alex Andriatis
 # 2021-05-03
 starttime=`date +%s`
-RUNDIR="/home/aandriat/Hycom_Forecasting/Advect_Hycom"
-DATADIR="/home/aandriat/Data/HYCOM"
-WEBDIR="/var/www/html"
+RUNDIR="Advect_Hycom"
+DATADIR="HYCOM"
+#WEBDIR="/var/www/html"
+WEBDIR="/Volumes/Shared/html"
 
-rsync -auvihP $DATADIR/LJCT_Hycom_Timeseries_advection.mat $WEBDIR/data/.
+rsync -auvihP $DATADIR/Hycom_Timeseries_advection.mat $WEBDIR/data/.
 
 now=$(date +"%T")
 echo "Rsynced files at: $now"

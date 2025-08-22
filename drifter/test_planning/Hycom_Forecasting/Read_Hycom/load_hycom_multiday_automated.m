@@ -3,21 +3,35 @@
 %
 % Updated for LJCT
 % Alex Andriatis 02-10-2022
+% 
+% Edited by A. Laferriere 08-22-2025
 
 try
 
 tic;
 
-addpath('/home/aandriat/Hycom_Forecasting/Read_Hycom');
+addpath('Read_Hycom');
+addpath(genpath('MATLAB'))
 
 % Test the hycom reading script
-datapath = '/home/aandriat/Data/HYCOM';
+datapath = 'HYCOM';
+
 hindcastpath = fullfile(datapath,'Hindcast');
 forecastpath = fullfile(datapath,'Forecast');
 
-tnow = getUTC_3h;
+if ~isfolder(hindcastpath)
+    mkdir(hindcastpath)
+end
+if ~isfolder(forecastpath)
+    mkdir(forecastpath)
+end
+desired_time_utc = datenum(2021,10,1);
 
-tlim = [tnow-7 tnow+7];
+tdays = 1; % number of days to run the forecast over 
+
+tnow = getUTC_3h(desired_time_utc);
+
+tlim = [tnow-tdays/2 tnow+tdays/2];
 times = [tlim(1):3/24:tlim(end)];
 lonlim = [-127 -116];
 latlim = [27 35];
@@ -29,6 +43,7 @@ sourcepath_forecast = 'http://tds.hycom.org/thredds/dodsC/GLBy0.08/expt_93.0/FMR
 
 % Read HYCOM
 parfor t= 1:length(times)
+% for t= 1:length(times)
     % There's a problem that often the HYCOM server drops out, so the reading needs to be re-launched.
     % Let's do a maximum of 10 attempts
     attempts=0;

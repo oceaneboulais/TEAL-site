@@ -5,13 +5,14 @@
 # Alex Andriatis
 # 2021-05-02
 starttime=`date +%s`
-RUNDIR="/home/aandriat/Hycom_Forecasting/Plot/Velocity"
+RUNDIR="Plot/Velocity"
 
 echo "Plotting forecasted velocities"
 nohup matlab -nodesktop -nosplash < $RUNDIR/run_makefigure_velocity_movie.m > $RUNDIR/LOGS/run_makefigure_velocity_movie.log 2>&1
 
-DATADIR="/home/aandriat/Data/HYCOM/Figures"
-WEBDIR="/var/www/html"
+DATADIR="HYCOM/Figures"
+#WEBDIR="/var/www/html"
+WEBDIR="/Volumes/Shared/www/html"
 
 rsync -auvihP $DATADIR/HYCOM_forecast_velocity_200*.avi $WEBDIR/figures/.
 

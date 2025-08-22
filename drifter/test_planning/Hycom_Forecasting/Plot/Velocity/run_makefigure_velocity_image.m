@@ -4,10 +4,11 @@
 try
 tic;
 
-addpath(genpath('/home/aandriat/Hycom_Forecasting'))
+addpath(genpath('MATLAB'))
+addpath(genpath('Plot'))
 
-datapath = '/home/aandriat/Data/HYCOM';
-filename='LJCT_Hycom_Timeseries.mat';
+datapath = 'HYCOM';
+filename='Hycom_Timeseries.mat';
 
 fpath = fullfile(datapath,filename);
 data = load(fpath);

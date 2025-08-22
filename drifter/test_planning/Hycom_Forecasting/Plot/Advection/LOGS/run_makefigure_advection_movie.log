@@ -1,66 +1,21 @@
-MATLAB is selecting SOFTWARE OPENGL rendering.
 
-                                                                              < M A T L A B (R) >
-                                                                    Copyright 1984-2020 The MathWorks, Inc.
-                                                                    R2020b (9.9.0.1467703) 64-bit (glnxa64)
-                                                                                August 26, 2020
+                            < M A T L A B (R) >
+                  Copyright 1984-2024 The MathWorks, Inc.
+              R2024a Update 6 (24.1.0.2689473) 64-bit (maca64)
+                               July 29, 2024
 
  
 To get started, type doc.
 For product information, visit www.mathworks.com.
  
->> >> >> >> [Warning: MATLAB has disabled some advanced graphics rendering features by switching to software OpenGL. For more information, click <a href="matlab:opengl('problems')">here</a>.] 
-Writing frame 1 of 51
-Writing frame 2 of 51
-Writing frame 3 of 51
-Writing frame 4 of 51
-Writing frame 5 of 51
-Writing frame 6 of 51
-Writing frame 7 of 51
-Writing frame 8 of 51
-Writing frame 9 of 51
-Writing frame 10 of 51
-Writing frame 11 of 51
-Writing frame 12 of 51
-Writing frame 13 of 51
-Writing frame 14 of 51
-Writing frame 15 of 51
-Writing frame 16 of 51
-Writing frame 17 of 51
-Writing frame 18 of 51
-Writing frame 19 of 51
-Writing frame 20 of 51
-Writing frame 21 of 51
-Writing frame 22 of 51
-Writing frame 23 of 51
-Writing frame 24 of 51
-Writing frame 25 of 51
-Writing frame 26 of 51
-Writing frame 27 of 51
-Writing frame 28 of 51
-Writing frame 29 of 51
-Writing frame 30 of 51
-Writing frame 31 of 51
-Writing frame 32 of 51
-Writing frame 33 of 51
-Writing frame 34 of 51
-Writing frame 35 of 51
-Writing frame 36 of 51
-Writing frame 37 of 51
-Writing frame 38 of 51
-Writing frame 39 of 51
-Writing frame 40 of 51
-Writing frame 41 of 51
-Writing frame 42 of 51
-Writing frame 43 of 51
-Writing frame 44 of 51
-Writing frame 45 of 51
-Writing frame 46 of 51
-Writing frame 47 of 51
-Writing frame 48 of 51
-Writing frame 49 of 51
-Writing frame 50 of 51
-Writing frame 51 of 51
-Saved figure in /home/aandriat/Data/HYCOM/Figures/HYCOM_forecast_advection_200_zoom
-Elapsed time is 75.140709 seconds.
+>> >> >> >> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Writing frame 1 of 6
+Writing frame 2 of 6
+Writing frame 3 of 6
+Writing frame 4 of 6
+CodeCache is full. Compiler has been disabled.
+Try increasing the code cache size using -XX:ReservedCodeCacheSize=
+Writing frame 5 of 6
+Writing frame 6 of 6
+Saved figure in HYCOM/Figures/HYCOM_forecast_advection_200_zoom
+Elapsed time is 7.021142 seconds.
 >> >> 

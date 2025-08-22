@@ -5,15 +5,21 @@
 try
 
 tic;
-
-datapath = '/home/aandriat/Data/HYCOM';
+pwd
+addpath(genpath('MATLAB'))
+datapath = 'HYCOM';
 hindcastpath = fullfile(datapath,'Hindcast');
 forecastpath = fullfile(datapath,'Forecast');
 
-tnow = getUTC_3h;
+desired_time_utc = datenum(2021,10,1);
 
-tlim = [tnow-7 tnow+7];
+tdays = 1; % number of days to run the forecast over 
+
+tnow = getUTC_3h(desired_time_utc);
+
+tlim = [tnow-tdays/2 tnow+tdays/2];
 times = [tlim(1):3/24:tlim(end)];
+
 
 combined=[];
 varnames1d = {'time'};
@@ -61,7 +67,7 @@ for n=1:length(varnames3d)
     combined.(varnames3d{n}) = combined.(varnames3d{n})(:,:,:,I);
 end
 
-savepath = fullfile(datapath,'LJCT_Hycom_Timeseries.mat');
+savepath = fullfile(datapath,'Hycom_Timeseries.mat');
 save(savepath,'-struct','combined','-v7.3');
 disp(['Saved combined data in ' savepath ]);
 

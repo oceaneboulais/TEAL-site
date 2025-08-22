@@ -6,10 +6,10 @@
 try
 
 tic;
-
-datapath = '/home/aandriat/Data/HYCOM';
-filename='LJCT_Hycom_Timeseries.mat';
-savename='LJCT_Hycom_Timeseries_Center.mat';
+addpath(genpath('MATLAB'))
+datapath = 'HYCOM';
+filename='Hycom_Timeseries.mat';
+savename='Hycom_Timeseries_Center.mat';
 
 fpath = fullfile(datapath,filename);
 data = load(fpath);

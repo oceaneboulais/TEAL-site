@@ -1,120 +1,22 @@
-MATLAB is selecting SOFTWARE OPENGL rendering.
 
-                                                                              < M A T L A B (R) >
-                                                                    Copyright 1984-2020 The MathWorks, Inc.
-                                                                    R2020b (9.9.0.1467703) 64-bit (glnxa64)
-                                                                                August 26, 2020
+                            < M A T L A B (R) >
+                  Copyright 1984-2024 The MathWorks, Inc.
+              R2024a Update 6 (24.1.0.2689473) 64-bit (maca64)
+                               July 29, 2024
 
  
 To get started, type doc.
 For product information, visit www.mathworks.com.
  
->> >> >> >> >> >> Calculating derived quantities for time 1 of 106
-Calculating derived quantities for time 2 of 106
-Calculating derived quantities for time 3 of 106
-Calculating derived quantities for time 4 of 106
-Calculating derived quantities for time 5 of 106
-Calculating derived quantities for time 6 of 106
-Calculating derived quantities for time 7 of 106
-Calculating derived quantities for time 8 of 106
-Calculating derived quantities for time 9 of 106
-Calculating derived quantities for time 10 of 106
-Calculating derived quantities for time 11 of 106
-Calculating derived quantities for time 12 of 106
-Calculating derived quantities for time 13 of 106
-Calculating derived quantities for time 14 of 106
-Calculating derived quantities for time 15 of 106
-Calculating derived quantities for time 16 of 106
-Calculating derived quantities for time 17 of 106
-Calculating derived quantities for time 18 of 106
-Calculating derived quantities for time 19 of 106
-Calculating derived quantities for time 20 of 106
-Calculating derived quantities for time 21 of 106
-Calculating derived quantities for time 22 of 106
-Calculating derived quantities for time 23 of 106
-Calculating derived quantities for time 24 of 106
-Calculating derived quantities for time 25 of 106
-Calculating derived quantities for time 26 of 106
-Calculating derived quantities for time 27 of 106
-Calculating derived quantities for time 28 of 106
-Calculating derived quantities for time 29 of 106
-Calculating derived quantities for time 30 of 106
-Calculating derived quantities for time 31 of 106
-Calculating derived quantities for time 32 of 106
-Calculating derived quantities for time 33 of 106
-Calculating derived quantities for time 34 of 106
-Calculating derived quantities for time 35 of 106
-Calculating derived quantities for time 36 of 106
-Calculating derived quantities for time 37 of 106
-Calculating derived quantities for time 38 of 106
-Calculating derived quantities for time 39 of 106
-Calculating derived quantities for time 40 of 106
-Calculating derived quantities for time 41 of 106
-Calculating derived quantities for time 42 of 106
-Calculating derived quantities for time 43 of 106
-Calculating derived quantities for time 44 of 106
-Calculating derived quantities for time 45 of 106
-Calculating derived quantities for time 46 of 106
-Calculating derived quantities for time 47 of 106
-Calculating derived quantities for time 48 of 106
-Calculating derived quantities for time 49 of 106
-Calculating derived quantities for time 50 of 106
-Calculating derived quantities for time 51 of 106
-Calculating derived quantities for time 52 of 106
-Calculating derived quantities for time 53 of 106
-Calculating derived quantities for time 54 of 106
-Calculating derived quantities for time 55 of 106
-Calculating derived quantities for time 56 of 106
-Calculating derived quantities for time 57 of 106
-Calculating derived quantities for time 58 of 106
-Calculating derived quantities for time 59 of 106
-Calculating derived quantities for time 60 of 106
-Calculating derived quantities for time 61 of 106
-Calculating derived quantities for time 62 of 106
-Calculating derived quantities for time 63 of 106
-Calculating derived quantities for time 64 of 106
-Calculating derived quantities for time 65 of 106
-Calculating derived quantities for time 66 of 106
-Calculating derived quantities for time 67 of 106
-Calculating derived quantities for time 68 of 106
-Calculating derived quantities for time 69 of 106
-Calculating derived quantities for time 70 of 106
-Calculating derived quantities for time 71 of 106
-Calculating derived quantities for time 72 of 106
-Calculating derived quantities for time 73 of 106
-Calculating derived quantities for time 74 of 106
-Calculating derived quantities for time 75 of 106
-Calculating derived quantities for time 76 of 106
-Calculating derived quantities for time 77 of 106
-Calculating derived quantities for time 78 of 106
-Calculating derived quantities for time 79 of 106
-Calculating derived quantities for time 80 of 106
-Calculating derived quantities for time 81 of 106
-Calculating derived quantities for time 82 of 106
-Calculating derived quantities for time 83 of 106
-Calculating derived quantities for time 84 of 106
-Calculating derived quantities for time 85 of 106
-Calculating derived quantities for time 86 of 106
-Calculating derived quantities for time 87 of 106
-Calculating derived quantities for time 88 of 106
-Calculating derived quantities for time 89 of 106
-Calculating derived quantities for time 90 of 106
-Calculating derived quantities for time 91 of 106
-Calculating derived quantities for time 92 of 106
-Calculating derived quantities for time 93 of 106
-Calculating derived quantities for time 94 of 106
-Calculating derived quantities for time 95 of 106
-Calculating derived quantities for time 96 of 106
-Calculating derived quantities for time 97 of 106
-Calculating derived quantities for time 98 of 106
-Calculating derived quantities for time 99 of 106
-Calculating derived quantities for time 100 of 106
-Calculating derived quantities for time 101 of 106
-Calculating derived quantities for time 102 of 106
-Calculating derived quantities for time 103 of 106
-Calculating derived quantities for time 104 of 106
-Calculating derived quantities for time 105 of 106
-Calculating derived quantities for time 106 of 106
+>> >> >> >> >> >> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Calculating derived quantities for time 1 of 9
+Calculating derived quantities for time 2 of 9
+Calculating derived quantities for time 3 of 9
+Calculating derived quantities for time 4 of 9
+Calculating derived quantities for time 5 of 9
+Calculating derived quantities for time 6 of 9
+Calculating derived quantities for time 7 of 9
+Calculating derived quantities for time 8 of 9
+Calculating derived quantities for time 9 of 9
 Calculing MLD for longitude 1 of 139
 Calculing MLD for longitude 2 of 139
 Calculing MLD for longitude 3 of 139
@@ -254,7 +156,6 @@ Calculing MLD for longitude 136 of 139
 Calculing MLD for longitude 137 of 139
 Calculing MLD for longitude 138 of 139
 Calculing MLD for longitude 139 of 139
-Added derived variables to/home/aandriat/Data/HYCOM/LJCT_Hycom_Timeseries.mat
-Elapsed time is 588.221711 seconds.
-
+Added derived variables toHYCOM/Hycom_Timeseries.mat
+Elapsed time is 15.497731 seconds.
 >> >> >> 

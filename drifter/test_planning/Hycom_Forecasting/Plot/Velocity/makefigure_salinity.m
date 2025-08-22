@@ -1,4 +1,4 @@
-function make_HYCOM_forecast_figure(figtype,zoomoption,datapath,data);
+function makefigure_salinity(figtype,zoomoption,datapath,data);
 % Plot the current HYCOM velocity field, as well as a target of what we think a good deployment location is
 %
 %

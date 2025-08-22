@@ -1,4 +1,4 @@
-function make_HYCOM_forecast_advection_figure(figtype,zoomoption,datapath,data);
+function makefigure_advection(figtype,zoomoption,datapath,data);
 % Plot the advection of the HYCOM field for a deployment at the most recent runtime
 %
 % Alex Andriatis
@@ -6,7 +6,9 @@ function make_HYCOM_forecast_advection_figure(figtype,zoomoption,datapath,data);
 
 figpath = fullfile(datapath,'Figures');
 
-dmean = 200;
+if ~isfolder(figpath)
+    mkdir(figpath)
+end
 
 % Movie time runs from "deployment" to end of advection
 timevec = data.time;

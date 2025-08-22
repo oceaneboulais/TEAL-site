@@ -1,8 +1,11 @@
-sending incremental file list
->f.st...... LJCT_Hycom_Timeseries_advection.mat
-         32.77K   1%    0.00kB/s    0:00:00            1.65M 100%  154.18MB/s    0:00:00 (xfr#1, to-chk=0/1)
-
-sent 1.65M bytes  received 35 bytes  3.30M bytes/sec
-total size is 1.65M  speedup is 1.00
-Rsynced files at: 15:28:24
-Runtime:  0  seconds
+Transfer starting: 1 files
+rsync(69121): error: /Volumes/Shared/html/data/: open: No such file or directory
+rsync(69121): error: rsync_receiver
+rsync(69120): error: unexpected end of file
+rsync(69120): error: io_read_nonblocking
+rsync(69120): error: io_read_blocking
+rsync(69120): error: io_read_flush
+rsync(69120): error: rsync_sender
+rsync(69120): warning: child 69121 exited with status 1
+Rsynced files at: 13:13:26
+Runtime:  1  seconds

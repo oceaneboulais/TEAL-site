@@ -5,21 +5,26 @@
 % Alex Andriatis
 % 2021-05-02
 
+% Edited by A. Laferriere 2025-08-22
+%   to specify the range over which the depth average is calculated 
+
 try
 
 tic;
-addpath('/home/aandriat/Hycom_Forecasting/Advect_Hycom');
-datapath = '/home/aandriat/Data/HYCOM';
-filename='LJCT_Hycom_Timeseries.mat';
+addpath('Advect_Hycom');
+addpath(genpath('MATLAB'))
+
+datapath = 'HYCOM';
+filename='Hycom_Timeseries.mat';
 
 fpath = fullfile(datapath,filename);
 data = load(fpath);
 
-savename='LJCT_Hycom_Timeseries_advection.mat';
+savename='Hycom_Timeseries_advection.mat';
 savepath=fullfile(datapath,savename);
 
-%deploytime = datenum(2021,05,06);
-deploytime = getUTC_3h;
+deploytime = datenum(2021,10,1);
+% deploytime = getUTC_3h
 dmean = 200;
 
 xl = [-119 -117];

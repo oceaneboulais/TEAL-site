@@ -5,7 +5,7 @@
 # Alex Andriatis
 # 2021-05-02
 starttime=`date +%s`
-RUNDIR="/home/aandriat/Hycom_Forecasting/Read_Hycom"
+RUNDIR="Read_Hycom"
 
 echo "Reading HYCOM"
 mkdir $RUNDIR/LOGS/
