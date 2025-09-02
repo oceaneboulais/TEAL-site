@@ -38,6 +38,10 @@ switch sensor
         ftab = [100 50e3];
         htab = [-145 -145];
         phitab = 0*ones(size(htab));
+    case 'VLA-HTI-92WB'
+        ftab = [100 50e3];
+        htab = [-136 -136]; % -156 dB + 20 dB fixed gain
+        phitab = 0*ones(size(htab));
     case 'VS-209-omni'
         ftab =  [1e3 4e3 7e3 8e3 10e3 20e3];
         htab = [-162 -163 -164 -165 -165 -165];

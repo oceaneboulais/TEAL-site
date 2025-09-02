@@ -1,7 +1,5 @@
 function [metrics,Ix,Iy,Iz] = computeDirectionalMetrics(P,V,p,T)
 
-% function [metrics,Ix,Iy,Iz] = computeDirectionalMetrics(P,V,do_3D_metrics,compass_offset,elevation_offset,T,time_avg,v_is_scaled,c,rho)
-
 if nargin<3 || ~isfield(p,'do_3D_metrics')
     p.do_3D_metrics = true;
 end
@@ -15,7 +13,7 @@ if nargin<3 || ~isfield(p,'elevation_offset')
 end
 if nargin<3 || ~isfield(p,'time_avg')
     p.time_avg = [];
-elseif time_avg==0
+elseif p.time_avg==0
     p.time_avg=[];
 end
 if nargin<3 || ~isfield(p,'v_is_scaled')
@@ -90,7 +88,7 @@ if ~isempty(p.time_avg)
     disp('Starting intensity time averaging...')
 
     %Consolidate time bins
-    Ninc=ceil(time_avg./T(1));  %%Number of samples per beampattern.
+    Ninc=ceil(p.time_avg./T(1));  %%Number of samples per beampattern.
     Nt = length(T);
     Nbeam_count=floor(Nt./Ninc);
     Itindex=Ninc:Ninc:Nt;

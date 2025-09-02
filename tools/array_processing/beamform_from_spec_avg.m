@@ -66,7 +66,7 @@ v = getReplicaVector(freq,pos,elev_deg,az_deg,c);
 
 disp('Permute weights')
 v = permute(v,[1 5 2 3 4]);
-toc
+% toc
 %%v now has [freq ? Nchan ? Nelev]
 % S = permute(S,[1 3 4 5 2]);
 % for fidx = 1:length(freq)
@@ -125,7 +125,7 @@ for Iband = 1:size(fband,1)  %For each frequency band
     Bpow{Iband}=abs(Bpow{Iband}).^2; %[Nfreq Nt 1 Naz Nel]
     Bpow{Iband}=permute(Bpow{Iband},[1,2,4,5,3]); %[Nfreq Nt Naz Nel]
     disp('Finished large matrix beamforming operation.');
-    toc
+%     toc
 
     if ~isempty(hist_param)
         disp('Starting histogram...')
@@ -146,7 +146,7 @@ for Iband = 1:size(fband,1)  %For each frequency band
     
 
     %Consolidate time bins
-    if ~isempty(time_avg)
+    if ~isempty(time_avg)&& time_avg>0
         disp('Starting time averaging...')
         Ninc=ceil(time_avg./T(1));  %%Number of samples per beampattern.
         Nbeam_count=floor(Nt./Ninc);
@@ -161,7 +161,7 @@ for Iband = 1:size(fband,1)  %For each frequency band
     else
         Itindex = 1:length(T);
     end
-        toc
+%         toc
 end %Iband
 Tout = T(Itindex);
 if isscalar(fband_in)
@@ -170,7 +170,7 @@ if isscalar(fband_in)
     Fout = vertcat(Fout{:});
 end
 disp('Finished beamform_from_spec_avg.')
-toc
+% toc
 
 
 
