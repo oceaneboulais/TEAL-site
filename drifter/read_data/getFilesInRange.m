@@ -10,7 +10,8 @@ if ischar(data_dir)||isstring(data_dir)
     if isfolder(fullfile(data_dir,'AcousticData'))
         filelist = dir(fullfile(data_dir,'AcousticData',['drifter*' ext]));
     else
-        filelist = dir(fullfile(data_dir,['drifter*' ext]));
+%         filelist = dir(fullfile(data_dir,['drifter*' ext]));
+        filelist = dir(fullfile(data_dir,['*' ext]));
     end
 else
     filelist = data_dir;
