@@ -1,3 +1,9 @@
+#train_model.py
+# This script processes .wav files to detect bowhead whale calls, extracts spectrogram samples around
+# each detection, trains a convolutional autoencoder on these samples, and uses Gaussian Mixture
+# Modeling (GMM) to cluster the latent representations learned by the autoencoder.
+
+
 # %pip install librosa
 # %pip install torch torchvision
 # %pip install ipykernel
@@ -14,24 +20,40 @@ import torch.nn as nn
 from torch.utils.data import Dataset, DataLoader, random_split
 from torchvision import transforms
 
+#loaddir = '/Volumes/Bowhead/Shell2010_GSI_Data/S510gsif/S510G0_WAV/'
+loaddir= "./"
+savedir='OutputDir.dir'
+#savedir = '/Users/oceaneboulais/Github/ThodeLab/BowheadWhale/BowheadResults/'
+files = [f for f in sorted(os.listdir(loaddir)) if f.lower().endswith('.wav') and not f.startswith('._')]
+
+
+NFFT = 256  # number of points in each FFT according to Thode et al paper. This corresponds to segment durations of 0.256 seconds at 1 kHz sampling.
+specgram_window = plt.mlab.window_hanning(np.ones(NFFT))
+# noverlap=28
+noverlap = 128  # number of points to overlap between segments according to Thode et al paper. This corresponds to 50% overlap at 1 kHz sampling.
+f_hp=30 # high-pass for eliminating low-frequency noise
+nu = 1.7 #power law detector
+window_sec = 3
+pks_idx = []
+T = []
+
+fmin = 20
+fmax = 475
+dB_threshold = 10  # threshold above mean for detection
 
 # loaddir = '/Volumes/Bowhead/Shell2010_GSI_Data/S510gsif/S510G0_WAV' #directory with .wav files
 # savedir = '/Users/oceaneboulais/Github/ThodeLab/BowheadWhale/BowheadResults'
 # if not os.path.exists(savedir):
 #     os.makedirs(savedir)
-
 # files = sorted(os.listdir(loaddir))
 
-loaddir = '/Volumes/Bowhead/Shell2010_GSI_Data/S510gsif/S510G0_WAV/'
-savedir = '/Users/oceaneboulais/Github/ThodeLab/BowheadWhale/BowheadResults/'
-files = [f for f in sorted(os.listdir(loaddir)) if f.lower().endswith('.wav') and not f.startswith('._')]
 
-for file in files:
-    try:
-        y, fs = lb.load(os.path.join(loaddir, file), sr=1000)
+#for file in files:
+#    try:
+#        y, fs = lb.load(os.path.join(loaddir, file), sr=1000)
         # your processing here
-    except Exception as e:
-        print(f"Skipping file {file} due to error: {e}")
+#   except Exception as e:
+#       print(f"Skipping file {file} due to error: {e}")
 
 def calculate_background_median(Pxx, T, window_sec):
     fs_spec = np.round(np.mean(1/np.diff(T)))
@@ -39,22 +61,10 @@ def calculate_background_median(Pxx, T, window_sec):
     xx = median_filter(Pxx, size=(1, window), mode='reflect')
     return xx
 
-# samplerate = 1600
-samplerate = 1000 # sampling rate at 1kHz according to Thode et al paper.
 
-# NFFT=32
-NFFT = 256  # number of points in each FFT according to Thode et al paper. This corresponds to segment durations of 0.256 seconds at 1 kHz sampling.
-specgram_window = plt.mlab.window_hanning(np.ones(NFFT))
-# noverlap=28
-noverlap = 128  # number of points to overlap between segments according to Thode et al paper. This corresponds to 50% overlap at 1 kHz sampling.
-f_hp=30 # high-pass for eliminating low-frequency noise
-nu = 1.7
-window_sec = 3
-pks_idx = []
-T = []
 
-for ii in range(len(files)):
-    y, fs = lb.load(loaddir + files[ii], sr=samplerate) # load .wav file
+for Ifile in range(len(files)):
+    y, fs = lb.load(loaddir + files[Ifile], sr=None) # load .wav file
     duration = len(y)/fs  # duration of the audio file in seconds
     # chunk_duration = 60  # duration of each chunk in seconds
     chunk_duration = 3  # duration of each chunk changed to account for predicitve autoencoder
@@ -66,22 +76,24 @@ for ii in range(len(files)):
         if end_idx>len(y):
             end_idx = len(y)
         chunk_y = y[start_idx:end_idx]
-        sos = signal.butter(4, f_hp, 'high', analog=False, output='sos', fs=fs)
-        chunk_y = signal.sosfilt(sos, chunk_y)  # run data through high pass filter
+        #sos = signal.butter(4, f_hp, 'high', analog=False, output='sos', fs=fs)
+       # chunk_y = signal.sosfilt(sos, chunk_y)  # run data through high pass filter
         F, T, Pxx = signal.spectrogram(chunk_y, fs, nperseg=NFFT, nfft=NFFT, noverlap=noverlap,mode='psd', window=specgram_window)  # make spectrogram
         # Pxx = Pxx[3:15, :]  # specify 150-750 Hz data
         # Find freq range indices for 40 to 750 Hz
-        fmin = 40
-        fmax = 750
+        
         freq_idx = np.where((F >= fmin) & (F <= fmax))[0]
         Pxx = Pxx[freq_idx, :]
 
         background = calculate_background_median(Pxx, T, window_sec)
         plstat = np.mean((Pxx/background)**nu, axis=0)  # power law statistic
-        plstat_gauss = 10**(gaussian_filter1d(10*np.log10(plstat), sigma=10)/10)
-        # pks_idx, _ = signal.find_peaks(10*np.log10(plstat_gauss),heigh
+        #plstat_gauss = 10**(gaussian_filter1d(10*np.log10(plstat), sigma=10)/10)
+        # pks_idx, _ = signal.find_peaks(10*np.log10(plstat_gauss), height=10*np.log10(np.mean(plstat_gauss)), distance=72)
+       
+        plstat_gauss = gaussian_filter1d(10*np.log10(plstat), sigma=10)               
+       
         # t=10*np.log10(np.mean(plstat_gauss)) + np.std(10*np.log10(plstat_gauss)), distance=72)  # make detections
-        pks_idx, _ = signal.find_peaks(10*np.log10(plstat_gauss), height=10*np.log10(np.mean(plstat_gauss)), distance=72)
+        pks_idx, _ = signal.find_peaks(plstat_gauss, height=dB_threshold, distance=72)
         pks_idx = pks_idx[(pks_idx>72) & (pks_idx<len(T)-72)]
         for jj in range(len(pks_idx)):
             T_det = T[int(pks_idx[jj])] + chunk_idx*chunk_duration  # add chunk duration to T_det
@@ -89,9 +101,9 @@ for ii in range(len(files)):
             PSD_sample = (PSD_sample-np.mean(PSD_sample))/np.std(PSD_sample)
             PSD_sample = PSD_sample-1
             PSD_sample = np.clip(PSD_sample, 0, 1)
-            np.save(savedir + files[ii][-19:-4] + '_s' + "{:05.2f}".format(T_det) + '.npy',PSD_sample)  # save .npy file centered at each detection
-    print('Processed ' + str(ii + 1) + ' files out of ' + str(len(files)))
-    print(f"Detections in chunk {chunk_idx} of file {files[ii]}: {len(pks_idx)}")
+            np.save(savedir + files[Ifile][-19:-4] + '_s' + "{:05.2f}".format(T_det) + '.npy',PSD_sample)  # save .npy file centered at each detection
+    print('Processed ' + str(Ifile + 1) + ' files out of ' + str(len(files)))
+    print(f"Detections in chunk {chunk_idx} of file {files[Ifile]}: {len(pks_idx)}")
     # plt.plot(10*np.log10(plstat_gauss))
     # plt.scatter(pks_idx, 10*np.log10(plstat_gauss)[pks_idx], color='r')
     # plt.title(f"Detection Statistic with Peaks: {files[ii]}, chunk {chunk_idx}")
@@ -269,9 +281,9 @@ for cc in range(n_clusters):
     plt.figure(0)
     imax=5
     if len(cluster_idx)>=imax:
-        for ii in range(imax):
+        for Ifile in range(imax):
             fig = plt.figure(figsize=(5,0.5))
-            data_plot = np.load(dataset.folder_path+dataset.file_list[cluster_idx[ii]])       
+            data_plot = np.load(dataset.folder_path+dataset.file_list[cluster_idx[Ifile]])       
             plt.imshow(data_plot,vmin=0, vmax=1, origin='lower', cmap='inferno',extent=[0,0.36,150,750],aspect='auto')
             plt.gca().invert_yaxis()
             plt.ylabel('freq. (Hz)', fontsize=9)
