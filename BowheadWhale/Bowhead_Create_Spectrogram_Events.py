@@ -20,7 +20,7 @@ plt.style.use('_mpl-gallery-nogrid')
 
 #loaddir = '/Volumes/Bowhead/Shell2010_GSI_Data/S510gsif/S510G0_WAV/'
 loaddir= "./"
-savedir='OutputDir.dir/'
+savedir='/Users/thode/Desktop/BowheadEvents.dir/'
 #savedir = '/Users/oceaneboulais/Github/ThodeLab/BowheadWhale/BowheadResults/'
 files = [f for f in sorted(os.listdir(loaddir)) if f.lower().endswith('.wav') and not f.startswith('._')]
 
@@ -32,7 +32,7 @@ noverlap = 128+64  # number of points to overlap between segments according to T
 f_hp=30 # high-pass for eliminating low-frequency noise
 nu = 1.7 #power law detector
 window_sec_median = 5  # median filter window in seconds
-chunk_duration = 30  # duration of each chunk changed to account for predicitve autoencoder
+chunk_duration = 60  # duration of each chunk for processing detections
    
 #min_distance =4  # minimum distance between detections in samples (at 4 Hz this is 0.75 seconds)
 window_sample_sec = 3 # seconds to take for each sample, centered on peak SNR
@@ -43,7 +43,7 @@ T = []
 
 fmin = 10
 fmax = 475
-dB_threshold = 10  # threshold above mean for detection
+dB_threshold = 20  # threshold above mean for detection
 
 
 
@@ -56,6 +56,7 @@ def calculate_background_median(Pxx, T, window_sec):
 
 
 for Ifile in range(len(files)):
+    counts = 0
     y, fs = lb.load(loaddir + files[Ifile], sr=None) # load .wav file
     duration = len(y)/fs  # duration of the audio file in seconds
 
@@ -106,12 +107,16 @@ for Ifile in range(len(files)):
             plt.show()
         #pks_idx = pks_idx[(pks_idx>min_distance) & (pks_idx<len(T)-min_distance)]
 
+       
         for Ipeak in range(len(pks_idx)):
             T_det = T[int(pks_idx[Ipeak])] + Ichunk*chunk_duration  # add chunk duration to T_det
             PSD_sample = 10*np.log10(Pxx[:, (pks_idx[Ipeak]-Iwindow_sample):(pks_idx[Ipeak] + Iwindow_sample)])  # make spectrogram samples for each detection
-            PSD_sample = (PSD_sample-np.median(PSD_sample))/np.std(PSD_sample)
-            PSD_sample = (PSD_sample)/3
-            PSD_sample = np.clip(PSD_sample, 0, 1)
+           # PSD_sample = (PSD_sample-np.median(PSD_sample))/np.std(PSD_sample)
+            #PSD_sample = 100*(PSD_sample)/3
+            PSD_sample = PSD_sample.astype('int16')
+            #PSD_sample = PSD_sample.astype('uint8')
+            
+            #PSD_sample = np.clip(PSD_sample, 0, 1)
 
             if my_debug:
                 fig, ax = plt.subplots(layout='constrained')
@@ -119,8 +124,9 @@ for Ifile in range(len(files)):
 
             savestr=savedir + files[Ifile][-19:-4] + '_s' + "{:05.2f}".format(T_det) + '.npy'
             np.save(savestr,PSD_sample)  # save .npy file centered at each detection
+            counts +=1
     print('Processed ' + str(Ifile + 1) + ' files out of ' + str(len(files)))
-    print(f"Detections in chunk {Ichunk} of file {files[Ifile]}: {len(pks_idx)}")
+    print(f"Detections in file {files[Ifile]}: {counts}")
      
     # plt.scatter(pks_idx, 10*np.log10(plstat_gauss)[pks_idx], color='r')
     # plt.title(f"Detection Statistic with Peaks: {files[ii]}, chunk {chunk_idx}")

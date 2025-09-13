@@ -5,8 +5,10 @@ from torchvision import transforms
 import os
 import numpy as np
 import random
+import matplotlib.pyplot as plt
 
-savedir='OutputDir.dir/'
+
+savedir='/Users/thode/Desktop/BowheadEvents.dir/'
 folder_path = savedir # Define the folder containing the detections
 
 batch_size = 64
@@ -28,6 +30,11 @@ class CustomDatasetFull(Dataset):
     def __getitem__(self, idx):
         file_path = os.path.join(self.folder_path, self.file_list[idx])
         image = np.load(file_path)
+        image = image/100
+        
+        fig, ax = plt.subplots(layout='constrained')
+        ax.imshow(image, origin='lower')
+        
         if self.transform:
             image = self.transform(image)
         else:
@@ -80,7 +87,7 @@ class Autoencoder(nn.Module):
         return output, latent
 
 latent_dim = 16
-device = torch.device("cuda")
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 autoencoder = Autoencoder(latent_dim=latent_dim).to(device)
 autoencoder = autoencoder.float()
 criterion = nn.MSELoss(reduction='mean')
