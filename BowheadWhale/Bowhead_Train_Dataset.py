@@ -14,8 +14,16 @@ folder_path = savedir # Define the folder containing the detections
 batch_size = 64
 learning_rate = 0.0001
 validation_split = 0.2
-
+my_debug = False
 #define dataloader for loading detections
+
+filelist = [f for f in sorted(os.listdir(folder_path)) if f.endswith('.npy')]
+file_path = os.path.join(folder_path, filelist[0])
+image = np.load(file_path)
+nrow,ncol = image.shape
+print("nrow,ncol=",nrow,ncol)
+
+
 class CustomDatasetFull(Dataset):
     def __init__(self, folder_path, transform=None, shuffle=False):
         self.folder_path = folder_path
@@ -30,11 +38,23 @@ class CustomDatasetFull(Dataset):
     def __getitem__(self, idx):
         file_path = os.path.join(self.folder_path, self.file_list[idx])
         image = np.load(file_path)
-        image = image/100
-        
-        fig, ax = plt.subplots(layout='constrained')
-        ax.imshow(image, origin='lower')
-        
+        image=(image.astype(np.float32))/10
+        #option to add random white noise
+       # mean = image.mean()
+       # std = image.std() if image.std() > 0 else 1.0
+        #image = (image - mean) / std
+        #image[image < 0] = 0
+
+       # image = transforms.ToTensor()(image)
+       
+       # fig, ax = plt.subplots(layout='constrained')
+       # ax.imshow(image, origin='lower')
+        if my_debug:
+            print(file_path)
+            fig, ax = plt.subplots(layout='constrained')
+            im = ax.imshow(image, origin='lower')
+            fig.colorbar(im, ax=ax)
+
         if self.transform:
             image = self.transform(image)
         else:
@@ -56,6 +76,7 @@ train_dataset, val_dataset = random_split(dataset,[num_train_samples,num_val_sam
 dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=False,num_workers=16,pin_memory=True) #all data
 train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True) #divide into training and test data
 val_dataloader = DataLoader(val_dataset, batch_size=batch_size,shuffle=True)
+
 
 #define the autoencoder architecture
 class Autoencoder(nn.Module):

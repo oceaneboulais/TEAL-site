@@ -85,8 +85,7 @@ for Ifile in range(len(files)):
         #plstat_gauss = 10**(gaussian_filter1d(10*np.log10(plstat), sigma=10)/10)
         # pks_idx, _ = signal.find_peaks(10*np.log10(plstat_gauss), height=10*np.log10(np.mean(plstat_gauss)), distance=72)
        
-      
-        
+
         #plstat_gauss = gaussian_filter1d(plstat, sigma=2)               
        
         # t=10*np.log10(np.mean(plstat_gauss)) + np.std(10*np.log10(plstat_gauss)), distance=72)  # make detections
@@ -105,15 +104,18 @@ for Ifile in range(len(files)):
             ax.scatter(pks_idx,plstat[pks_idx])
             ax.grid(True)
             plt.show()
-        #pks_idx = pks_idx[(pks_idx>min_distance) & (pks_idx<len(T)-min_distance)]
+        pks_idx = pks_idx[(pks_idx>Iwindow_sample) & (pks_idx<len(T)-Iwindow_sample)]
 
        
         for Ipeak in range(len(pks_idx)):
             T_det = T[int(pks_idx[Ipeak])] + Ichunk*chunk_duration  # add chunk duration to T_det
+            
             PSD_sample = 10*np.log10(Pxx[:, (pks_idx[Ipeak]-Iwindow_sample):(pks_idx[Ipeak] + Iwindow_sample)])  # make spectrogram samples for each detection
-           # PSD_sample = (PSD_sample-np.median(PSD_sample))/np.std(PSD_sample)
+            PSD_sample = 10* (PSD_sample-np.median(PSD_sample))/np.std(PSD_sample)
             #PSD_sample = 100*(PSD_sample)/3
-            PSD_sample = PSD_sample.astype('int16')
+            PSD_sample[PSD_sample < 0] = 0
+
+            PSD_sample = PSD_sample.astype('uint8')
             #PSD_sample = PSD_sample.astype('uint8')
             
             #PSD_sample = np.clip(PSD_sample, 0, 1)
@@ -125,6 +127,9 @@ for Ifile in range(len(files)):
             savestr=savedir + files[Ifile][-19:-4] + '_s' + "{:05.2f}".format(T_det) + '.npy'
             np.save(savestr,PSD_sample)  # save .npy file centered at each detection
             counts +=1
+            if np.remainder(counts, 100)==0:
+                print(counts)
+    print(f"File {Ifile+1}/{len(files)}, chunk {Ichunk+1}/{num_chunks}, detections {counts}")
     print('Processed ' + str(Ifile + 1) + ' files out of ' + str(len(files)))
     print(f"Detections in file {files[Ifile]}: {counts}")
      
