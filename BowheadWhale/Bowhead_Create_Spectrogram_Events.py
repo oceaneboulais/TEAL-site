@@ -22,11 +22,12 @@ plt.style.use('_mpl-gallery-nogrid')
 loaddir= "./"
 savedir='/Users/thode/Desktop/BowheadEvents.dir/'
 
+my_debug=False
 dB_threshold = 20  # threshold above mean for detection
 image_scale_factor = 5  # factor to multiply SNR by for saving as unit8 image  
 fmin = 10
 fmax = 475
-
+window_sample_sec = 3 # seconds to take for each sample, centered on peak SNR
 
 #savedir = '/Users/oceaneboulais/Github/ThodeLab/BowheadWhale/BowheadResults/'
 files = [f for f in sorted(os.listdir(loaddir)) if f.lower().endswith('.wav') and not f.startswith('._')]
@@ -42,9 +43,7 @@ window_sec_median = 5  # median filter window in seconds
 chunk_duration = 60  # duration of each chunk for processing detections
    
 #min_distance =4  # minimum distance between detections in samples (at 4 Hz this is 0.75 seconds)
-window_sample_sec = 3 # seconds to take for each sample, centered on peak SNR
 
-my_debug=True
 pks_idx = []
 T = []
 
