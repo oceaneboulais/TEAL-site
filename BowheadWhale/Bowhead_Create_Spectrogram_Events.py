@@ -21,6 +21,13 @@ plt.style.use('_mpl-gallery-nogrid')
 #loaddir = '/Volumes/Bowhead/Shell2010_GSI_Data/S510gsif/S510G0_WAV/'
 loaddir= "./"
 savedir='/Users/thode/Desktop/BowheadEvents.dir/'
+
+dB_threshold = 20  # threshold above mean for detection
+image_scale_factor = 5  # factor to multiply SNR by for saving as unit8 image  
+fmin = 10
+fmax = 475
+
+
 #savedir = '/Users/oceaneboulais/Github/ThodeLab/BowheadWhale/BowheadResults/'
 files = [f for f in sorted(os.listdir(loaddir)) if f.lower().endswith('.wav') and not f.startswith('._')]
 
@@ -29,7 +36,7 @@ NFFT = 256  # number of points in each FFT according to Thode et al paper. This 
 specgram_window = plt.mlab.window_hanning(np.ones(NFFT))
 # noverlap=28
 noverlap = 128+64  # number of points to overlap between segments according to Thode et al paper. This corresponds to 50% overlap at 1 kHz sampling.
-f_hp=30 # high-pass for eliminating low-frequency noise
+#f_hp=30 # high-pass for eliminating low-frequency noise
 nu = 1.7 #power law detector
 window_sec_median = 5  # median filter window in seconds
 chunk_duration = 60  # duration of each chunk for processing detections
@@ -37,13 +44,9 @@ chunk_duration = 60  # duration of each chunk for processing detections
 #min_distance =4  # minimum distance between detections in samples (at 4 Hz this is 0.75 seconds)
 window_sample_sec = 3 # seconds to take for each sample, centered on peak SNR
 
-my_debug=False
+my_debug=True
 pks_idx = []
 T = []
-
-fmin = 10
-fmax = 475
-dB_threshold = 20  # threshold above mean for detection
 
 
 
@@ -111,21 +114,53 @@ for Ifile in range(len(files)):
             T_det = T[int(pks_idx[Ipeak])] + Ichunk*chunk_duration  # add chunk duration to T_det
             
             PSD_sample = 10*np.log10(Pxx[:, (pks_idx[Ipeak]-Iwindow_sample):(pks_idx[Ipeak] + Iwindow_sample)])  # make spectrogram samples for each detection
-            PSD_sample = 10* (PSD_sample-np.median(PSD_sample))/np.std(PSD_sample)
-            #PSD_sample = 100*(PSD_sample)/3
-            PSD_sample[PSD_sample < 0] = 0
-
-            PSD_sample = PSD_sample.astype('uint8')
-            #PSD_sample = PSD_sample.astype('uint8')
             
-            #PSD_sample = np.clip(PSD_sample, 0, 1)
+               
+    # matrix = np.array([[10, 20, 30],
+    #                    [40, 50, 60],
+    #                    [70, 80, 90]])
+    # vector = np.array([1, 2, 3])
 
+    # result = matrix/vector[:, np.newaxis]
+    # print(result)
+
+            median_sample = np.median(PSD_sample, axis=1)
+            #std_sample = np.std(PSD_sample, axis=1)
+            SNR_sample = image_scale_factor*(PSD_sample-median_sample[:,np.newaxis])
+            # multiplying by 10 gives a SNR resolution of 0.1 dB
+            SNR_sample[SNR_sample < 0] = 0
+            SNR_sample[SNR_sample > 255] = 255
+            SNR_sample8 = SNR_sample.astype('uint8')
+           
             if my_debug:
-                fig, ax = plt.subplots(layout='constrained')
-                ax.imshow(PSD_sample, origin='lower')
+                fig = plt.figure(figsize=(15, 9)) #width, height in inches
+                ax0 = fig.add_subplot(1, 3, 1)
+                im0=plt.imshow(PSD_sample, cmap='gray', origin='lower')
+                ax0.set_title('Power Spectral Density (dB)')
+                fig.colorbar(im0, ax=ax0)
+
+                ax1 = fig.add_subplot(1, 3, 2)
+                #fig, ax = plt.subplots(layout='constrained')
+                im=plt.imshow(SNR_sample/image_scale_factor, cmap='gray', origin='lower')
+                ax1.set_title('float image with median removed at each frequency band')
+                fig.colorbar(im, ax=ax1)
+                print('float image with median removed at each frequency band')
+
+                ax2 = fig.add_subplot(1, 3, 3)
+                im2=plt.imshow(SNR_sample8, cmap='gray', origin='lower')
+                ax2.set_title('unit8 image, SNR multiplied by image_scale_factor')
+                fig.colorbar(im2, ax=ax2)
+                plt.draw()
+                plt.pause(2)  # Pause to ensure the plot updates
+                plt.close('all')
+               # fig, ax = plt.subplots(layout='constrained')
+               # im=ax.imshow(PSD_sample, origin='lower')
+                #ax.set_title('image with median removed at each frequency band')
+                #fig.colorbar(im, ax=ax)
+               # print('image with median removed at each frequency band')
 
             savestr=savedir + files[Ifile][-19:-4] + '_s' + "{:05.2f}".format(T_det) + '.npy'
-            np.save(savestr,PSD_sample)  # save .npy file centered at each detection
+            np.save(savestr,SNR_sample8)  # save .npy file centered at each detection
             counts +=1
             if np.remainder(counts, 100)==0:
                 print(counts)

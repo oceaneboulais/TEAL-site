@@ -10,6 +10,8 @@ import matplotlib.pyplot as plt
 
 savedir='/Users/thode/Desktop/BowheadEvents.dir/'
 folder_path = savedir # Define the folder containing the detections
+image_scale_factor = 5  # factor to multiply SNR by for saving as unit8 image
+
 
 batch_size = 64
 learning_rate = 0.0001
