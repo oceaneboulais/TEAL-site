@@ -48,9 +48,6 @@ tidal_list = tidal_list([dir_list.isdir] & ~ismember(tidal_list,{'.','..'}));
 
 
 
-
-
-
 for itidal = 1:length(tidal_list)
 
     savefolder = fullfile(base_savefolder,expt_name,tidal_list{itidal});
@@ -122,6 +119,7 @@ for itidal = 1:length(tidal_list)
                 disp('Data loaded');
                 toc
     
+                %%%%%%%%%%Rotating processes
                 disp('Performing rotation...');
                 y = rotateTIDALData(y,nas,NAS_avg_time,fs);
                 disp('Rotation complete')
