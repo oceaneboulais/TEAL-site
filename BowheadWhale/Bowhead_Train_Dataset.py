@@ -106,7 +106,7 @@ class Autoencoder(nn.Module):
         self.t_conv3 = nn.ConvTranspose2d(4, 1, [3,2], stride=[3,2])
         self.fc1 = nn.Linear(288, latent_dim)
         self.fc2 = nn.Linear(latent_dim, 288)
-        self.pool = nn.MaxPool2d(2, 2)
+        self.pool = nn.MaxPool2d(2, 2)  #AdaptiveAvgPool maybe better?
     def forward(self, x): #when running the model, this is the function that is called
         x = torch.nn.functional.relu(self.conv1(x))        
         x = self.pool(x)
