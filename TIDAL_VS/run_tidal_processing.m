@@ -8,10 +8,16 @@ addpath('functions/')
 global avs_hist
 
 base_data_dir = '/Volumes/Shared/TIDAL/';
+% expt_name = 'TiDAL_Deployment_Maui_2025';
+% subdir = 'Acoustic_Data';
 
-expt_name = 'TiDAL_Deployment_Maui_2025';
+expt_name_set = {
+    'TiDAL Sept 24 Pier test'
+    'TiDAL March 2025 Pier Calib'
+    };
+subdir = [];
 
-data_dir = fullfile(base_data_dir,expt_name,'Acoustic_Data');
+
 base_savefolder = fullfile('/Volumes/Shared/Analysis',mfilename);
 
 overwrite_avs_data = false;
@@ -40,11 +46,14 @@ hist_param.el_edges = -90.5:el_res_hist:91.5;
 nfft = 512; % frequency resolution of FFT in Hz
 prcnt_overlap = 0.50; % percent overlap to use in spectrogram calculation, 0 - 1
 
-% assume that different tidals are located as subfolders with their unit ID
-% as the folder name 
-dir_list = dir(data_dir);
-tidal_list = {dir_list.name};
-tidal_list = tidal_list([dir_list.isdir] & ~ismember(tidal_list,{'.','..'}));
+for iset = 1:length(expt_name_set)
+    expt_name = expt_name_set{iset};
+    data_dir = fullfile(base_data_dir,expt_name,subdir);
+    % assume that different tidals are located as subfolders with their unit ID
+    % as the folder name 
+    dir_list = dir(data_dir);
+    tidal_list = {dir_list.name};
+    tidal_list = tidal_list([dir_list.isdir] & ~ismember(tidal_list,{'.','..'}));
 
 
 
@@ -52,7 +61,7 @@ tidal_list = tidal_list([dir_list.isdir] & ~ismember(tidal_list,{'.','..'}));
 
 
 for itidal = 1:length(tidal_list)
-
+    
     savefolder = fullfile(base_savefolder,expt_name,tidal_list{itidal});
     filelist = dir(fullfile(data_dir,tidal_list{itidal},'*','AnalogData*.vs'));
     Nfiles = length(filelist);
@@ -353,4 +362,5 @@ for itidal = 1:length(tidal_list)
             saveas(gcf,fullfile(savefolder,[png_savename '.fig']))
         end
 close all
+end
 end
