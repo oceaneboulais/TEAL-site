@@ -1,10 +1,11 @@
-%% tidalrotation_master.m
+%%%% tidalrotation_master.m
 function x = rotateTIDALData(x,NASdata,NAS_avg_time,Fs)
 % Rotate raw TiDAL data
 % Input:
 %   dataFolder: Folder containing matching Analog and Digital TiDAL Data
 %   NAS_avg_time: number of seconds over which NAS data is averaged
-
+% 
+% At present, individual histogram are generated from an entire file (5 minutes).
 
 NASdata.DigitalDataMeas=[NASdata.DigitalDataMeas(1,:); NASdata.DigitalDataMeas];
 NASdata.g=NASdata.DigitalDataMeas(:,4:6);

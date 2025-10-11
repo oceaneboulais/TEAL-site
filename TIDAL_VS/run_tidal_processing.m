@@ -119,7 +119,8 @@ for itidal = 1:length(tidal_list)
                 disp('Data loaded');
                 toc
     
-                %%%%%%%%%%Rotating processes
+                %%%%Rotate the data
+                %%%%%%%%%%Rotating processes%%%%%%
                 disp('Performing rotation...');
                 y = rotateTIDALData(y,nas,NAS_avg_time,fs);
                 disp('Rotation complete')
