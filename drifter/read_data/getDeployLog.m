@@ -1,7 +1,10 @@
 function driftlog = getDeployLog(gitpath,deploy_no)
 
 driftlog_file = fullfile(gitpath,'drifter','TFO_Drifter_deployment_log.xlsx');
-driftlog = readtable(driftlog_file);
+opts = detectImportOptions(driftlog_file);
+opts = setvartype(opts, 'DeployTimeUTC', 'string');  % or whatever your column is called
+opts = setvartype(opts, 'RecoverTimeUTC', 'string');  % or whatever your column is called
+driftlog = readtable(driftlog_file,opts);
 % driftlog.SunriseUTC = datetime(driftlog.SunriseUTC, "ConvertFrom", "excel",'Format','HH:mm:SS');
 % driftlog.SunsetUTC = datetime(driftlog.SunsetUTC, "ConvertFrom", "excel",'Format','HH:mm:SS');
 
@@ -17,6 +20,10 @@ end
 % recover_time = driftlog.RecoverDateLocal + driftlog.RecoverTimeLocal;
 % driftlog.DeployTimeUTC  = deploy_time + hours(driftlog.TimeZoneOffset);
 % driftlog.RecoverTimeUTC = recover_time + hours(driftlog.TimeZoneOffset);
+
+% make sure recover and deploy times are read as datetime arrays
+driftlog.DeployTimeUTC = datetime(driftlog.DeployTimeUTC);
+driftlog.RecoverTimeUTC =  datetime(driftlog.RecoverTimeUTC);
 
 t0_utc = string(datetime(driftlog.DeployTimeUTC ,'Format','yyyyMMdd''T''HHmmss'));
 t0_utc(ismissing(t0_utc)) = '';

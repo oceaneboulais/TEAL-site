@@ -38,12 +38,14 @@ end
 
 % need to swap for the M-35 to be consistent with later processing
 % (that is, metric computations use atan(Ix,Iy) so they compute the angle
-
-if contains(sensor_type(10),"NS")&&contains(sensor_type(11),"EW")
-    StmpEW = S(:,:,11);
-    StmpNS = S(:,:,10);
-    S(:,:,10) = StmpEW;
-    S(:,:,11) = StmpNS;
+% TODO: kind of a hack for this data set, needs to be updated to be more general
+if length(sensor_type)>9
+    if contains(sensor_type(10),"NS")&&contains(sensor_type(11),"EW")
+        StmpEW = S(:,:,11);
+        StmpNS = S(:,:,10);
+        S(:,:,10) = StmpEW;
+        S(:,:,11) = StmpNS;
+    end
 end
 
 switch type

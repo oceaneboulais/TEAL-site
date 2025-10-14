@@ -12,7 +12,6 @@ base_data_dir = '/Volumes/Shared/TIDAL/';
 % subdir = 'Acoustic_Data';
 
 expt_name_set = {
-    'TiDAL Sept 24 Pier test'
     'TiDAL March 2025 Pier Calib'
     };
 subdir = [];
@@ -210,6 +209,11 @@ for itidal = 1:length(tidal_list)
                 disp('Saving avs file...')
                 save(vssavename,'avsdata')
                 disp('Save complete.')
+                toc
+            else
+                disp('Loading avs data...')
+                load(vssavename,'avsdata')
+                disp('Load complete.')  
                 toc
             end
         elseif vsfile_exists && specfile_exists
