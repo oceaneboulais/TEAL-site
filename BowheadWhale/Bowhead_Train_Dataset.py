@@ -16,7 +16,7 @@ image_scale_factor = 5  # factor to multiply SNR by for saving as unit8 image
 batch_size = 64
 learning_rate = 0.0001
 validation_split = 0.2
-my_debug = False
+
 #define dataloader for loading detections
 
 filelist = [f for f in sorted(os.listdir(folder_path)) if f.endswith('.npy')]
@@ -40,22 +40,20 @@ class CustomDatasetFull(Dataset):
     def __getitem__(self, idx):
         file_path = os.path.join(self.folder_path, self.file_list[idx])
         image = np.load(file_path)
-        image=(image.astype(np.float32))/10
-        #option to add random white noise
-       # mean = image.mean()
-       # std = image.std() if image.std() > 0 else 1.0
-        #image = (image - mean) / std
-        #image[image < 0] = 0
-
-       # image = transforms.ToTensor()(image)
+       
+        #image = transforms.ToTensor()(image)
        
        # fig, ax = plt.subplots(layout='constrained')
        # ax.imshow(image, origin='lower')
+        my_debug = False
         if my_debug:
             print(file_path)
-            fig, ax = plt.subplots(layout='constrained')
-            im = ax.imshow(image, origin='lower')
-            fig.colorbar(im, ax=ax)
+            fig = plt.figure(figsize=(15, 9)) #width, height in inches
+            ax0 = fig.add_subplot(1, 2, 1)
+            im0=plt.imshow(image, cmap='gray', origin='lower')
+            ax0.set_title('Input image')
+            fig.colorbar(im0, ax=ax0)
+
 
         if self.transform:
             image = self.transform(image)
@@ -63,12 +61,27 @@ class CustomDatasetFull(Dataset):
             image = torch.from_numpy(image).float()
             if image.ndim == 2:  # If grayscale, add channel dimension
                 image = image.unsqueeze(0)
+
+        if my_debug:
+            ax1 = fig.add_subplot(1, 2, 2)
+            im1=plt.imshow(image[0,:,:], cmap='gray', origin='lower')
+            ax1.set_title('Converted image')
+            fig.colorbar(im1, ax=ax1)
+            plt.draw()
+            plt.pause(5)  # Pause to ensure the plot updates
+            plt.close('all')
+               
         return image
         
 
 custom_transform = transforms.ToTensor()
 
 dataset = CustomDatasetFull(folder_path, transform=custom_transform,shuffle=False)
+#determine size of input images
+#datatemp = next(iter(train_dataloader))
+print(dataset[0].size())
+image_dims=dataset[0].size()
+image_dims=image_dims[1:] #remove channel dimension
 
 num_samples = len(dataset)
 num_train_samples = int((1-validation_split)*num_samples)
@@ -80,10 +93,11 @@ train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True
 val_dataloader = DataLoader(val_dataset, batch_size=batch_size,shuffle=True)
 
 
+
 #define the autoencoder architecture
 class Autoencoder(nn.Module):
-    def __init__(self, latent_dim):
-        super(Autoencoder, self).__init__()
+    def __init__(self, latent_dim): #Defines the structure of the autoencoder
+        super(Autoencoder, self).__init__()  #need a sequential step?
         self.conv1 = nn.Conv2d(1, 4, 3, padding=1) 
         self.conv2 = nn.Conv2d(4, 8, 3, padding=1)
         self.conv3 = nn.Conv2d(8, 16, 3, padding=1)
@@ -92,8 +106,8 @@ class Autoencoder(nn.Module):
         self.t_conv3 = nn.ConvTranspose2d(4, 1, [3,2], stride=[3,2])
         self.fc1 = nn.Linear(288, latent_dim)
         self.fc2 = nn.Linear(latent_dim, 288)
-        self.pool = nn.MaxPool2d(2, 2)
-    def forward(self, x):
+        self.pool = nn.MaxPool2d(2, 2)  #AdaptiveAvgPool maybe better?
+    def forward(self, x): #when running the model, this is the function that is called
         x = torch.nn.functional.relu(self.conv1(x))        
         x = self.pool(x)
         x = torch.nn.functional.relu(self.conv2(x))
@@ -109,12 +123,16 @@ class Autoencoder(nn.Module):
         output = torch.sigmoid(self.t_conv3(x))
         return output, latent
 
+
+
+
 latent_dim = 16
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+print(f"Using {device} device")
 autoencoder = Autoencoder(latent_dim=latent_dim).to(device)
 autoencoder = autoencoder.float()
 criterion = nn.MSELoss(reduction='mean')
-optimizer = torch.optim.Adam(autoencoder.parameters(), lr=learning_rate)
+optimizer = torch.optim.Adam(autoencoder.parameters(), lr=learning_rate) #optimizer = optim.Adam(model.parameters(), lr=0.001)
 autoencoder.to(device)
 
 #check connection to GPU
