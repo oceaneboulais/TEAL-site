@@ -6,7 +6,7 @@ global avs_hist
 use_remote = false; add_path = true;
 [data_basedir,procdata_basedir,gitpath] = setUpDrifterPaths(use_remote,add_path);
 
-do_bf_processing = false; % if saved beamformer data doesn't exist, process the data
+do_bf_processing = true; % if saved beamformer data doesn't exist, process the data
 do_vs_processing = true; % if saved avs data doesn't exist, process the data
 do_stats = true; % if true, compute the histograms
 overwrite_avs_data = false;
@@ -20,7 +20,7 @@ max_plot_time_hrs = 72;
 expt = ''; % process only this experiment
 drifters =[]; % process only these drifters
 dateset_utc = []; % process only between these times in utc
-deployments =[35]; % process only these deployments 
+deployments =[34:35]; % process only these deployments 
 
 %% plot settings
 save_to_ppt = false; % save the figures in a powerpoint file
@@ -70,7 +70,7 @@ elev_deg = -90:el_res_bf:90;
 
 hist_param.az_edges = -0.5:az_res_hist:360.5;
 hist_param.el_edges = -90.5:el_res_hist:91.5;
-
+hist_param.PdB_edges = 90:0.5:160;
 
 %% freq settings
 do_resample = true;
@@ -84,7 +84,7 @@ fs_resample = 51200;
 %%%%File location settings
 powerpoint_template = fullfile(gitpath,'tools','myTemplate.pptx');
 
-driftlog_file = fullfile(gitpath,'drifter','TFO_Drifter_deployment_log.xlsx');
+driftlog_file = fullfile(gitpath,'drifter','Drifter_TFO_deployment_log.xlsx');
 
 driftlog = getDeployLog(gitpath);
 
@@ -552,7 +552,7 @@ for deployment = deployment_set
                 f1 = fband(iband,1);
                 f2 = fband(iband,2);
                 
-                fprintf('Producing histograms for Deployment %i, Dive %i: freq %1.2fkHz to %1.2fkHz \n',deployment,dive_num,f1/1e3,f2/1e3)
+                fprintf('Producing histograms for Drifter %i, Deployment %i, Dive %i: freq %1.2fkHz to %1.2fkHz \n',drifter_num,deployment,dive_num,f1/1e3,f2/1e3)
 		ax = [];
                 if do_bf_processing
                     set(groot,'CurrentFigure',el_hist_fig); clf;
@@ -564,7 +564,7 @@ for deployment = deployment_set
                     	cb = colorbar; cb.Visible = 'off';
         	    end
                     ax(end+1)=nexttile([4 1]);
-                    title_str = {'Array Elevation Histogram',sprintf('Freq Band %1.2fkhz-%1.2fkHz',f1/1e3,f2/1e3)};
+                    title_str = {sprintf('Drifter %i',drifter_num),'Array Elevation Histogram',sprintf('Freq Band %1.2fkhz-%1.2fkHz',f1/1e3,f2/1e3)};
                     title_str = cat(2,{sprintf('%s to %s',datestr(time_start_utc),datestr(time_stop_utc))},title_str);
         
                     plotElevationHistogram(file_time_utc,el_centers,elev_hist(:,:,iband))
@@ -600,7 +600,7 @@ for deployment = deployment_set
                 if do_vs_processing
                     %% azimuth histogram plot 
  		            ax = [];
-                    title_str = {'AVS Azimuth Histogram',sprintf('Freq Band %1.2fkhz-%1.2fkHz',f1/1e3,f2/1e3)};
+                    title_str = {sprintf('Drifter %i',drifter_num),'AVS Azimuth Histogram',sprintf('Freq Band %1.2fkhz-%1.2fkHz',f1/1e3,f2/1e3)};
                     title_str = cat(2,{sprintf('%s to %s',datestr(time_start_utc),datestr(time_stop_utc))},title_str);
     
                     set(groot,'CurrentFigure',avs_az_hist_fig); clf;
@@ -613,7 +613,7 @@ for deployment = deployment_set
     		    end
                     ax(end+1)=nexttile([4 1]);
     
-                    avs_hist.AziVsPdB.extract_slice('Frequency',fband(iband,:)).sum_slice({'PSD','Frequency'}).image_2D_slice('MaxnormPerY',true,'pcolor');
+                    avs_hist.AziVsPdB.extract_slice('Frequency',fband(iband,:)).sum_slice({'PSD','Frequency'}).image_2D_slice('MaxnormPerX',true,'pcolor');
                     shading flat
                     
     
@@ -646,7 +646,7 @@ for deployment = deployment_set
                     %% elevation histogram plot 
 
                     ax = [];
-                    title_str = {'AVS Elevation Histogram',sprintf('Freq Band %1.2fkhz-%1.2fkHz',f1/1e3,f2/1e3)};
+                    title_str = {sprintf('Drifter %i',drifter_num),'AVS Elevation Histogram',sprintf('Freq Band %1.2fkhz-%1.2fkHz',f1/1e3,f2/1e3)};
                     title_str = cat(2,{sprintf('%s to %s',datestr(time_start_utc),datestr(time_stop_utc))},title_str);
     
                     set(groot,'CurrentFigure',avs_el_hist_fig); clf;
@@ -659,7 +659,7 @@ for deployment = deployment_set
     		    end
                     ax(end+1)=nexttile([4 1]);
     
-                    avs_hist.AziVsEl.extract_slice('Frequency',fband(iband,:)).sum_slice({'Azimuth','Frequency'}).image_2D_slice('MaxnormPerY',true,'pcolor');
+                    avs_hist.AziVsEl.extract_slice('Frequency',fband(iband,:)).sum_slice({'Azimuth','Frequency'}).image_2D_slice('MaxnormPerX',true,'pcolor');
                     shading flat
     
                     hold on

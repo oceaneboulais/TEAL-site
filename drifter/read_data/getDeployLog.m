@@ -1,6 +1,6 @@
 function driftlog = getDeployLog(gitpath,deploy_no)
 
-driftlog_file = fullfile(gitpath,'drifter','TFO_Drifter_deployment_log.xlsx');
+driftlog_file = fullfile(gitpath,'drifter','Drifter_TFO_deployment_log.xlsx');
 opts = detectImportOptions(driftlog_file);
 opts = setvartype(opts, 'DeployTimeUTC', 'string');  % or whatever your column is called
 opts = setvartype(opts, 'RecoverTimeUTC', 'string');  % or whatever your column is called
