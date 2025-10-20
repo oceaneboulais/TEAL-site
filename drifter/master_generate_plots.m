@@ -70,6 +70,7 @@ end
 %%
 ax = [];
 if do_raw_data
+    for avg_type = ["Median" "Mean"];
     switch avg_type
         case 'Median'
             Spowplot = Spow_med;
@@ -153,15 +154,16 @@ if do_raw_data
             pptx.addPicture(gcf);
         end
         if save_plots
-            png_savename = sprintf('Drifter_%i_Acoustic%i_CH%i_%s_%s_%s',...
+            png_savename = sprintf('Drifter_%i_Acoustic%i_%s_CH%i_%s_%s_%s',...
                 driftlog.DrifterNumber(didx),driftlog.AcousticSphere(didx), ...
-                ch_select(sensID),acoustic_config.sensor_type{ch_select(sensID)},...
+                avg_type,ch_select(sensID),acoustic_config.sensor_type{ch_select(sensID)},...
                 datetime(t0_utc,'format','yyyyMMdd''T''HHmmSS'),...
                 datetime(tend_utc,'format','yyyyMMdd''T''HHmmSS'));
 
             saveas(gcf,fullfile(thissavefolder,[png_savename '.png']))
             saveas(gcf,fullfile(thissavefolder,[png_savename '.fig']))
         end
+    end
     end %sensID
 
     % make line plots of in-band noise levels
