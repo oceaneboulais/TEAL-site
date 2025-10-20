@@ -7,15 +7,23 @@ addpath('functions/')
 
 global avs_hist
 
-base_data_dir = '/Volumes/Shared/TIDAL/';
-% expt_name = 'TiDAL_Deployment_Maui_2025';
-% subdir = 'Acoustic_Data';
+% base_data_dir = '/Volumes/Shared/TIDAL/';
+% % expt_name = 'TiDAL_Deployment_Maui_2025';
+% % subdir = 'Acoustic_Data';
+% 
+% expt_name_set = {
+%     'TiDAL March 2025 Pier Calib'
+%     };
+% subdir = [];
+
+
+base_data_dir = '/Volumes/Shared/ONR_DRIFTER/2025_Sep_CA';
 
 expt_name_set = {
-    'TiDAL March 2025 Pier Calib'
+    'Drifter5_Acoustic3_20250926T180000_20250929T200000'
+    'Drifter6_Acoustic4_20250929T204500_20251003T193000'
     };
-subdir = [];
-
+subdir = 'TIDAL';
 
 base_savefolder = fullfile('/Volumes/Shared/Analysis',mfilename);
 
@@ -40,7 +48,7 @@ az_res_hist = 2;
 
 hist_param.az_edges = -0.5:az_res_hist:360.5;
 hist_param.el_edges = -90.5:el_res_hist:91.5;
-
+hist_param.PdB_edges = 110:0.5:160;
 %% freq settings
 nfft = 512; % frequency resolution of FFT in Hz
 prcnt_overlap = 0.50; % percent overlap to use in spectrogram calculation, 0 - 1
