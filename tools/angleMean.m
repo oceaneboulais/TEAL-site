@@ -1,7 +1,8 @@
-function mu = angleMean(alpha,dim)
-% delta = angleMean(alpha,dim)
-% get the difference in the angles alpha and beta in degrees
+function mu = angleMean(alpha, dim)
+%ANGLEMEAN  Mean of angles in degrees (circular mean)
+%   mu = angleMean(alpha, dim)
+%
+%   Computes the mean direction accounting for wrap-around.
 
-N = size(alpha,dim);
-A = prod(exp(1i*alpha*pi/(180*N)),dim);
-mu = angle(A)*180/pi;
+A = mean(exp(1i * alpha * pi / 180), dim);  % take the mean of unit vectors
+mu = angle(A) * 180 / pi;                   % convert back to degrees
