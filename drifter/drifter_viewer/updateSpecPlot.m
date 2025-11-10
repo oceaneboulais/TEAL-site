@@ -8,7 +8,8 @@ selectedButton = app.PlotTypeButtonGroup.SelectedObject;
 ch_idx = str2double(app.Channel.Value);
 PdB = 20*log10(abs(app.S(:,:,ch_idx)));
 
-med_level_dB = medfilt2(PdB,[30 30]);
+% med_level_dB = medfilt2(PdB,[30 30]);
+med_level_dB = imgaussfilt(PdB, 10);  % σ≈10 pixels ≈ 30×30 window
 SNR_dB = PdB - med_level_dB;
 
 if app.TransparencyCheckBox.Value
@@ -29,10 +30,17 @@ Tlabel = 'Time, sec';
 
 switch selectedButton.Text
     case 'Spectrogram'
+%         p=pcolor(current_axes,Tvar,app.F/1e3,PdB);
+%         p.ZData = p.CData;
+%         p.AlphaData = transp; 
+%         p.FaceAlpha = 'flat';
+%         p.AlphaDataMapping = 'none';
+
+        % or use imagesc
         p=pcolor(current_axes,Tvar,app.F/1e3,PdB);
-        p.ZData = p.CData;
-        p.AlphaData = transp; 
-        p.FaceAlpha = 'flat';
+        axis(current_axes, 'xy');            % flip Y so freq increases upward
+%         Apply alpha (transparency) map
+        p.AlphaData = transp;
         p.AlphaDataMapping = 'none';
         shading(current_axes,'flat');% 
         colorbar(current_axes)
@@ -41,7 +49,6 @@ switch selectedButton.Text
         title_str = sprintf('PSD, Channel %i: %s',app.ch_select(ch_idx),app.ch_type(ch_idx));
         xlabel(current_axes,Tlabel)
         ylabel(current_axes,'Freq, kHz')
-        
     case 'AVS Azigram'
         p=pcolor(current_axes,Tvar,app.F/1e3,wrapTo180(app.metrics.azigram)); 
         shading(current_axes,'flat');% 
@@ -119,6 +126,7 @@ switch selectedButton.Text
         xlabel(current_axes,Tlabel)
         ylabel(current_axes,'Freq, kHz')
 end
+
 % keep the limits the same as I switch back and forth
 % xa = xlim(current_axes);
 % ya = ylim(current_axes);

@@ -30,10 +30,13 @@ filenames = vertcat(filelist.name);
 % check file size and remove any zero byte files 
 filesize = vertcat(filelist.bytes);
 badfiles = filesize==0;
-warning('Removing %i bad files:',sum(badfiles))
-display(filenames(filesize==0,:))
-filenames(filesize==0,:) = [];
-filelist(filesize==0) = [];
+if any(badfiles)
+    warning('Removing %i bad files:',sum(badfiles))
+    display(filenames(filesize==0,:))
+    filenames(filesize==0,:) = [];
+    filelist(filesize==0) = [];
+end
+
 
 [~,~,ext] = fileparts(filenames(1,:));
 
@@ -68,8 +71,14 @@ file_duration_sec = 60;
 % file_idx1 = find(time_start_utc>=file_time_utc & time_start_utc<(file_time_utc+seconds(file_duration_sec)),1,'first');
 % file_idx2 = find(time_stop_utc>=file_time_utc & time_stop_utc<(file_time_utc+seconds(file_duration_sec)),1,'first');
 
-file_idx1 = find(file_time_utc+seconds(file_duration_sec)>=time_start_utc&file_time_utc<=time_stop_utc,1,'first');
-file_idx2 = find(file_time_utc<=time_stop_utc&file_time_utc+seconds(file_duration_sec)>=time_start_utc,1,'last');
+% file_idx1 = find(file_time_utc+seconds(file_duration_sec)>=time_start_utc&file_time_utc<=time_stop_utc,1,'first');
+% file_idx2 = find(file_time_utc<=time_stop_utc&file_time_utc+seconds(file_duration_sec)>=time_start_utc,1,'last');
+file_idx1 = find(file_time_utc + seconds(file_duration_sec) > time_start_utc & ...
+                 file_time_utc <= time_stop_utc, 1, 'first');
+
+file_idx2 = find(file_time_utc < time_stop_utc & ...
+                 file_time_utc + seconds(file_duration_sec) > time_start_utc, 1, 'last');
+
 
 if isempty(file_idx2)
     file_idx2 = length(file_time_utc);
