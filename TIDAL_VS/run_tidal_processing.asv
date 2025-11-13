@@ -27,9 +27,9 @@ subdir = 'TIDAL';
 
 base_savefolder = fullfile('/Volumes/Shared/Analysis',mfilename);
 
-overwrite_avs_data = false;
-do_histograms = false;
-save_rotated_wav_file = false;
+overwrite_avs_data = true;
+do_histograms = true;
+save_rotated_wav_file = true;
 
 avs_time_avg = 0.1;
 NAS_avg_time = 0.5;
@@ -165,9 +165,13 @@ for iset = 1:length(expt_name_set)
                 NASdata.tabs_start=filelist(file_idx).name(12:(end-3));
                 temp.tabs=datetime(NASdata.tabs_start,'InputFormat','ddMMMyyyy-HHmm');
                 nas.tabs=[nas.tabs temp.tabs+seconds(t_NAS)];
-                nas.g=[nas.g; NASdata.g];
-                nas.m=[nas.m; NASdata.m];
-                
+                nas.g=[nas.g NASdata.g];
+                nas.m=[nas.m NASdata.m];
+                % acoulen = size(x,1);  %%Five minute file
+                %t_ac=(0:(acoulen-1))./Fs;
+                % disp('Data loaded');
+                %toc
+
                 % compute the spectrogram of each channel
                 disp('compute FFT...')
                 noverlp = floor(nfft*prcnt_overlap);
