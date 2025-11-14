@@ -5,19 +5,9 @@ addpath(genpath('/Volumes/homes/alaferriere/GIT/ThodeLab'))
 addpath('EnumClass/')
 addpath('functions/')
 
-global avs_hist
-
-% base_data_dir = '/Volumes/Shared/TIDAL/';
-% % expt_name = 'TiDAL_Deployment_Maui_2025';
-% % subdir = 'Acoustic_Data';
-%
-% expt_name_set = {
-%     'TiDAL March 2025 Pier Calib'
-%     };
-% subdir = [];
-
-
 base_data_dir = '/Volumes/Shared/ONR_DRIFTER/2025_Sep_CA';
+
+
 
 expt_name_set = {
     'Drifter5_Acoustic3_20250926T180000_20250929T200000'
@@ -162,7 +152,10 @@ for iset = 1:length(expt_name_set)
       subplot(3,1,2);plot(nas.tabs,nas.m);title('magnetometer data');legend('x','y','z');grid on
       subplot(3,1,3);yyaxis left;plot(nas.tabs,nas.g_tot);
       yyaxis right; plot(nas.tabs,nas.m_tot)
-      title('magnitudes');legend('acceleration magnitude','magnetometer magnitude');grid on
-     
+      title('Magnitudes');legend('Acceleration magnitude','Magnetometer magnitude');grid on
+      xlabel('Time (Local)');
+      NASsavefilename = fullfile(savefolder,[expt_name '_' tidal_list{Itidal} '_nas']);
+      saveas(gcf,NASsavefilename,'fig');
+
     end %itidal
 end %iset

@@ -45,3 +45,4 @@ yyaxis right
 plot(driftcam.time_utc,driftcam.roll_deg);grid on;ylabel('Roll (deg)')
 set(gca,'xtick',xtickk)
 xtickangle(90);
+

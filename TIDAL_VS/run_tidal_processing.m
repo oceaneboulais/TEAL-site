@@ -261,7 +261,11 @@ for iset = 1:length(expt_name_set)
             fprintf('File took %1.2f seconds\n\n\n  ',t1)
         end %file_idx
 
-        %%%Plot non-acoustic data for this folder....
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %%%Plot non-acoustic data for this folder....%%%
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
         nas.g_tot=sqrt(sum(abs(nas.g.^2),2));
         nas.m_tot=sqrt(sum(abs(nas.m.^2),2));
         figure
@@ -270,14 +274,17 @@ for iset = 1:length(expt_name_set)
         subplot(3,1,2);plot(nas.tabs,nas.m);title('magnetometer data');legend('x','y','z');grid on
         subplot(3,1,3);yyaxis left;plot(nas.tabs,nas.g_tot);
         yyaxis right; plot(nas.tabs,nas.m_tot)
-        title('magnitudes');legend('acceleration magnitude','magnetometer magnitude');grid on
-        %%%%%Alison, what title should be used for saving this fig?
+        title('Magnitudes');legend('Acceleration magnitude','Magnetometer magnitude');grid on
+        xlabel('Time (Local)');
+        NASsavefilename = fullfile(savefolder,[expt_name '_' tidal_list{Itidal} '_nas']);
+        saveas(gcf,NASsavefilename,'fig');
 
         if specfile_exists
             load(Ssavefilename, 'Spow_avg','Spow_med','F','fband','file_time')
         else
             save(Ssavefilename, 'Spow_avg','Spow_med','F','fband','file_time')
         end
+
         %%%%Save statistical data and generate histograms
 
 
