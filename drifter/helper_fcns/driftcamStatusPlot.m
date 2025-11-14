@@ -59,4 +59,4 @@ if ~isempty(sunset_time) & ~isempty(sunrise_time)
 end
 xa = xlim;
 ax2 = gca(); ax2.XTick = linspace(xa(1),xa(end),80);
-ax2.XTickLabel = '';
+%ax2.XTickLabel = '';

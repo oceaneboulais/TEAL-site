@@ -2,7 +2,9 @@ function [driftcam,control_label] = loadDrifterLogDataV2(time_utc_in,datadrive,d
 % if time_utc is empty, load all the time points for this drifter in the data drive
 % if time_utc is 1 x 2 vector, use that as the limits of the times to load
 % otherwise, interpolate the log to the time points in time_utc
-
+%
+%datadrive is a string of directory of ControlSystem
+% drifter_num is an integer listing drifter number
 
 [~,D] = fileparts(datadrive);
 if ~strcmp(D,'ControlSystem')

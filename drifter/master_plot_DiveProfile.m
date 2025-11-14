@@ -1,0 +1,47 @@
+%%%%%master_plot_DiveProfile.m%%%%%%
+%
+clear all
+close all
+
+datadrive='/Volumes/Shared/ONR_DRIFTER/2025_May_HI/Drifter5_Acoustic3_20250503T220700_20250505T220000/ControlSystem';
+datadrive='/Volumes/Shared/ONR_DRIFTER/2025_Sep_CA/Drifter6_Acoustic4_20250929T204500_20251003T193000/ControlSystem';
+
+Drifter_number=5;
+tick_inc=60*60; %%tick increment in seconds
+
+Tfile=[];
+[driftcam,control_label] = loadDrifterLogDataV2(Tfile,datadrive,Drifter_number);
+
+driftlog.SunsetUTC=[];
+driftlog.SunriseUTC=[];
+
+driftcamStatusPlot(driftcam,driftlog.SunsetUTC,driftlog.SunriseUTC);
+
+xlimm=gca().XLim;
+tmp=datevec(xlimm(1));
+tmp(5:6)=0;
+xlimm(1)=datetime(tmp);
+
+tmp=datevec(xlimm(2));
+if tmp(5)~=0
+    tmp(4)=tmp(4)+1;
+end
+tmp(5:6)=0;
+xlimm(2)=datetime(tmp);
+ set(gca,'XLim',xlimm)
+
+xtickk=xlimm(1):seconds(tick_inc):xlimm(2);
+set(gca,'xtick',xtickk)
+grid minor
+
+%xtickk=xlimm(1):(seconds(tick_inc)/2):xlimm(2);
+set(gca,'XMinorTick','on');
+set(gca,'XMinorGrid','on')
+
+figure
+yyaxis left
+plot(driftcam.time_utc,driftcam.pitch_deg);grid on;ylabel('Pitch (deg)')
+yyaxis right
+plot(driftcam.time_utc,driftcam.roll_deg);grid on;ylabel('Roll (deg)')
+set(gca,'xtick',xtickk)
+xtickangle(90);

@@ -299,12 +299,10 @@ end
 delete(gcp('nocreate'))
 
 
-
-
-
 function parsaveS(fname,Spow_avg,Spow_med,F,fband,Tfile)
 save([fname '.mat'], 'Spow_avg','Spow_med','F','fband','Tfile')
 end
+
 function parsaveB(fname,Bpow_avg,Bpow_med,b_incoh_avg_dB,b_incoh_med_dB,F,fband,Tfile,elev_deg)
 save([fname '.mat'], 'Bpow_avg','Bpow_med','b_incoh_avg_dB','b_incoh_med_dB','F','fband','Tfile','elev_deg')
 end
