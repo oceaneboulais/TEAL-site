@@ -2,3 +2,6 @@
 drifter/run_drifter_processing_v4
 BowheadWhale/S510G0T20100831T000000.WAV
 *.asv
+*.mp4
+.DS_Store
+~$*
