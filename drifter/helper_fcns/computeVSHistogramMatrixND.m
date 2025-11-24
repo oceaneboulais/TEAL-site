@@ -1,4 +1,4 @@
-% function [vs_hist] = computeVSHistogram_Thode(vsdata,params,tabs)
+% function [vs_hist] = computeVSHistogramMatrixND(avsdata,params,tabs,Ifile)
 %
 %azi_param.az_edges = -0.5:2:360.5;
 %azi_param.el_edges = -90.5:2:91.5;
@@ -6,7 +6,9 @@
 %
 %%%%Parameters
 % params:  a structure of parameters arranged as follows:
-%%
+%%% params.az_edges;
+%%% params.el_edges;
+%%% params.PdB_edges;
 % %%%%%%How much time to make original distributions?
 %
 % %%Frequency range to review
@@ -15,6 +17,10 @@
 %
 %
 % params.debug.image=false;
+%
+% Ifile:  if one, initialize data.  Ifile is the index associated with the
+%       tabs vector.
+% tabs:   datenumbers, one per Ifile entered.
 
 function computeVSHistogramMatrixND(avsdata,params,tabs,Ifile)
 % Compute histograms using entire contents of vsdata (1 minute for drifter)
@@ -75,7 +81,7 @@ if Ifile==1 || isempty(avs_hist) %Initialize ouputs, now that we have FF
 
     end
 
-end
+end %if Ifile==1
 
 
 for If=1:length(FF)
@@ -105,7 +111,7 @@ for If=1:length(FF)
             avs_hist.AVTP.N(:,:,:,:,If)=avs_hist.AVTP.N(:,:,:,:,If)+single(histcounts4(avsdata.azigram(If,:),avsdata.PdB(If,:),avsdata.normalized_transport_velocity(If,:), avsdata.intensity_phase(If,:), ...
                 params.grid.azi,params.grid.PdB,params.grid.ItoE,params.grid.IntensityPhase));
     end
-end
+end  %Iff (length(FF))
 
 if 1==0
     %fidx = (vsdata.F>=fband(Iband,1))&(vsdata.F<=fband(Iband,2));

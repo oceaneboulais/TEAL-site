@@ -211,7 +211,8 @@ for iset = 1:length(expt_name_set)
                     opts.compass_offset = declination;
                     opts.elevation_offset = 0;
                     opts.time_avg = avs_time_avg;
-                    avsdata = computeDirectionalMetrics(S(:,:,1),S(:,:,2:4),opts,T);
+                    %%Azigram includes compass declination, so output is with respect to true north.
+                    avsdata = computeDirectionalMetrics(S(:,:,1),S(:,:,2:4),opts,T);  
 
                     toc
                     disp('AVS processing completed')
