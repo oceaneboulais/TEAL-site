@@ -3,6 +3,7 @@
 close all
 clear all
 
+addpath ../drifter/helper_fcns/
 global avs_hist
 
 avs_hist=[];
@@ -10,7 +11,7 @@ avs_hist=[];
 avs_data_folder='~/Projects/ONR_drifter/Deployments/Hawai_2025/Drifter5_Deployment1/Bulk_Analysis/avs_data/';
 tabs_range=[datetime(2025,5,3,19,2,0) datetime(2025,5,3,19,45,0)];
 
-avs_data_folder='/Volumes/Shared/Analysis/run_tidal_processing/Drifter5_Acoustic3_20250503T220700_20250505T220000/Unit001_VS107/avs_data/';
+avs_data_folder='/Volumes/Shared-1/Analysis/run_tidal_processing/Drifter5_Acoustic3_20250503T220700_20250505T220000/Unit001_VS107/avs_data/';
 tabs_range=[datetime(2025,5,3,12,0,0) datetime(2025,5,4,9,0,0)];
 
 tabs_inc=(1);   %Increment in desired histogram in minutes.
