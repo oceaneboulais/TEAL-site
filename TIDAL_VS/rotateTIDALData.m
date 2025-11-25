@@ -19,17 +19,15 @@ acoulen = size(x,1);  %%Five minute file
 t_ac=(0:(acoulen-1))./Fs;
 
 
-
 g_all=zeros(acoulen,3);
 m_all=zeros(acoulen,3);
-
 
 for I=1:3
     g_all(:,I)=interp1(t_NAS,NASdata.g(:,I),t_ac);
     m_all(:,I)=interp1(t_NAS,NASdata.m(:,I),t_ac);
 end
 
-for It=1:(length(t_NAS_update)-1)
+for It=1:(length(t_NAS_update)-1)  %For each interpolated point...
     Igood=find((t_ac>=t_NAS_update(It)) & (t_ac<t_NAS_update(It+1)));
     m=mean(m_all(Igood,:));
     g=mean(g_all(Igood,:));
