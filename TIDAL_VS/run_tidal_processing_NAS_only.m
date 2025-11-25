@@ -6,13 +6,22 @@ addpath('EnumClass/')
 addpath('functions/')
 
 base_data_dir = '/Volumes/Shared/ONR_DRIFTER/2025_Sep_CA';
-
-
-
 expt_name_set = {
     'Drifter5_Acoustic3_20250926T180000_20250929T200000'
     'Drifter6_Acoustic4_20250929T204500_20251003T193000'
     };
+
+base_data_dir= '/Volumes/Shared-1/ONR_DRIFTER/2025_May_HI';
+
+
+
+expt_name_set = {
+    'Drifter5_Acoustic3_20250503T220700_20250505T220000'
+   
+    };
+
+
+
 subdir = 'TIDAL';
 
 base_savefolder = fullfile('/Volumes/Shared/Analysis',mfilename);
@@ -113,7 +122,7 @@ for iset = 1:length(expt_name_set)
             vssavename = fullfile(savefolder,'avs_data',vssavename);
             vsfile_exists = exist(vssavename,'file');
             try
-                [~,NASdata] = readTIDALData(filename,[1 1 0]);
+                [~,NASdata] = readTIDALData(filename,[0 1 0]);
 
                 %%%Store orientation data
                 NASdata.DigitalDataMeas=[NASdata.DigitalDataMeas(1,:); NASdata.DigitalDataMeas];
