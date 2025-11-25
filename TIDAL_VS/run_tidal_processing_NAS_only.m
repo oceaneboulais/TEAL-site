@@ -147,7 +147,7 @@ for iset = 1:length(expt_name_set)
       nas.g_tot=sqrt(sum(abs(nas.g.^2),2));
       nas.m_tot=sqrt(sum(abs(nas.m.^2),2));
       figure
-      subplot(3,1,1);plot(nas.tabs,nas.g);title('acceleration data');legend('x','y','z');grid on
+      h(1)=subplot(3,1,1);plot(nas.tabs,nas.g);title('acceleration data');legend('x','y','z');grid on
       title(sprintf('Accelerometer %s in %s/%s',tidal_list{Itidal},base_data_dir,expt_name),'Interpreter','none')
       subplot(3,1,2);plot(nas.tabs,nas.m);title('magnetometer data');legend('x','y','z');grid on
       subplot(3,1,3);yyaxis left;plot(nas.tabs,nas.g_tot);

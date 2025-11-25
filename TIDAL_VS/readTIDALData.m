@@ -7,7 +7,7 @@ function [x,nas,header] = readTIDALData(filename,which_data)
 %   DigitalDataMeas: magnetometer and accelerometer data 
 %       accelerometer: 4-X, 5-Y, 6-Z
 %       magnetometer: 7-X, 8-Y, 9-Z
-%   which_data (optional): 1 x 3 logical for: [header analog digital]
+%   which_data (optional): 1 x 3 logical for: [analgo  digital header]
 
 if ~exist('which_data','var')
     which_data = [true true true];
