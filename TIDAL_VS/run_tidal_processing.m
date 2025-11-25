@@ -29,7 +29,7 @@ base_savefolder = fullfile('/Volumes/Shared/Analysis',mfilename);
 
 overwrite_avs_data = false;
 do_histograms = false;
-save_rotated_wav_file = false;
+save_rotated_wav_file = true;
 
 avs_time_avg = 0.1;  %seconds averaging
 NAS_avg_time = 0.5;  %Seconds averaging
