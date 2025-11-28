@@ -12,7 +12,7 @@ avs_data_folder='~/Projects/ONR_drifter/Deployments/Hawai_2025/Drifter5_Deployme
 tabs_range=[datetime(2025,5,3,19,2,0) datetime(2025,5,3,19,45,0)];
 
 avs_data_folder='/Volumes/Shared-1/Analysis/run_tidal_processing/Drifter5_Acoustic3_20250503T220700_20250505T220000/Unit001_VS107/avs_data/';
-tabs_range=[datetime(2025,5,3,12,0,0) datetime(2025,5,4,9,0,0)];
+%tabs_range=[datetime(2025,5,3,12,0,0) datetime(2025,5,4,9,0,0)];
 
 tabs_inc=(1);   %Increment in desired histogram in minutes.
 params.az_edges=4:4:360;
@@ -73,7 +73,7 @@ avs_hist.AziVsPdB.bin_grid{Itime}=tabs_output;
 avs_hist.AziVsItoE.bin_grid{Itime}=tabs_output;
 
 save_name=sprintf('avs_hist_%s_%s.mat',datestr(tabs_output(1),30),datestr(tabs_output(end),30));
-save(save_name,'avs_hist')
+save(save_name,'-v7.3','avs_hist')
 
 
 frange=[1500 3000];
