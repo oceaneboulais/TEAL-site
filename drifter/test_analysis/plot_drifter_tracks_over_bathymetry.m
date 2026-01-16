@@ -1,6 +1,8 @@
 close all, clear all
 addpath(genpath('/Users/alaferri/GIT/sio_code/ThodeLab'))
-% add ship GPS tracks over the map?
+
+% add ship GPS tracks over the map? this was only hardcoded for 2023
+% seamount
 add_ship_track = false;
 
 % create an additional figure iwth the dive profile and control status for
@@ -10,10 +12,10 @@ plot_driftcam_status = false;
 use_remote_path = true;
 [data_basedir,procdata_basedir,gitpath,envdir]= setUpDrifterPaths(use_remote_path);
 
-% gebfile = '/Volumes/homes/alaferriere/Databases/GEBCO_2021.nc'; % this is the bathymetry data file
-gebfile = '/Users/alaferri/Databases/GEBCO_2021.nc';
+gebfile = '/Volumes/Shared/Databases/GEBCO_2021.nc'; % this is the bathymetry data file
+% gebfile = '/Users/alaferri/Databases/GEBCO_2021.nc';
 
-driftlog_file = fullfile(gitpath,'drifter','TFO_Drifter_deployment_log.xlsx');
+driftlog_file = fullfile(gitpath,'drifter','Drifter_TFO_deployment_log.xlsx');
 driftlog = getDeployLog(gitpath);
 
 if add_ship_track
@@ -22,7 +24,9 @@ if add_ship_track
 end
 
 % plot all these deployments on one map:
-deployment =29;
+% deployment =31:33; % HI 2025
+deployment =[6:13 23:24 26 34:35]; % CA deployments (except 25 and 30 which have no sat surface data)
+% deployment = [34 35]; % SNIPEE
 
 %% set some plotting options 
 markercolors = lines(length(deployment));
@@ -85,10 +89,6 @@ set(t,'BackgroundColor','none')
 % set (t, 'VerticalAlignment', 'cap')
 
 %% now add a track for each deployment and each dive
-if plot_driftcam_status
-    f2=figure(2);
-    tiledlayout(2,1)
-end
 if ~isempty(deployment)
     k = 0;
     for di = deployment
@@ -135,11 +135,11 @@ if ~isempty(deployment)
         end
             
 
-        % if ~isempty(driftcam)
-        %     max_depth_m = max(driftcam.depth_m);
-        % else
+        if ~isempty(driftcam)
+            max_depth_m = max(driftcam.depth_m);
+        else
             max_depth_m = max(driftlog.MaxSetDepth(deploy_id));
-        % end
+        end
 
         lon_plot = [driftlog.LonLastSat(deploy_id),...
                     driftlog.LonFirstSat(deploy_id)];
@@ -177,7 +177,7 @@ if ~isempty(deployment)
            min(driftlog.TimeLastSatUTC(deploy_id)),max(driftlog.TimeFirstSatUTC(deploy_id)),...
             max_depth_m,vector_sensor{1});
 
-        if ~isempty(driftcam)
+        if ~isempty(driftcam)&plot_driftcam_status
             f2=figure;
             nexttile(1,[1 1]); hold on
             % figure(2); hold on
@@ -186,6 +186,8 @@ if ~isempty(deployment)
             grid on
             set(gca,'fontweight','bold','fontsize',12);
             ax(1) = gca;
+            title(legend_str{k})
+            roundDatetick(4*60)
 
             if add_ship_track
                 % nexttile(5,[2 1]); hold on
@@ -197,29 +199,30 @@ if ~isempty(deployment)
                 ax(2) = gca;
                 % title('Ship Distance')
             end
-        end
-        % nexttile(1,[4,1])
-        figure(f1)
-        sc = scaleruler('on');
-        % setm(sc,'Fontweight','bold','Fontsize',12,'color','w','MajorTick',[5:10:50])
-        setm(sc,'Fontweight','bold','Fontsize',12,'color','w','MajorTick',scale_ruler,'MinorTick',0)
-        colorbar
-        
-        if plot_driftcam_status
+
             % nexttile(5,[2 1])
-            figure(f2)
-            ax(1).XTick = linspace(time_utc(1),time_utc(end),20);
-            ax(2).XTick = linspace(time_utc(1),time_utc(end),20);
-            set(ax(2),'fontweight','bold','fontsize',12,'XTickLabelRotation',90);
+            figure(f2); ax = gca;
+            ax.XTick = linspace(time_utc(1),time_utc(end),20);
+            datetick('x','mm-dd, HH:MM:SS','keepticks')
+            set(ax,'fontweight','bold','fontsize',12,'XTickLabelRotation',90);
         end
     end
     
-    legend(h,legend_str,'FontWeight','bold','fontsize',12)
+    % figure(f1)
+    
 
     % lst_pt = find(~isnan(gpsData.latitude),1,'last');
     % plotm(gpsData.latitude(lst_pt),gpsData.longitude(lst_pt),'ok','linewidth',2,...
     %     'MarkerSize',10,'MarkerFaceColor','k','MarkerEdgeColor','k');
 end
+
+
+figure(f1)
+legend(h,legend_str,'FontWeight','bold','fontsize',12)
+sc = scaleruler('on');
+% setm(sc,'Fontweight','bold','Fontsize',12,'color','w','MajorTick',[5:10:50])
+setm(sc,'Fontweight','bold','Fontsize',12,'color','w','MajorTick',scale_ruler,'MinorTick',0)
+colorbar
 
 
 
