@@ -14,6 +14,7 @@ switch keyword
         end
     case 'R3D_June2024'
         base_dir='/Volumes/R3D_V2/R3D_FirstDeployment_June2024/TiDAL/Tidal00%i';
+        base_dir='/Volumes/Shared/DARPA_R3D_REEFENSE/R3D_FirstDeployment_June2024/TiDAL/Tidal00%i';
         if exist('Inumber','var')
             base_dir=sprintf(base_dir,Inumber);
         end
