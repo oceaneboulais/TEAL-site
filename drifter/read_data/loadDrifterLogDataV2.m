@@ -1,0 +1,103 @@
+function [driftcam,control_label] = loadDrifterLogDataV2(time_utc_in,datadrive,drifter_num)
+% if time_utc is empty, load all the time points for this drifter in the data drive
+% if time_utc is 1 x 2 vector, use that as the limits of the times to load
+% otherwise, interpolate the log to the time points in time_utc
+%
+%datadrive is a string of directory of ControlSystem
+% drifter_num is an integer listing drifter number
+
+[~,D] = fileparts(datadrive);
+if ~strcmp(D,'ControlSystem')
+    log_filelist = dir(fullfile(datadrive,'**',sprintf('Drifter%i*',drifter_num),'ControlSystem','*.txt'));
+    if isempty(log_filelist)
+        log_filelist = dir(fullfile(datadrive,'**',sprintf('Drifter%i*',drifter_num),'ControlSystem','*.mat'));
+    end
+else
+    log_filelist = dir(fullfile(datadrive,'*.txt'));
+    if isempty(log_filelist)
+        log_filelist = dir(fullfile(datadrive,'*.mat'));
+    end
+end
+% if isempty(log_filelist)
+%     driftcam = []; 
+%     control_label = [];
+% end
+driftcam = []; 
+control_label = [];
+for ifile = 1:length(log_filelist)
+    if ifile==1|rem(ifile,10)==0
+        fprintf('Loading file %i of %i...\n',ifile,length(log_filelist));
+    end
+    ssr_file = fullfile(log_filelist(ifile).folder,log_filelist(ifile).name);
+    ext = log_filelist(ifile).name(end-3:end);
+    switch ext
+        case '.mat'
+            ssr_data =load(ssr_file);
+            ssr_data.Timestamp = [ssr_data.Data.Timestamp];
+            ssr_data.Depth = [ssr_data.Data.Depth];
+            ssr_data.Yaw = [ssr_data.Data.Yaw];
+            ssr_data.Pitch = [ssr_data.Data.Pitch];
+            ssr_data.Roll = [ssr_data.Data.Roll];
+            ssr_data.Control_State = [ssr_data.Data.Control_State];
+        case '.txt'
+            ssr_data = loadDrifterLog(ssr_file);
+            
+    end
+    % sometimes there are duplicate time stamps...
+    [ssr_time,iuniq] = unique(datetime(ssr_data.Timestamp,'ConvertFrom','posixtime'));
+%     duplicate_indices = setdiff( 1:numel(ssr_data.Timestamp), iuniq );
+    % if none of the times are in the set, skip them
+    if ~isempty(time_utc_in)
+        if all(ssr_time<min(time_utc_in))||all(ssr_time>max(time_utc_in))
+            continue
+        end
+    end
+    if isempty(time_utc_in)
+        time_utc = ssr_time;
+    elseif size(time_utc_in,2)==2&size(time_utc_in,1)==1
+        time_utc = ssr_time(ssr_time>=time_utc_in(1)&ssr_time<=time_utc_in(2));
+    else
+        time_utc = time_utc_in(:);
+    end
+    depth_m = single(interp1(ssr_time,ssr_data.Depth(iuniq),time_utc));
+    yaw_deg = single(interp1(ssr_time,ssr_data.Yaw(iuniq),time_utc));
+    pitch_deg = single(interp1(ssr_time,ssr_data.Pitch(iuniq),time_utc));
+    roll_deg = single(interp1(ssr_time,ssr_data.Roll(iuniq),time_utc));
+    control_label = strings(size(depth_m));
+    if isfield(ssr_data,"Control_State")
+        % control_state =interp1(ssr_time,ssr_data.Control_State(iuniq),time_utc)-1;
+        % control_label = {'Control','Hibernate', 'Dive', 'Surface', 'Interval'};
+        zeroIdx = ssr_data.Control_State(iuniq)==0;
+        if any(zeroIdx)
+            warning('Removing control_state=0 from %i samples',sum(zeroIdx))
+            iuniq(zeroIdx)=[];
+            ssr_time(zeroIdx) = [];
+        end
+            
+        control_state =interp1(ssr_time,ssr_data.Control_State(iuniq),time_utc);
+
+        control_label_list = ["Control","Hibernate", "Dive", "Surface", "Interval"];
+        control_label(~isnan(control_state)) = control_label_list((int8(control_state(~isnan(control_state))))).';
+    elseif length(unique(ssr_data.OP))==5||max(ssr_data.OP)==5
+        % control_state =interp1(ssr_time,ssr_data.OP(iuniq),time_utc)-1;
+        control_state =interp1(ssr_time,ssr_data.OP(iuniq),time_utc);
+        % control_label = {'Control','Hibernate', 'Dive', 'Surface', 'Interval'};        
+        control_label_list = ["Control","Hibernate", "Dive", "Surface", "Interval"];    
+        control_label(~isnan(control_state)) = control_label_list((int8(control_state(~isnan(control_state))))).';
+    else
+        control_state = interp1(ssr_time,ssr_data.OP(iuniq),time_utc);
+        % control_label = {'Control','Hibernate'};%??
+        control_label_list = ["Control","Hibernate"];%??
+        control_label(~isnan(control_state)) = control_label_list((int8(control_state(~isnan(control_state)))+1)).';
+    end
+    
+    % control_label = cell(size(control_state))
+    % control_label(~isnan(control_state)) = control_label{control_state(~isnan(control_state))+1};
+    driftcam = vertcat(driftcam,table(time_utc,depth_m,yaw_deg,roll_deg,pitch_deg,control_state,control_label));
+end %ifile
+end
+function t = convertLogTime(filelist)
+[~,filename,~]=fileparts(filelist);
+t=datetime(filelist(end-16:end-11),'InputFormat','yyMMdd');
+
+end

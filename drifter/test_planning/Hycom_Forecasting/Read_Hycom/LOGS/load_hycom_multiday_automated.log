@@ -1,0 +1,50 @@
+
+                            < M A T L A B (R) >
+                  Copyright 1984-2024 The MathWorks, Inc.
+              R2024a Update 6 (24.1.0.2689473) 64-bit (maca64)
+                               July 29, 2024
+
+ 
+To get started, type doc.
+For product information, visit www.mathworks.com.
+ 
+>> >> >> >> >> >> >> >> >> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Starting parallel pool (parpool) using the 'Processes' profile ...
+Connected to parallel pool with 12 workers.
+Reading data for 30-Sep-2021 15:00:00
+File already exists for the target time HYCOM_20210930T150000.mat
+Done reading
+Success
+Reading data for 30-Sep-2021 18:00:00
+File already exists for the target time HYCOM_20210930T180000.mat
+Done reading
+Success
+Reading data for 30-Sep-2021 12:00:00
+File already exists for the target time HYCOM_20210930T120000.mat
+Done reading
+Success
+Reading data for 01-Oct-2021 09:00:00
+File already exists for the target time HYCOM_20211001T090000.mat
+Done reading
+Success
+Reading data for 01-Oct-2021 06:00:00
+File already exists for the target time HYCOM_20211001T060000.mat
+Done reading
+Success
+Reading data for 01-Oct-2021 03:00:00
+File already exists for the target time HYCOM_20211001T030000.mat
+Done reading
+Success
+Reading data for 01-Oct-2021 12:00:00
+File already exists for the target time HYCOM_20211001T120000.mat
+Done reading
+Success
+Reading data for 01-Oct-2021
+File already exists for the target time HYCOM_20211001T000000.mat
+Done reading
+Success
+Reading data for 30-Sep-2021 21:00:00
+File already exists for the target time HYCOM_20210930T210000.mat
+Done reading
+Success
+Elapsed time is 15.616978 seconds.
+>> Parallel pool using the 'Processes' profile is shutting down.

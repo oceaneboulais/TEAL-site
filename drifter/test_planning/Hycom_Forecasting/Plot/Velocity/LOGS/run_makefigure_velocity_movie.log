@@ -1,0 +1,34 @@
+
+                            < M A T L A B (R) >
+                  Copyright 1984-2024 The MathWorks, Inc.
+              R2024a Update 6 (24.1.0.2689473) 64-bit (maca64)
+                               July 29, 2024
+
+ 
+To get started, type doc.
+For product information, visit www.mathworks.com.
+ 
+>> >> >> >> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Writing frame 1 of 9
+Writing frame 2 of 9
+Writing frame 3 of 9
+Writing frame 4 of 9
+CodeCache is full. Compiler has been disabled.
+Try increasing the code cache size using -XX:ReservedCodeCacheSize=
+Writing frame 5 of 9
+Writing frame 6 of 9
+Writing frame 7 of 9
+Writing frame 8 of 9
+Writing frame 9 of 9
+Saved figure in HYCOM/Figures/HYCOM_forecast_velocity_200
+Writing frame 1 of 9
+Writing frame 2 of 9
+Writing frame 3 of 9
+Writing frame 4 of 9
+Writing frame 5 of 9
+Writing frame 6 of 9
+Writing frame 7 of 9
+Writing frame 8 of 9
+Writing frame 9 of 9
+Saved figure in HYCOM/Figures/HYCOM_forecast_velocity_200_zoom
+Elapsed time is 15.363607 seconds.
+>> >> 

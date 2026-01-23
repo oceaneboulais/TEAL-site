@@ -1,0 +1,72 @@
+Analysis results store on Jonah2, /Volumes/Shared/Analysis
+
+
+TIDAL example: run_tidal_processing directory.
+
+
+
+
+load Drifter5_Acoustic3_20250503T220700_20250505T220000_Unit001_VS107_avs_hist.mat
+>> whos
+  Name           Size                   Bytes  Class       Attributes
+
+  avs_hist       1x1              17181552844  struct      global    
+  file_time      1x513                   4190  datetime              
+
+ avs_hist
+
+avs_hist = 
+
+  struct with fields:
+
+      AziVsEl: [1×1 MatrixND]
+     AziVsPdB: [1×1 MatrixND]
+    AziVsItoE: [1×1 MatrixND]
+
+>> avs_hist.AziVsEl
+
+ans = 
+
+  MatrixND with properties:
+
+           N: [180×91×257×513 single]
+    bin_grid: {1×4 cell}
+      labels: {'Azimuth'  'Elevation'  'Frequency'  'Time'}
+
+load avs_data_AnalogData-04MAY2025-0736_VS-209sensor-rot.mat
+>> whos
+  Name         Size               Bytes  Class     Attributes
+
+  avsdata      1x1             60721601  struct              
+
+>> avsdata
+
+avsdata = 
+
+  struct with fields:
+
+                              rho: 1000
+                      sound_speed: 1500
+                   compass_offset: 9.3000
+                 elevation_offset: 0
+                    do_3D_metrics: 1
+                                T: [0.0160 0.0320 0.0480 0.0640 0.0800 0.0960 0.1120 0.1280 0.1440 0.1600 0.1760 0.1920 0.2080 … ]
+                                I: [257×2678×3 single]
+                              PdB: [257×2678 single]
+                          azigram: [257×2678 single]
+                          elegram: [257×2678 single]
+                 reactive_azigram: [257×2678 single]
+                 reactive_elegram: [257×2678 single]
+                      phase_speed: [257×2678 single]
+                        intensity: [257×2678 single]
+                intensity_phase_z: [257×2678 single]
+                   energy_density: [257×2678 single]
+    normalized_transport_velocity: [257×2678 single]
+                      KEtoPEratio: [257×2678 single]
+                  intensity_phase: [257×2678 single]
+                intensity_phase_x: [257×2678 double]
+                intensity_phase_y: [257×2678 double]
+                      declination: 9.3000
+                                F: [257×1 double]
+
+Note that length(avsdata.T) is 18749, so 7 samples are averaged for every column of azigram, etc.

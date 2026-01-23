@@ -1,0 +1,15 @@
+Plotting forecasted velocities
+sending incremental file list
+>f.st...... HYCOM_forecast_advection_200_zoom.png
+         32.77K   6%    0.00kB/s    0:00:00          503.90K 100%  149.77MB/s    0:00:00 (xfr#1, to-chk=0/1)
+
+sent 504.16K bytes  received 35 bytes  1.01M bytes/sec
+total size is 503.90K  speedup is 1.00
+sending incremental file list
+>f.st...... HYCOM_forecast_advection_200_zoom.fig
+         32.77K  30%    0.00kB/s    0:00:00          107.37K 100%   71.15MB/s    0:00:00 (xfr#1, to-chk=0/1)
+
+sent 107.54K bytes  received 35 bytes  215.14K bytes/sec
+total size is 107.37K  speedup is 1.00
+Reading complete
+Runtime:  32  seconds

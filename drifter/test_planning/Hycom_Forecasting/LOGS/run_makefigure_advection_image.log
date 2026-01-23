@@ -1,0 +1,15 @@
+Plotting forecasted velocities
+Transfer starting: 1 files
+>f..tp... HYCOM_forecast_advection_200_zoom.png
+          65536  60%  100.55KB/s   00:00:00         108996 100%  166.89KB/s   00:00:00 (xfer#1, to-check=0/1)
+
+sent 109k bytes  received 42 bytes  37157 bytes/sec
+total size is 109k  speedup is 1.00
+Transfer starting: 1 files
+>f..tp... HYCOM_forecast_advection_200_zoom.fig
+          65536  62%   68.08KB/s   00:00:00         105400 100%  109.35KB/s   00:00:00 (xfer#1, to-check=0/1)
+
+sent 106k bytes  received 42 bytes  22523 bytes/sec
+total size is 105k  speedup is 1.00
+Reading complete
+Runtime:  20  seconds

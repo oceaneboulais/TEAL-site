@@ -1,0 +1,63 @@
+Plotting forecasted velocities
+Transfer starting: 1 files
+>f..tp... HYCOM_forecast_advection_200_zoom.avi
+          65536   3%  100.55KB/s   00:00:23        1146880  46%    1.73MB/s   00:00:00        2228224  90%    1.49MB/s   00:00:00        2469144 100%    1.22MB/s   00:00:01 (xfer#1, to-check=0/1)
+
+sent 2470k bytes  received 42 bytes  562k bytes/sec
+total size is 2469k  speedup is 1.00
+ffmpeg version 7.1.1 Copyright (c) 2000-2025 the FFmpeg developers
+  built with Apple clang version 17.0.0 (clang-1700.0.13.3)
+  configuration: --prefix=/opt/homebrew/Cellar/ffmpeg/7.1.1_5 --enable-shared --enable-pthreads --enable-version3 --cc=clang --host-cflags= --host-ldflags='-Wl,-ld_classic' --enable-ffplay --enable-gnutls --enable-gpl --enable-libaom --enable-libaribb24 --enable-libbluray --enable-libdav1d --enable-libharfbuzz --enable-libjxl --enable-libmp3lame --enable-libopus --enable-librav1e --enable-librist --enable-librubberband --enable-libsnappy --enable-libsrt --enable-libssh --enable-libsvtav1 --enable-libtesseract --enable-libtheora --enable-libvidstab --enable-libvmaf --enable-libvorbis --enable-libvpx --enable-libwebp --enable-libx264 --enable-libx265 --enable-libxml2 --enable-libxvid --enable-lzma --enable-libfontconfig --enable-libfreetype --enable-frei0r --enable-libass --enable-libopencore-amrnb --enable-libopencore-amrwb --enable-libopenjpeg --enable-libspeex --enable-libsoxr --enable-libzmq --enable-libzimg --disable-libjack --disable-indev=jack --enable-videotoolbox --enable-audiotoolbox --enable-neon
+  libavutil      59. 39.100 / 59. 39.100
+  libavcodec     61. 19.101 / 61. 19.101
+  libavformat    61.  7.100 / 61.  7.100
+  libavdevice    61.  3.100 / 61.  3.100
+  libavfilter    10.  4.100 / 10.  4.100
+  libswscale      8.  3.100 /  8.  3.100
+  libswresample   5.  3.100 /  5.  3.100
+  libpostproc    58.  3.100 / 58.  3.100
+Input #0, avi, from 'HYCOM/Figures/HYCOM_forecast_advection_200_zoom.avi':
+  Duration: 00:00:01.00, start: 0.000000, bitrate: 19753 kb/s
+  Stream #0:0: Video: mjpeg (Baseline) (MJPG / 0x47504A4D), yuvj420p(pc, bt470bg/unknown/unknown), 1636x1798 [SAR 1:1 DAR 818:899], 6 fps, 6 tbr, 6 tbn
+Stream mapping:
+  Stream #0:0 -> #0:0 (mjpeg (native) -> h264 (libx264))
+Press [q] to stop, [?] for help
+[libx264 @ 0x123f07f90] using SAR=1/1
+[libx264 @ 0x123f07f90] using cpu capabilities: ARMv8 NEON
+[libx264 @ 0x123f07f90] profile High, level 5.0, 4:2:0, 8-bit
+[libx264 @ 0x123f07f90] 264 - core 164 r3108 31e19f9 - H.264/MPEG-4 AVC codec - Copyleft 2003-2023 - http://www.videolan.org/x264.html - options: cabac=1 ref=3 deblock=1:0:0 analyse=0x3:0x113 me=hex subme=7 psy=1 psy_rd=1.00:0.00 mixed_ref=1 me_range=16 chroma_me=1 trellis=1 8x8dct=1 cqm=0 deadzone=21,11 fast_pskip=1 chroma_qp_offset=-2 threads=18 lookahead_threads=3 sliced_threads=0 nr=0 decimate=1 interlaced=0 bluray_compat=0 constrained_intra=0 bframes=3 b_pyramid=2 b_adapt=1 b_bias=0 direct=1 weightb=1 open_gop=0 weightp=2 keyint=250 keyint_min=6 scenecut=40 intra_refresh=0 rc_lookahead=40 rc=crf mbtree=1 crf=23.0 qcomp=0.60 qpmin=0 qpmax=69 qpstep=4 ip_ratio=1.40 aq=1:1.00
+Output #0, mp4, to 'HYCOM/Figures/HYCOM_forecast_advection_200_zoom.mp4':
+  Metadata:
+    encoder         : Lavf61.7.100
+  Stream #0:0: Video: h264 (avc1 / 0x31637661), yuvj420p(pc, bt470bg/unknown/unknown, progressive), 1636x1798 [SAR 1:1 DAR 818:899], q=2-31, 6 fps, 12288 tbn
+      Metadata:
+        encoder         : Lavc61.19.101 libx264
+      Side data:
+        cpb: bitrate max/min/avg: 0/0/0 buffer size: 0 vbv_delay: N/A
+[out#0/mp4 @ 0x600003ed4000] video:223KiB audio:0KiB subtitle:0KiB other streams:0KiB global headers:0KiB muxing overhead: 0.414716%
+frame=    6 fps=0.0 q=-1.0 Lsize=     224KiB time=00:00:00.66 bitrate=2748.6kbits/s speed=5.26x    
+[libx264 @ 0x123f07f90] frame I:1     Avg QP:20.13  size: 33894
+[libx264 @ 0x123f07f90] frame P:3     Avg QP:20.60  size: 42572
+[libx264 @ 0x123f07f90] frame B:2     Avg QP:18.64  size: 32904
+[libx264 @ 0x123f07f90] consecutive B-frames: 33.3% 66.7%  0.0%  0.0%
+[libx264 @ 0x123f07f90] mb I  I16..4: 19.6% 75.0%  5.4%
+[libx264 @ 0x123f07f90] mb P  I16..4: 20.2% 34.2%  6.5%  P16..4:  1.5%  0.2%  0.1%  0.0%  0.0%    skip:37.2%
+[libx264 @ 0x123f07f90] mb B  I16..4: 16.2% 13.4%  1.9%  B16..8:  4.5%  0.6%  0.4%  direct: 8.4%  skip:54.7%  L0:28.1% L1:56.7% BI:15.2%
+[libx264 @ 0x123f07f90] 8x8 transform intra:59.1% inter:59.8%
+[libx264 @ 0x123f07f90] coded y,uvDC,uvAC intra: 8.7% 23.0% 11.2% inter: 4.4% 8.5% 2.1%
+[libx264 @ 0x123f07f90] i16 v,h,dc,p: 53% 45%  1%  0%
+[libx264 @ 0x123f07f90] i8 v,h,dc,ddl,ddr,vr,hd,vl,hu: 63% 16% 20%  0%  0%  0%  0%  0%  0%
+[libx264 @ 0x123f07f90] i4 v,h,dc,ddl,ddr,vr,hd,vl,hu: 43% 26% 17%  2%  3%  3%  3%  2%  2%
+[libx264 @ 0x123f07f90] i8c dc,h,v,p: 63% 18% 18%  2%
+[libx264 @ 0x123f07f90] Weighted P-Frames: Y:0.0% UV:0.0%
+[libx264 @ 0x123f07f90] ref P L0: 72.1% 20.5%  7.1%  0.3%
+[libx264 @ 0x123f07f90] ref B L0: 92.2%  7.8%
+[libx264 @ 0x123f07f90] kb/s:1819.35
+Transfer starting: 1 files
+>f..tp... HYCOM_forecast_advection_200_zoom.mp4
+          65536  29%   52.10KB/s   00:00:03         229054 100%  181.88KB/s   00:00:01 (xfer#1, to-check=0/1)
+
+sent 229k bytes  received 42 bytes  50927 bytes/sec
+total size is 229k  speedup is 1.00
+Reading complete
+Runtime:  24  seconds

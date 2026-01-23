@@ -1,0 +1,68 @@
+function updateBFData(app)
+if isempty(app.B_pow)
+    return
+end
+% f1 = app.BFLower.Value*1e3;
+% f2 = app.BFUpper.Value*1e3;
+f1 = app.YlimLower.Value*1e3;
+f2 = app.YlimUpper.Value*1e3;
+fidx = (app.B_F>=f1)&(app.B_F<=f2);
+
+bf_data.f_band = [f1 f2];
+bf_data.B_pow = app.B_pow;
+[bf_data.B_pow_max,pow_idx] = max(squeeze(app.B_pow(:,:,:)),[],3);
+bf_data.B_coh = squeeze(abs(sum(app.B_pow(fidx,:,:,:))));
+bf_data.B_incoh = squeeze(sum(app.B_pow(fidx,:,:,:)));
+[AZ,EL] = meshgrid(app.az_deg,app.elev_deg);
+bf_data.max_pow_el = squeeze(EL(pow_idx));
+bf_data.max_pow_az = squeeze(AZ(pow_idx));app = 
+bf_data.el_deg = app.elev_deg;
+bf_data.az_deg = app.az_deg;
+
+tidx = app.T <= app.XlimUpper.Value & app.T>=app.XlimLower.Value;
+T = app.T(tidx); 
+
+[bf_data.Banglemax,max_idx] = max(bf_data.B_incoh(tidx,:),[],2);
+bf_data.elev_est = EL(max_idx);
+bf_data.az_est = AZ(max_idx);
+
+el_res = 1;
+el_edges = -90.5:el_res:91.5;
+
+bin_width = median(diff(el_edges));
+
+bf_data.elev_hist = histcounts(bf_data.elev_est,el_edges,'Normalization','count'); 
+bf_data.el_centers = el_edges(1:end-1)+bin_width/2;
+
+app.bf_data = bf_data;
+
+% also update the beamformer plots 
+% T = seconds(app.T_utc - app.T_utc(1));
+
+p=pcolor(app.UIAxesBF,app.T,app.bf_data.el_deg,...
+    10*log10(abs(squeeze(app.bf_data.B_incoh(:,:,app.bf_data.az_deg==0)).')));
+p.ZData = p.CData;
+shading(app.UIAxesBF,'flat')
+colorbar(app.UIAxesBF)
+colormap(app.UIAxesBF,'jet')
+xlabel(app.UIAxesBF,'Time, s')
+ylabel(app.UIAxesBF,'Elevation, deg')
+
+ya = [min(app.elev_deg) max(app.elev_deg)];
+xa = [app.XlimLower.Value app.XlimUpper.Value];
+ca = [app.BFdBLower.Value app.BFdBUpper.Value];
+xlim(app.UIAxesBF,xa); ylim(app.UIAxesBF,ya); %clim(app.UIAxesBF,ca);
+clim(app.UIAxesBF,ca)
+
+title_str=sprintf('%s to %s',datestr(app.T_utc(1)),datestr(app.T_utc(end)));
+title_str_s = sprintf('%1.2f to %1.2f sec',T(1),T(end));
+
+title(app.UIAxesBF,{sprintf('Beamformer Power, %1.1f kHz - %1.2f kHz',...
+    app.bf_data.f_band(1)/1e3,app.bf_data.f_band(2)/1e3),title_str,title_str_s})
+
+bar(app.UIAxesHist,app.bf_data.el_centers,app.bf_data.elev_hist)
+grid(app.UIAxesHist,'on')
+xlabel(app.UIAxesHist,'Elevation, deg')
+ylabel(app.UIAxesHist,'Count')
+title(app.UIAxesHist,{sprintf('Beamformer Elevation Histogram, %1.1f kHz - %1.2f kHz',...
+    app.bf_data.f_band(1)/1e3,app.bf_data.f_band(2)/1e3),title_str,title_str_s})
