@@ -256,6 +256,29 @@
             display: block;
         }
 
+        .about-toggle {
+            display: inline-block;
+            margin-top: 1rem;
+            color: #4ecdc4;
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+            pointer-events: auto;
+        }
+
+        .about-toggle:hover {
+            text-decoration: underline;
+        }
+
+        .about-content {
+            display: none;
+            margin-top: 1rem;
+        }
+
+        .about-content.open {
+            display: block;
+        }
+
         /* Contact */
         .contact-grid {
             display: grid;
@@ -442,7 +465,6 @@
                     <li><a href="#meet-the-lab">Meet the Lab</a></li>
                     <li><a href="#publications">Publications</a></li>
                     <li><a href="#experience">Experience the Science</a></li>
-                    <li><a href="#research">Research</a></li>
                     <li><a href="#support">Support</a></li>
                 </ul>
             </div>
@@ -464,11 +486,17 @@
                 <h2 style="font-size: 3rem; margin-bottom: 2rem; color: #4ecdc4;">About the Lab</h2>
                 
                 <div style="margin-bottom: 3rem; padding: 2.5rem; background: rgba(78, 205, 196, 0.08); border-radius: 20px; border: 1px solid rgba(78, 205, 196, 0.2);">
-                    <p style="color: rgba(255,255,255,0.9); font-size: 1.15rem; line-height: 2; text-align: justify;">
-                        The Thode Environmental Acoustic Lab pioneers interdisciplinary approaches to marine ecosystem conservation through cutting-edge acoustic and visual monitoring technologies. Our research leverages advanced directional acoustics and vector sensor arrays to study cetacean behavior and population dynamics while assessing the impacts of anthropogenic noise on marine mammal communication and migration patterns. Led by Dr. Aaron Thode's expertise in passive acoustic monitoring of bowhead whales, gray whales, and humpback whales in Arctic and Pacific environments, the lab has developed sophisticated algorithms for real-time acoustic localization and automated detection systems that operate even in the presence of industrial seismic surveys and shipping noise. 
-                        <br><br>
-                        Through collaborative research with graduate students and postdoctoral scholars, our work extends beyond cetacean conservation to encompass coral reef ecosystem enhancement through acoustic enrichment techniques. We employ autonomous visual monitoring systems combined with passive acoustics to track fish larvae settlement and reef fish recruitment, investigating how underwater soundscapes—both natural and artificially enriched—influence larval behavior and community assembly on degraded reefs. This multifaceted approach integrates bioacoustic analysis, computer vision, and oceanographic instrumentation to address critical questions in marine conservation, from understanding the Lombard effect in whale populations responding to noise pollution, to quantifying the efficacy of acoustic attraction methods for coral reef restoration, ultimately providing data-driven insights for policy makers and conservation practitioners working to protect vulnerable marine ecosystems in an era of increasing human impact.
-                    </p>
+                    <div>
+                        <p style="color: rgba(255,255,255,0.9); font-size: 1.15rem; line-height: 2; text-align: justify; margin-bottom: 0;">
+                            The Thode Environmental Acoustic Lab pioneers interdisciplinary approaches to marine ecosystem conservation through cutting-edge acoustic and visual monitoring technologies. Our research leverages advanced directional acoustics and vector sensor arrays to study cetacean behavior and population dynamics while assessing the impacts of anthropogenic noise on marine mammal communication and migration patterns. Led by Dr. Aaron Thode's expertise in passive acoustic monitoring of bowhead whales, gray whales, and humpback whales in Arctic and Pacific environments, the lab has developed sophisticated algorithms for real-time acoustic localization and automated detection systems that operate even in the presence of industrial seismic surveys and shipping noise.
+                        </p>
+                        <span class="about-toggle" onclick="toggleAbout()">Read more</span>
+                    </div>
+                    <div id="about-content" class="about-content">
+                        <p style="color: rgba(255,255,255,0.9); font-size: 1.15rem; line-height: 2; text-align: justify; margin-top: 1rem; margin-bottom: 0;">
+                            Through collaborative research with graduate students and postdoctoral scholars, our work extends beyond cetacean conservation to encompass coral reef ecosystem enhancement through acoustic enrichment techniques. We employ autonomous visual monitoring systems combined with passive acoustics to track fish larvae settlement and reef fish recruitment, investigating how underwater soundscapes—both natural and artificially enriched—influence larval behavior and community assembly on degraded reefs. This multifaceted approach integrates bioacoustic analysis, computer vision, and oceanographic instrumentation to address critical questions in marine conservation, from understanding the Lombard effect in whale populations responding to noise pollution, to quantifying the efficacy of acoustic attraction methods for coral reef restoration, ultimately providing data-driven insights for policy makers and conservation practitioners working to protect vulnerable marine ecosystems in an era of increasing human impact.
+                        </p>
+                    </div>
                 </div>
                 
                 <div style="margin-top: 3rem; padding: 2rem; background: rgba(78, 205, 196, 0.1); border-radius: 15px; border: 1px solid rgba(78, 205, 196, 0.3);">
@@ -551,8 +579,20 @@
                 <p style="text-align: center; color: rgba(255,255,255,0.7); margin-bottom: 3rem;">Over 60 publications spanning directional acoustics monitoring marine mammals, reef ecosystems, and signal processing</p>
                 
                 <div class="publication-item">
-                    <div class="authors">Alford, M. H., Thode, A., Voet, G., et al.</div>
-                    <div class="title">A 90-m-Tall Neutrally Buoyant Instrument Chain for Measuring Ocean Fine Structure in a Quasi-Lagrangian Reference Frame</div>
+                    <div class="authors">Boulais, O., Thode, A., Pickering, C., et al.</div>
+                    <div class="title">Autonomous cameras reveal larval reef fish responses to acoustic enrichment and lunar phase</div>
+                    <div class="journal">Scientific Reports, 16(1), 21200 (2026)</div>
+                </div>
+
+                <div class="publication-item">
+                    <div class="authors">Wei, C., Laferriere, A. B., Yen, W.-K., Thode, A., Bevans, D., Freeman, L., & Kaipa, K.</div>
+                    <div class="title">Inter-platform coordination for estimating oceanic velocity gradients using Lagrangian floats</div>
+                    <div class="journal">IEEE Journal of Oceanic Engineering (2026)</div>
+                </div>
+
+                <div class="publication-item">
+                    <div class="authors">Alford, M. H., Thode, A., Voet, G., Laferriere, A. B., Le Boyer, A., Couto, N., Souhrada, K., Bevans, D., Berkenpas, E., & Freeman, L.</div>
+                    <div class="title">A 90-m-tall neutrally buoyant instrument chain for measuring ocean fine structure in a quasi-Lagrangian reference frame</div>
                     <div class="journal">Journal of Atmospheric and Oceanic Technology, 42(4), 425–434 (2025)</div>
                 </div>
                 
@@ -566,6 +606,48 @@
                     <div class="authors">Kügler, A., Lammers, M. O., Pack, A. A., Tenorio-Hallé, L., & Thode, A. M.</div>
                     <div class="title">Diel spatio-temporal patterns of humpback whale singing on a high-density breeding ground</div>
                     <div class="journal">Royal Society Open Science, 11(1), 230279 (2024)</div>
+                </div>
+
+                <div class="publication-item">
+                    <div class="authors">Petersma, F. T., Thomas, L., Thode, A. M., Harris, D., Marques, T. A., Cheoo, G. V., & Kim, K. H.</div>
+                    <div class="title">Accommodating false positives within acoustic spatial capture–recapture, with variable source levels, noisy bearings and an inhomogeneous spatial density</div>
+                    <div class="journal">Journal of Agricultural, Biological and Environmental Statistics (2023)</div>
+                </div>
+
+                <div class="publication-item">
+                    <div class="authors">Tenorio-Hallé, L., Thode, A. M., Lammers, M. O., Conrad, A. S., & Kim, K. H.</div>
+                    <div class="title">Multi-target 2D tracking method for singing humpback whales using vector sensors</div>
+                    <div class="journal">Journal of the Acoustical Society of America, 151(1), 126–137 (2022)</div>
+                </div>
+
+                <div class="publication-item">
+                    <div class="authors">Thode, A. M., Conrad, A. S., Ozanich, E., King, R., Freeman, S. E., Freeman, L. A., Zgliczynski, B., Gerstoft, P., & Kim, K. H.</div>
+                    <div class="title">Automated two-dimensional localization of underwater acoustic transient impulses using vector sensor image processing</div>
+                    <div class="journal">Journal of the Acoustical Society of America, 149(2), 770–787 (2021)</div>
+                </div>
+
+                <div class="publication-item">
+                    <div class="authors">Ozanich, E., Thode, A., Gerstoft, P., Freeman, L. A., & Freeman, S.</div>
+                    <div class="title">Deep embedded clustering of coral reef bioacoustics</div>
+                    <div class="journal">Journal of the Acoustical Society of America, 149(4), 2587–2601 (2021)</div>
+                </div>
+
+                <div class="publication-item">
+                    <div class="authors">Blackwell, S. B., Thode, A. M., Conrad, A. S., Ferguson, M. C., Berchok, C. L., Stafford, K. M., Marques, T. A., & Kim, K. H.</div>
+                    <div class="title">Estimating acoustic cue rates in bowhead whales during their fall migration through the Alaskan Beaufort Sea</div>
+                    <div class="journal">Journal of the Acoustical Society of America, 149(5), 3611–3625 (2021)</div>
+                </div>
+
+                <div class="publication-item">
+                    <div class="authors">Bonnel, J., Thode, A., Wright, D., & Chapman, R.</div>
+                    <div class="title">Nonlinear time-warping made simple: a step-by-step tutorial on underwater acoustic modal separation with a single hydrophone</div>
+                    <div class="journal">Journal of the Acoustical Society of America, 147(3), 1897–1926 (2020)</div>
+                </div>
+
+                <div class="publication-item">
+                    <div class="authors">Frouin-Mouy, H., Tenorio-Halle, L., Thode, A., Swartz, S., & Urban, J.</div>
+                    <div class="title">Using two drones to simultaneously monitor visual and acoustic behaviour of gray whales in Baja California, Mexico</div>
+                    <div class="journal">Journal of Experimental Marine Biology and Ecology, 525 (2020)</div>
                 </div>
 
                 <div style="text-align: center; margin-top: 2rem;">
@@ -634,39 +716,6 @@
                             <p style="font-size: 0.9rem; color: rgba(255,255,255,0.6);">🔹 Deep neural networks<br>🔹 Automated call detection<br>🔹 Noise-robust analysis</p>
                         </div>
                     </div> -->
-                </div>
-            </div>
-        </section>
-
-        <!-- Research Topics Section -->
-        <section id="research" class="content-section">
-            <div class="container">
-                <h2 style="font-size: 3rem; margin-bottom: 2rem; text-align: center; color: #4ecdc4;">Research Topics</h2>
-                <div class="card-grid">
-                    <div class="card">
-                        <h3>Ocean Acoustics</h3>
-                        <p style="color: rgba(255,255,255,0.8);">Investigating sound propagation in marine environments and developing advanced acoustic sensing techniques.</p>
-                    </div>
-                    <div class="card">
-                        <h3>Marine Mammal Biology</h3>
-                        <p style="color: rgba(255,255,255,0.8);">Studying marine mammal vocalizations, behavior, and population dynamics using passive acoustic monitoring.</p>
-                    </div>
-                    <div class="card">
-                        <h3>Acoustics and Infrasound</h3>
-                        <p style="color: rgba(255,255,255,0.8);">Analyzing low-frequency acoustic signals in ocean environments and their applications.</p>
-                    </div>
-                    <div class="card">
-                        <h3>Fisheries Biology</h3>
-                        <p style="color: rgba(255,255,255,0.8);">Applying acoustic methods to fisheries research and conservation efforts.</p>
-                    </div>
-                    <div class="card">
-                        <h3>Polar Ecology</h3>
-                        <p style="color: rgba(255,255,255,0.8);">Examining acoustic environments and marine life in Arctic and polar regions.</p>
-                    </div>
-                    <div class="card">
-                        <h3>Applied Ocean Sciences</h3>
-                        <p style="color: rgba(255,255,255,0.8);">Developing practical applications of ocean acoustic technology for environmental monitoring.</p>
-                    </div>
                 </div>
             </div>
         </section>
@@ -876,6 +925,13 @@
         function toggleMission() {
             const section = document.getElementById('mission-content');
             const trigger = document.querySelector('.mission-toggle');
+            const isOpen = section.classList.toggle('open');
+            trigger.textContent = isOpen ? 'Read less' : 'Read more';
+        }
+
+        function toggleAbout() {
+            const section = document.getElementById('about-content');
+            const trigger = document.querySelector('.about-toggle');
             const isOpen = section.classList.toggle('open');
             trigger.textContent = isOpen ? 'Read less' : 'Read more';
         }
