@@ -725,9 +725,30 @@
             <div class="container">
                 <h2 style="font-size: 3rem; margin-bottom: 2rem; text-align: center; color: #4ecdc4;">Support Us</h2>
                 
-                <p style="text-align: center; color: rgba(255,255,255,0.8); margin-bottom: 3rem; font-size: 1.1rem; max-width: 800px; margin-left: auto; margin-right: auto; line-height: 1.7;">
+                <p style="text-align: center; color: rgba(255,255,255,0.8); margin-bottom: 1rem; font-size: 1.1rem; max-width: 800px; margin-left: auto; margin-right: auto; line-height: 1.7;">
                     If you are interested in supporting research at the Thode Environmental Acoustic Lab, please contact Dr. Aaron Thode or the <a href="https://scripps.ucsd.edu/giving/contact-us" target="_blank" style="color: #4ecdc4; text-decoration: none;">Scripps Development Office</a> for more information.
                 </p>
+
+                <!-- Email built at runtime so static scrapers can't harvest the plain address -->
+                <p style="text-align: center; color: rgba(255,255,255,0.8); margin-bottom: 3rem; font-size: 1.1rem;">
+                    <span id="pi-email-contact">Dr. Aaron Thode</span>
+                </p>
+                <script>
+                    (function() {
+                        var user = "athode";
+                        var domain = "ucsd.edu";
+                        var address = user + "@" + domain;
+                        var link = document.createElement("a");
+                        link.href = "mailto:" + address;
+                        link.textContent = address;
+                        link.style.color = "#4ecdc4";
+                        link.style.textDecoration = "none";
+
+                        var container = document.getElementById("pi-email-contact");
+                        container.textContent = "Dr. Aaron Thode: ";
+                        container.appendChild(link);
+                    })();
+                </script>
 
                 <h3 style="color: #4ecdc4; margin-top: 3rem; margin-bottom: 2rem; text-align: center; font-size: 1.8rem;">Ways to Support Our Lab</h3>
                 
@@ -772,11 +793,6 @@
                 <h3 style="color: #4ecdc4; margin-top: 4rem; margin-bottom: 2rem; text-align: center; font-size: 1.8rem;">Contact Information</h3>
                 
                 <div class="contact-grid">
-                    <div class="contact-item">
-                        <h3>Email</h3>
-                        <p><a href="mailto:athode@ucsd.edu">athode@ucsd.edu</a></p>
-                    </div>
-                   
                     <div class="contact-item">
                         <h3>Mailing Address</h3>
                         <p style="color: rgba(255,255,255,0.8); line-height: 1.8;">
@@ -861,7 +877,7 @@
                 </div>
 
                 <div class="team-member">
-                    <div class="profile-circle">A</div>
+                    <img src="Meet_the_Team/headshots/abby_profile.png" alt="Abby Hanes" class="profile-circle" style="width: 120px; height: 120px; object-fit: cover; border-radius: 50%; margin: 0 auto 1.5rem; display: block; background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%); border: 3px solid rgba(78, 205, 196, 0.3);">
                     <h4>Abby Hanes</h4>
                     <p class="role">Team Member</p>
                     <p class="bio">Placeholder profile for an upcoming lab member contributing to acoustic research, fieldwork, and marine data analysis.</p>
@@ -872,7 +888,7 @@
                 </div>
 
                 <div class="team-member">
-                    <div class="profile-circle">H</div>
+                    <img src="Meet_the_Team/headshots/angel_profile.JPG" alt="Angel Huang" class="profile-circle" style="width: 120px; height: 120px; object-fit: cover; border-radius: 50%; margin: 0 auto 1.5rem; display: block; background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%); border: 3px solid rgba(78, 205, 196, 0.3);">
                     <h4>Angdl Huang</h4>
                     <p class="role">Team Member</p>
                     <p class="bio">Placeholder profile for a new collaborator contributing to marine acoustics, signal analysis, and interdisciplinary ecological research.</p>
