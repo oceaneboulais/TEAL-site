@@ -233,6 +233,29 @@
             font-size: 0.9rem;
         }
 
+        .mission-toggle {
+            display: inline-block;
+            margin-top: 1rem;
+            color: #4ecdc4;
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+            pointer-events: auto;
+        }
+
+        .mission-toggle:hover {
+            text-decoration: underline;
+        }
+
+        .mission-content {
+            display: none;
+            margin-top: 1rem;
+        }
+
+        .mission-content.open {
+            display: block;
+        }
+
         /* Contact */
         .contact-grid {
             display: grid;
@@ -451,9 +474,14 @@
                 <div style="margin-top: 3rem; padding: 2rem; background: rgba(78, 205, 196, 0.1); border-radius: 15px; border: 1px solid rgba(78, 205, 196, 0.3);">
                     <h3 style="color: #4ecdc4; margin-bottom: 1rem; text-align: center;">Our Mission</h3>
                     <p style="color: rgba(255,255,255,0.8); text-align: center; line-height: 1.8; font-size: 1.1rem;">
-                        To advance our understanding of marine ecosystems through innovative vector sensor-based acoustic 
-                        research, autonomous monitoring with audio-visual modalities, and develop deep learning techniques to support conservation efforts.
+                        To advance our understanding of marine ecosystems through innovative vector sensor-based acoustic research, autonomous monitoring with audio-visual modalities, and applied machine learning. 
+                        <span class="mission-toggle" onclick="toggleMission()">Read more</span>
                     </p>
+                    <div id="mission-content" class="mission-content">
+                        <p style="color: rgba(255,255,255,0.8); text-align: center; line-height: 1.8; font-size: 1.1rem;">
+                            Our work supports conservation by revealing how marine animals communicate, respond to environmental change, and interact with soundscapes in dynamic coastal and polar ecosystems. We pair field observations with signal processing, computer vision, and ecological analysis to develop practical tools for protecting vulnerable marine life and improving ocean stewardship.
+                        </p>
+                    </div>
                 </div>
             </div>
         </section>
@@ -680,9 +708,9 @@
                         <div style="width: 80px; height: 80px; margin: 0 auto 1.5rem; border-radius: 15px; background: rgba(78, 205, 196, 0.2); display: flex; align-items: center; justify-content: center; font-size: 2.5rem;">
                             🔬
                         </div>
-                        <h3>Equipment & Technology</h3>
+                        <h3>Accelerate Reef Restoration with Acoustic Enrichment Project </h3>
                         <p style="color: rgba(255,255,255,0.7); line-height: 1.7; margin-bottom: 1rem;">
-                            Support the development and deployment of advanced acoustic instruments, hydrophone arrays, and autonomous monitoring systems.
+                            Support the development and deployment of directional acoustic instruments, active playback for acoustic enrichment and autonomous visual monitoring systems towards pantropical reef restoration.
                         </p>
                     </div>
                 </div>
@@ -782,6 +810,28 @@
                         <a href="https://oceaneboulais.net" target="_blank">Website</a>
                     </div>
                 </div>
+
+                <div class="team-member">
+                    <div class="profile-circle">A</div>
+                    <h4>Abby Hanes</h4>
+                    <p class="role">Team Member</p>
+                    <p class="bio">Placeholder profile for an upcoming lab member contributing to acoustic research, fieldwork, and marine data analysis.</p>
+                    <div class="team-links">
+                        <a href="#">LinkedIn</a>
+                        <a href="#">Website</a>
+                    </div>
+                </div>
+
+                <div class="team-member">
+                    <div class="profile-circle">H</div>
+                    <h4>Angdl Huang</h4>
+                    <p class="role">Team Member</p>
+                    <p class="bio">Placeholder profile for a new collaborator contributing to marine acoustics, signal analysis, and interdisciplinary ecological research.</p>
+                    <div class="team-links">
+                        <a href="#">LinkedIn</a>
+                        <a href="#">Website</a>
+                    </div>
+                </div>
             </div>
             
             <h3 style="color: #4ecdc4; margin-top: 3rem; margin-bottom: 1.5rem; font-size: 1.8rem;">Alumni</h3>
@@ -821,6 +871,15 @@
             </div>
         </div>
     </div>
+
+    <script>
+        function toggleMission() {
+            const section = document.getElementById('mission-content');
+            const trigger = document.querySelector('.mission-toggle');
+            const isOpen = section.classList.toggle('open');
+            trigger.textContent = isOpen ? 'Read less' : 'Read more';
+        }
+    </script>
 
     <!-- Three.js Scene Script -->
     <script>
