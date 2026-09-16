@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
     <title>Thode Environmental Acoustic Lab</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,19 +18,27 @@
             box-sizing: border-box;
         }
 
+        html {
+            -webkit-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+        }
+
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             overflow-x: hidden;
             background: #0a1f2e;
             color: white;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            -webkit-tap-highlight-color: transparent;
         }
 
         #canvas-container {
             position: fixed;
             top: 0;
             left: 0;
-            width: 100vw;
-            height: 100vh;
+            width: 100%;
+            height: 100%;
             z-index: 0;
         }
 
@@ -41,7 +49,10 @@
         }
 
         .content-section {
+            /* Fallback for browsers without dvh/JS support, then corrected via --vh custom property */
             min-height: 100vh;
+            min-height: calc(var(--vh, 1vh) * 100);
+            min-height: 100dvh;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -82,8 +93,10 @@
         nav .nav-content {
             max-width: 1400px;
             margin: 0 auto;
-            padding: 1rem 2rem;
+            padding: 1rem calc(2rem + env(safe-area-inset-right)) 1rem calc(2rem + env(safe-area-inset-left));
             display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem 1.5rem;
             justify-content: space-between;
             align-items: center;
         }
@@ -96,8 +109,9 @@
 
         nav ul {
             display: flex;
+            flex-wrap: wrap;
             list-style: none;
-            gap: 2rem;
+            gap: 0.75rem 2rem;
         }
 
         nav a {
@@ -332,7 +346,9 @@
             width: 90%;
             max-width: 1200px;
             max-height: 85vh;
+            max-height: 85dvh;
             overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
             box-shadow: 0 10px 50px rgba(0, 0, 0, 0.5);
         }
 
@@ -434,8 +450,12 @@
         }
 
         @media (max-width: 768px) {
+            nav .nav-content {
+                padding: 0.85rem calc(1.25rem + env(safe-area-inset-right)) 0.85rem calc(1.25rem + env(safe-area-inset-left));
+            }
+
             nav ul {
-                gap: 1rem;
+                gap: 0.6rem 1rem;
                 font-size: 0.9rem;
             }
 
@@ -445,6 +465,60 @@
 
             .container {
                 padding: 1.5rem;
+                border-radius: 14px;
+            }
+
+            .content-section {
+                padding: 1.25rem;
+            }
+
+            .card, .team-member, .contact-item {
+                padding: 1.5rem;
+            }
+
+            .modal-content {
+                margin: 4% auto;
+                padding: 1.5rem;
+                width: calc(100% - 2rem);
+                border-radius: 14px;
+            }
+
+            .close-modal {
+                font-size: 2rem;
+            }
+
+            #about p[style*="text-align: justify"],
+            #meet-the-lab p[style*="text-align: justify"] {
+                text-align: left !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .card-grid, .team-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .contact-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .profile-circle {
+                width: 100px;
+                height: 100px;
+            }
+
+            nav h1 {
+                font-size: 0.9rem;
+            }
+
+            nav ul {
+                gap: 0.5rem 0.85rem;
+                font-size: 0.85rem;
+            }
+
+            .btn-primary {
+                padding: 0.85rem 1.75rem;
+                width: 100%;
             }
         }
     </style>
@@ -936,6 +1010,21 @@
         }
     </script>
 
+    <!-- Keeps section heights stable across mobile browsers whose UI chrome resizes the viewport on scroll -->
+    <script>
+        function setViewportHeightUnit() {
+            document.documentElement.style.setProperty('--vh', (window.innerHeight * 0.01) + 'px');
+        }
+        setViewportHeightUnit();
+        window.addEventListener('orientationchange', setViewportHeightUnit);
+
+        let vhResizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(vhResizeTimer);
+            vhResizeTimer = setTimeout(setViewportHeightUnit, 150);
+        });
+    </script>
+
     <!-- Three.js Scene Script -->
     <script>
         // Scene setup
@@ -1133,12 +1222,18 @@
 
         animate();
 
-        // Handle window resize
-        window.addEventListener('resize', () => {
+        // Handle window resize (debounced so mobile address-bar show/hide doesn't thrash the renderer)
+        let sceneResizeTimer;
+        function resizeScene() {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+        window.addEventListener('resize', () => {
+            clearTimeout(sceneResizeTimer);
+            sceneResizeTimer = setTimeout(resizeScene, 150);
         });
+        window.addEventListener('orientationchange', resizeScene);
 
         // Intersection Observer for scroll animations
         const observer = new IntersectionObserver((entries) => {
